@@ -1,4 +1,4 @@
-defmodule Recom.Entities do
+defmodule Entities do
   defmodule Product do
     defstruct start: nil, end: nil, name: ""
 

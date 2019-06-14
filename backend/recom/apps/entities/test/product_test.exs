@@ -1,7 +1,7 @@
-defmodule Recom.Entities.ProductTest do
+defmodule Entities.ProductTest do
   use ExUnit.Case, async: true
 
-  alias Recom.Entities.Product
+  alias Entities.Product
 
   describe "new/0" do
     test "returns a product with a nil start" do
