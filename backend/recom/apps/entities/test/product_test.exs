@@ -12,8 +12,9 @@ defmodule Recom.Entities.ProductTest do
       assert %Product{end: nil} = Product.new()
     end
 
-    test "returns a product with an empty location" do
-      assert %Product{location: nil} = Product.new()
+    test "returns a product with an empty name" do
+      assert %Product{name: ""} = Product.new()
     end
   end
+
 end
