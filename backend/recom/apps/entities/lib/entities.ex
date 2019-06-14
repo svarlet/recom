@@ -1,6 +1,6 @@
 defmodule Recom.Entities do
   defmodule Product do
-    defstruct code: ""
+    defstruct code: "", start: nil
 
     def new() do
       __struct__()

@@ -7,5 +7,9 @@ defmodule Recom.Entities.ProductTest do
     test "returns a product with an empty show code" do
       assert %Product{code: ""} = Product.new()
     end
+
+    test "returns a product with a nil start" do
+      assert %Product{start: nil} = Product.new()
+    end
   end
 end
