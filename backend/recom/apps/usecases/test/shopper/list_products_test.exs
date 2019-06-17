@@ -1,5 +1,6 @@
 defmodule Usecases.Shopper.ListProductsTest do
   use ExUnit.Case, async: true
+  use Timex
 
   import Usecases.Shopper.ListProducts
 
@@ -7,18 +8,22 @@ defmodule Usecases.Shopper.ListProductsTest do
 
   setup do
     p1 = Product.new(name: "M2020 EU 2018 Regular Pass",
+      time_span: Interval.new(from: ~N[2018-05-31 09:00:00], until: [days: 3, hours: 8]),
       start: ~N[2018-05-31 09:00:00],
       end: ~N[2018-06-02 17:00:00])
 
     p2 = Product.new(name: "M2020 EU 2019 Regular Pass",
+      time_span: Interval.new(from: ~N[2019-06-02 09:00:00], until: [days: 3, hours: 8]),
       start: ~N[2019-06-02 09:00:00],
       end: ~N[2019-06-05 17:00:00])
 
     p3 = Product.new(name: "M2020 EU 2019 VIP Pass",
+      time_span: Interval.new(from: ~N[2019-06-02 09:00:00], until: [days: 3, hours: 8]),
       start: ~N[2019-06-02 09:00:00],
       end: ~N[2019-06-05 17:00:00])
 
     p4 = Product.new(name: "M2020 EU 2020 Regular Pass",
+      time_span: Interval.new(from: ~N[2020-07-02 09:00:00], until: [days: 3, hours: 8]),
       start: ~N[2020-07-02 09:00:00],
       end: ~N[2020-07-05 17:00:00])
 
