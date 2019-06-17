@@ -5,5 +5,9 @@ defmodule Entities do
     def new(fields \\ []) do
       __struct__(fields)
     end
+
+    def purchasable?(product, instant) do
+      false
+    end
   end
 end

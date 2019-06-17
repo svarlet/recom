@@ -44,4 +44,12 @@ defmodule Entities.ProductTest do
     end
   end
 
+  describe "purchasable?/2" do
+    test "given a product and an instant prior to the product time span, it returns true" do
+      instant = Timex.now()
+      later_time_span = Interval.new(from: Timex.shift(instant, days: 3), until: [days: 1])
+      p = Product.new(name: "irrelevant product name", time_span: later_time_span)
+      refute Product.purchasable?(p, instant)
+    end
+  end
 end
