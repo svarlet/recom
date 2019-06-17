@@ -60,5 +60,14 @@ defmodule Entities.ProductTest do
       live_product = Product.new(name: "irrelevant product name", time_span: overlapping_time_span)
       assert Product.purchasable?(live_product, now)
     end
+
+    test "given a product and an instant after the product time span, it returns false" do
+      now = Timex.now()
+      past_time_span = Interval.new(
+        from: Timex.shift(now, weeks: -2),
+        until: Timex.shift(now, weeks: -2, hours: 10))
+      past_product = Product.new(name: "irrelevant product name", time_span: past_time_span)
+      refute Product.purchasable?(past_product, now)
+    end
   end
 end
