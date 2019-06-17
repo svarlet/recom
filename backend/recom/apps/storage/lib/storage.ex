@@ -1,0 +1,2 @@
+defmodule Storage do
+end
