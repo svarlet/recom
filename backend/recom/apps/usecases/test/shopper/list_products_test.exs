@@ -26,8 +26,7 @@ defmodule Usecases.Shopper.ListProductsTest do
   test "it returns the products scheduled in the future", context do
     instant_before_some_scheduled_products = ~N[2019-04-14 14:00:00]
     upcoming_products = list_products(context.products, instant_before_some_scheduled_products)
-    assert context.p2 in upcoming_products
-    assert context.p3 in upcoming_products
+    assert [context.p2, context.p3] == upcoming_products
   end
 
   test "it returns the products spanning over the instant", context do
