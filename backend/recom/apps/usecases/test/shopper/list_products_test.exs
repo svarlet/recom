@@ -7,17 +7,19 @@ defmodule Usecases.Shopper.ListProductsTest do
   alias Entities.Product
 
   setup do
+    duration = [days: 3, hours: 8]
+
     p1 = Product.new(name: "M2020 EU 2018 Regular Pass",
-      time_span: Interval.new(from: ~N[2018-05-31 09:00:00], until: [days: 3, hours: 8]))
+      time_span: Interval.new(from: ~N[2018-05-31 09:00:00], until: duration))
 
     p2 = Product.new(name: "M2020 EU 2019 Regular Pass",
-      time_span: Interval.new(from: ~N[2019-06-02 09:00:00], until: [days: 3, hours: 8]))
+      time_span: Interval.new(from: ~N[2019-06-02 09:00:00], until: duration))
 
     p3 = Product.new(name: "M2020 EU 2019 VIP Pass",
-      time_span: Interval.new(from: ~N[2019-06-02 09:00:00], until: [days: 3, hours: 8]))
+      time_span: Interval.new(from: ~N[2019-06-02 09:00:00], until: duration))
 
     p4 = Product.new(name: "M2020 EU 2020 Regular Pass",
-      time_span: Interval.new(from: ~N[2020-07-02 09:00:00], until: [days: 3, hours: 8]))
+      time_span: Interval.new(from: ~N[2020-07-02 09:00:00], until: duration))
 
     %{products: [p1, p2, p3, p4], p1: p1, p2: p2, p3: p3, p4: p4}
   end
