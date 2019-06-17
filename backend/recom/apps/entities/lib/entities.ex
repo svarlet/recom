@@ -1,5 +1,7 @@
 defmodule Entities do
   defmodule Product do
+    use Timex
+
     defstruct start: nil, end: nil, name: "", time_span: nil
 
     def new(fields \\ []) do
@@ -7,7 +9,7 @@ defmodule Entities do
     end
 
     def purchasable?(product, instant) do
-      false
+      Timex.before?(instant, product.time_span.until)
     end
   end
 end
