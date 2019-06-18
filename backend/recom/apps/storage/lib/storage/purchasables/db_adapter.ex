@@ -6,19 +6,14 @@ defmodule Storage.PurchasablesGateway.DbAdapter do
   import Ecto.Query
 
   alias Storage.Product
+  alias Storage.PurchasablesGateway.DataMapper
 
   @impl true
   def all(instant) do
     purchasables =
       from(p in Product, where: p.end > ^instant)
       |> Storage.Repo.all()
-      |> Enum.map(&to_entity/1)
+      |> Enum.map(&DataMapper.convert/1)
     {:ok, purchasables}
-  end
-
-  defp to_entity(%Product{name: name, start: start, end: the_end}) do
-    Entities.Product.new(
-      name: name,
-      time_span: Interval.new(from: start, until: the_end))
   end
 end
