@@ -32,4 +32,23 @@ defmodule Storage.PurchasablesGatewayTest do
 
     assert {:ok, [^future_product_as_entity]} = PurchasablesGateway.Adapters.DbGateway.all(instant)
   end
+
+  test "given some products, when some start exactly at the instant, it returns those" do
+    instant = Timex.now()
+
+    %Product{
+      name: "Product starting exactly at the instant",
+      start: instant,
+      end: Timex.shift(instant, days: 2)}
+    |> Storage.Repo.insert()
+
+    product_as_entity = Entities.Product.new(
+      name: "Product starting exactly at the instant",
+      time_span: Interval.new(
+        from: instant,
+        until: [days: 2]
+      ))
+
+    assert {:ok, [^product_as_entity]} = PurchasablesGateway.Adapters.DbGateway.all(instant)
+  end
 end
