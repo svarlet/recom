@@ -5,12 +5,12 @@ defmodule Usecases.Shopper.ListPurchasablesTest do
   import Mox
   import Usecases.Shopper.ListPurchasables
 
-  setup :verify_on_exit!
-
   alias Usecases.Shopper.PurchasablesGateway
   alias Entities.Product
 
   Mox.defmock PurchasablesGateway.MockAdapter, for: PurchasablesGateway
+
+  setup :verify_on_exit!
 
   test "it fetches purchasables via the provided gateway with the supplied instant" do
     instant = Timex.now()
