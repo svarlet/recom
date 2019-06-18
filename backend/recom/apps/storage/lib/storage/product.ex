@@ -22,7 +22,7 @@ defmodule Storage.PurchasablesGateway.Adapters.DbGateway do
   @impl true
   def all(instant) do
     purchasables =
-      from(p in Product, where: p.start >= ^instant)
+      from(p in Product, where: p.end > ^instant)
       |> Storage.Repo.all()
       |> Enum.map(&to_entity/1)
     {:ok, purchasables}

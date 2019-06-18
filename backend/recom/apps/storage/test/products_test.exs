@@ -71,4 +71,25 @@ defmodule Storage.PurchasablesGatewayTest_ProductsAtVariousTimes do
 
     assert {:ok, []} == PurchasablesGateway.Adapters.DbGateway.all(instant)
   end
+
+  test "given a product which started before the instant and terminates later, it returns it" do
+    instant = Timex.now()
+
+    %Product{
+      name: "Product which started before the instant and finishes after",
+      start: Timex.shift(instant, hours: -1),
+      end: Timex.shift(instant, hours: 1)
+    }
+    |> Storage.Repo.insert!()
+
+    expected_product = Entities.Product.new(
+      name: "Product which started before the instant and finishes after",
+      time_span: Interval.new(
+        from: Timex.shift(instant, hours: -1),
+        until: Timex.shift(instant, hours: 1)
+      )
+    )
+
+    assert {:ok, [^expected_product]} = PurchasablesGateway.Adapters.DbGateway.all(instant)
+  end
 end
