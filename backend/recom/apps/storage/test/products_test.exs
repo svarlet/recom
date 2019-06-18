@@ -1,14 +1,21 @@
+defmodule Storage.PurchasablesGateway_NoProductsTest do
+  use Storage.DataCase
+  use Timex
+
+  alias Storage.PurchasablesGateway.Adapters.DbGateway, as: PurchasablesGateway
+
+  test "given no products, when requesting all purchasables, it returns {:ok, []}" do
+    irrelevant_instant = Timex.now()
+    assert {:ok, []} == PurchasablesGateway.all(irrelevant_instant)
+  end
+end
+
 defmodule Storage.PurchasablesGatewayTest do
   use Storage.DataCase
   use Timex
 
   alias Storage.Product
   alias Storage.PurchasablesGateway
-
-  test "given no products, when requesting all purchasables, it returns {:ok, []}" do
-    irrelevant_instant = Timex.now()
-    assert {:ok, []} == PurchasablesGateway.Adapters.DbGateway.all(irrelevant_instant)
-  end
 
   test "given some products, when some expire after the instant, it returns those" do
     instant = Timex.now()
