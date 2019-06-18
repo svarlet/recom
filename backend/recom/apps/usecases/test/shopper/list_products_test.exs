@@ -34,8 +34,8 @@ defmodule Usecases.Shopper.ListProductsTest do
   end
 
   test "on failure, relays the error" do
-    instant = Timex.now()
-    Mox.expect(PurchasablesGateway.Mock, :all, fn ^instant -> {:error, :something_failed} end)
-    assert {:error, :something_failed} == list_products(PurchasablesGateway.Mock, instant)
+    irrelevant_instant = Timex.now()
+    Mox.stub(PurchasablesGateway.Mock, :all, fn _instant -> {:error, :something_failed} end)
+    assert {:error, :something_failed} == list_products(PurchasablesGateway.Mock, irrelevant_instant)
   end
 end
