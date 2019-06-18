@@ -1,5 +1,5 @@
 defmodule Storage.PurchasablesGatewayTest do
-  use ExUnit.Case, async: true
+  use Storage.DataCase
   use Timex
 
   alias Storage.Product

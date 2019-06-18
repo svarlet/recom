@@ -11,7 +11,8 @@ defmodule Storage.MixProject do
       lockfile: "../../mix.lock",
       elixir: "~> 1.8",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      elixirc_paths: elixirc_path(Mix.env())
     ]
   end
 
@@ -33,4 +34,7 @@ defmodule Storage.MixProject do
       {:postgrex, ">= 0.0.0"}
     ]
   end
+
+  defp elixirc_path(:test), do: ["test/support", "lib"]
+  defp elixirc_path(_), do: ["lib"]
 end
