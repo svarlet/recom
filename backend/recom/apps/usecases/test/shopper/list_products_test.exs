@@ -16,7 +16,7 @@ defmodule Usecases.Shopper.ListProductsTest do
     instant = Timex.now()
     irrelevant_found_purchasables = []
     Mox.expect(PurchasablesGateway.MockAdapter, :all, fn ^instant -> {:ok, irrelevant_found_purchasables} end)
-    list_products(PurchasablesGateway.MockAdapter, instant)
+    list_products(instant, PurchasablesGateway.MockAdapter)
   end
 
   test "on success, returns the found purchasables" do
@@ -30,12 +30,12 @@ defmodule Usecases.Shopper.ListProductsTest do
       time_span: Interval.new(from: Timex.shift(instant, months: 1), until: [months: 1, days: 2]))
     ]
     Mox.stub(PurchasablesGateway.MockAdapter, :all, fn _instant -> {:ok, found_purchasables} end)
-    assert {:ok, found_purchasables} == list_products(PurchasablesGateway.MockAdapter, instant)
+    assert {:ok, found_purchasables} == list_products(instant, PurchasablesGateway.MockAdapter)
   end
 
   test "on failure, relays the error" do
     irrelevant_instant = Timex.now()
     Mox.stub(PurchasablesGateway.MockAdapter, :all, fn _instant -> {:error, :something_failed} end)
-    assert {:error, :something_failed} == list_products(PurchasablesGateway.MockAdapter, irrelevant_instant)
+    assert {:error, :something_failed} == list_products(irrelevant_instant, PurchasablesGateway.MockAdapter)
   end
 end

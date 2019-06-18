@@ -6,7 +6,7 @@ defmodule Usecases.Shopper do
   end
 
   defmodule ListProducts do
-    def list_products(purchasables_gateway, instant) do
+    def list_products(instant, purchasables_gateway) do
       purchasables_gateway.all(instant)
     end
   end
