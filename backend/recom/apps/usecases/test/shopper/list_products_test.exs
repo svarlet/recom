@@ -11,6 +11,13 @@ defmodule Usecases.Shopper.ListProductsTest do
 
   Mox.defmock PurchasablesGateway.Mock, for: PurchasablesGateway
 
+  test "it fetches purchasables via the provided gateway" do
+    instant = Timex.now()
+    irrelevant_found_purchasables = []
+    Mox.expect(PurchasablesGateway.Mock, :all, fn ^instant -> {:ok, irrelevant_found_purchasables} end)
+    list_products(PurchasablesGateway.Mock, instant)
+  end
+
   test "on success, returns the found purchasables" do
     instant = Timex.now()
     Mox.expect(PurchasablesGateway.Mock, :all, fn ^instant -> {:ok, []} end)
