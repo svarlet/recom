@@ -1,12 +1,12 @@
-defmodule Storage.PurchasablesGateway_NoProductsTest do
+defmodule Storage.PurchasablesGateway.DbAdapter_NoProductsTest do
   use Storage.DataCase
   use Timex
 
-  alias Storage.PurchasablesGateway.Adapters.DbGateway, as: PurchasablesGateway
+  alias Storage.PurchasablesGateway.DbAdapter
 
   test "given no products, when requesting all purchasables, it returns {:ok, []}" do
     irrelevant_instant = Timex.now()
-    assert {:ok, []} == PurchasablesGateway.all(irrelevant_instant)
+    assert {:ok, []} == DbAdapter.all(irrelevant_instant)
   end
 end
 
@@ -15,7 +15,7 @@ defmodule Storage.PurchasablesGatewayTest_ProductsAtVariousTimes do
   use Timex
 
   alias Storage.Product
-  alias Storage.PurchasablesGateway
+  alias Storage.PurchasablesGateway.DbAdapter
 
   test "given some products, when some expire after the instant, it returns those" do
     instant = Timex.now()
@@ -37,7 +37,7 @@ defmodule Storage.PurchasablesGatewayTest_ProductsAtVariousTimes do
         until: [days: 2]
       ))
 
-    assert {:ok, [^future_product_as_entity]} = PurchasablesGateway.Adapters.DbGateway.all(instant)
+    assert {:ok, [^future_product_as_entity]} = DbAdapter.all(instant)
   end
 
   test "given some products, when some start exactly at the instant, it returns those" do
@@ -56,7 +56,7 @@ defmodule Storage.PurchasablesGatewayTest_ProductsAtVariousTimes do
         until: [days: 2]
       ))
 
-    assert {:ok, [^product_as_entity]} = PurchasablesGateway.Adapters.DbGateway.all(instant)
+    assert {:ok, [^product_as_entity]} = DbAdapter.all(instant)
   end
 
   test "given a product which ends exactly at the instant, it doesn't return it" do
@@ -69,7 +69,7 @@ defmodule Storage.PurchasablesGatewayTest_ProductsAtVariousTimes do
     }
     |> Storage.Repo.insert!()
 
-    assert {:ok, []} == PurchasablesGateway.Adapters.DbGateway.all(instant)
+    assert {:ok, []} == DbAdapter.all(instant)
   end
 
   test "given a product which started before the instant and terminates later, it returns it" do
@@ -90,6 +90,6 @@ defmodule Storage.PurchasablesGatewayTest_ProductsAtVariousTimes do
       )
     )
 
-    assert {:ok, [^expected_product]} = PurchasablesGateway.Adapters.DbGateway.all(instant)
+    assert {:ok, [^expected_product]} = DbAdapter.all(instant)
   end
 end

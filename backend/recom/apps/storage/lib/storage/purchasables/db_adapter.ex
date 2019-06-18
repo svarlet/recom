@@ -1,4 +1,4 @@
-defmodule Storage.PurchasablesGateway.Adapters.DbGateway do
+defmodule Storage.PurchasablesGateway.DbAdapter do
   @behaviour Usecases.Shopper.PurchasablesGateway
 
   use Timex

@@ -10,13 +10,13 @@ defmodule Usecases.Shopper.ListProductsTest do
   alias Usecases.Shopper.PurchasablesGateway
   alias Entities.Product
 
-  Mox.defmock PurchasablesGateway.Adapters.Mock, for: PurchasablesGateway
+  Mox.defmock PurchasablesGateway.MockAdapter, for: PurchasablesGateway
 
   test "it fetches purchasables via the provided gateway with the supplied instant" do
     instant = Timex.now()
     irrelevant_found_purchasables = []
-    Mox.expect(PurchasablesGateway.Adapters.Mock, :all, fn ^instant -> {:ok, irrelevant_found_purchasables} end)
-    list_products(PurchasablesGateway.Adapters.Mock, instant)
+    Mox.expect(PurchasablesGateway.MockAdapter, :all, fn ^instant -> {:ok, irrelevant_found_purchasables} end)
+    list_products(PurchasablesGateway.MockAdapter, instant)
   end
 
   test "on success, returns the found purchasables" do
@@ -29,13 +29,13 @@ defmodule Usecases.Shopper.ListProductsTest do
         name: "irrelevant name 2",
       time_span: Interval.new(from: Timex.shift(instant, months: 1), until: [months: 1, days: 2]))
     ]
-    Mox.stub(PurchasablesGateway.Adapters.Mock, :all, fn _instant -> {:ok, found_purchasables} end)
-    assert {:ok, found_purchasables} == list_products(PurchasablesGateway.Adapters.Mock, instant)
+    Mox.stub(PurchasablesGateway.MockAdapter, :all, fn _instant -> {:ok, found_purchasables} end)
+    assert {:ok, found_purchasables} == list_products(PurchasablesGateway.MockAdapter, instant)
   end
 
   test "on failure, relays the error" do
     irrelevant_instant = Timex.now()
-    Mox.stub(PurchasablesGateway.Adapters.Mock, :all, fn _instant -> {:error, :something_failed} end)
-    assert {:error, :something_failed} == list_products(PurchasablesGateway.Adapters.Mock, irrelevant_instant)
+    Mox.stub(PurchasablesGateway.MockAdapter, :all, fn _instant -> {:error, :something_failed} end)
+    assert {:error, :something_failed} == list_products(PurchasablesGateway.MockAdapter, irrelevant_instant)
   end
 end
