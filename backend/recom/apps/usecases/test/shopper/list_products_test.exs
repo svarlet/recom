@@ -8,6 +8,7 @@ defmodule Usecases.Shopper.ListProductsTest do
   setup :verify_on_exit!
 
   alias Usecases.Shopper.PurchasablesGateway
+  alias Entities.Product
 
   Mox.defmock PurchasablesGateway.Mock, for: PurchasablesGateway
 
@@ -20,8 +21,16 @@ defmodule Usecases.Shopper.ListProductsTest do
 
   test "on success, returns the found purchasables" do
     instant = Timex.now()
-    Mox.expect(PurchasablesGateway.Mock, :all, fn ^instant -> {:ok, []} end)
-    assert {:ok, []} == list_products(PurchasablesGateway.Mock, instant)
+    found_purchasables = [
+      Product.new(
+        name: "irrelevant name 1",
+        time_span: Interval.new(from: Timex.shift(instant, days: 2), until: [days: 3])),
+      Product.new(
+        name: "irrelevant name 2",
+      time_span: Interval.new(from: Timex.shift(instant, months: 1), until: [months: 1, days: 2]))
+    ]
+    Mox.stub(PurchasablesGateway.Mock, :all, fn _instant -> {:ok, found_purchasables} end)
+    assert {:ok, found_purchasables} == list_products(PurchasablesGateway.Mock, instant)
   end
 
   test "on failure, relays the error" do
