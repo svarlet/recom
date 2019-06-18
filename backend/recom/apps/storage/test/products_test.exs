@@ -10,7 +10,7 @@ defmodule Storage.PurchasablesGateway_NoProductsTest do
   end
 end
 
-defmodule Storage.PurchasablesGatewayTest do
+defmodule Storage.PurchasablesGatewayTest_ProductsAtVariousTimes do
   use Storage.DataCase
   use Timex
 
@@ -57,5 +57,18 @@ defmodule Storage.PurchasablesGatewayTest do
       ))
 
     assert {:ok, [^product_as_entity]} = PurchasablesGateway.Adapters.DbGateway.all(instant)
+  end
+
+  test "given a product which ends exactly at the instant, it doesn't return it" do
+    instant = Timex.now()
+
+    %Product{
+      name: "Product which ends at the instant",
+      start: Timex.shift(instant, hours: -1),
+      end: instant
+    }
+    |> Storage.Repo.insert!()
+
+    assert {:ok, []} == PurchasablesGateway.Adapters.DbGateway.all(instant)
   end
 end
