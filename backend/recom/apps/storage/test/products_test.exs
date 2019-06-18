@@ -14,7 +14,7 @@ defmodule Storage.PurchasablesGatewayTest do
     instant = Timex.now()
 
     [%Product{
-        name: "Pass 2015",
+        name: "Pass for a product which expired 2 days ago",
         start: Timex.shift(instant, days: -5),
         end: Timex.shift(instant, days: -2)},
      %Product{
