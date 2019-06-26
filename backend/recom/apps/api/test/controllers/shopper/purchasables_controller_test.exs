@@ -17,4 +17,19 @@ defmodule Api.Shopper.PurchasablesControllerTest do
       at: instant,
       with_usecase: UsecaseMock)
   end
+
+  test "the controller request the purchasables for the specified instant" do
+    defmodule UsecaseMock do
+      def list_purchasables(instant) do
+        send(self(), {:instant, instant})
+        purchasables = []
+        {:ok, purchasables}
+      end
+    end
+
+    irrelevant_conn = Plug.Test.conn(:get, "/purchasables")
+    instant = Timex.now()
+    PurchasablesController.list(irrelevant_conn, at: instant, with_usecase: UsecaseMock)
+    assert_received {:instant, ^instant}
+  end
 end

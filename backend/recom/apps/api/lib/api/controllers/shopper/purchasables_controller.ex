@@ -1,5 +1,8 @@
 defmodule Api.Shopper.PurchasablesController do
-  def list(conn, at: _instant, with_usecase: _usecase) do
+  import Plug.Conn, only: [send_resp: 3]
+
+  def list(conn, at: instant, with_usecase: usecase) do
+    usecase.list_purchasables(instant)
     conn
   end
 end
