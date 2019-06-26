@@ -81,6 +81,10 @@ defmodule Api.Shopper.PurchasablesControllerTest do
     test "then it responds with a 200 status", context do
       assert %Plug.Conn{status: 200} = context.response
     end
+
+    test "then it responds with a json ccontent type", context do
+      assert ["application/json"] == Plug.Conn.get_resp_header(context.response, "content-type")
+    end
   end
 
 end
