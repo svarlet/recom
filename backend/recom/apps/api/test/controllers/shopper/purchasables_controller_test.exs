@@ -4,7 +4,8 @@ defmodule Api.Shopper.PurchasablesControllerTest do
   alias Api.Shopper.PurchasablesController
 
   setup do
-    %{conn: Plug.Test.conn(:get, "/purchasables")}
+    %{conn: Plug.Test.conn(:get, "/purchasables"),
+      instant: Timex.now()}
   end
 
   test "it returns a %Plug.Conn{}", context do
@@ -15,9 +16,8 @@ defmodule Api.Shopper.PurchasablesControllerTest do
       end
     end
 
-    instant = Timex.now()
     assert %Plug.Conn{} = PurchasablesController.list(context.conn,
-      at: instant,
+      at: context.instant,
       with_usecase: UsecaseMock)
   end
 
@@ -30,8 +30,10 @@ defmodule Api.Shopper.PurchasablesControllerTest do
       end
     end
 
-    instant = Timex.now()
-    PurchasablesController.list(context.conn, at: instant, with_usecase: UsecaseMock)
-    assert_received {:instant, ^instant}
+    PurchasablesController.list(context.conn,
+      at: context.instant,
+      with_usecase: UsecaseMock)
+    assert_received {:instant, instant}
+    assert instant == context.instant
   end
 end
