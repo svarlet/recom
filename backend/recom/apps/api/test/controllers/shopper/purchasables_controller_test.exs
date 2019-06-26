@@ -3,7 +3,11 @@ defmodule Api.Shopper.PurchasablesControllerTest do
 
   alias Api.Shopper.PurchasablesController
 
-  test "it returns a %Plug.Conn{}" do
+  setup do
+    %{conn: Plug.Test.conn(:get, "/purchasables")}
+  end
+
+  test "it returns a %Plug.Conn{}", context do
     defmodule UsecaseMock do
       def list_purchasables(_instant) do
         purchasables = []
@@ -11,14 +15,13 @@ defmodule Api.Shopper.PurchasablesControllerTest do
       end
     end
 
-    irrelevant_conn = Plug.Test.conn(:get, "/purchasables")
     instant = Timex.now()
-    assert %Plug.Conn{} = PurchasablesController.list(irrelevant_conn,
+    assert %Plug.Conn{} = PurchasablesController.list(context.conn,
       at: instant,
       with_usecase: UsecaseMock)
   end
 
-  test "the controller request the purchasables for the specified instant" do
+  test "the controller request the purchasables for the specified instant", context do
     defmodule UsecaseMock do
       def list_purchasables(instant) do
         send(self(), {:instant, instant})
@@ -27,9 +30,8 @@ defmodule Api.Shopper.PurchasablesControllerTest do
       end
     end
 
-    irrelevant_conn = Plug.Test.conn(:get, "/purchasables")
     instant = Timex.now()
-    PurchasablesController.list(irrelevant_conn, at: instant, with_usecase: UsecaseMock)
+    PurchasablesController.list(context.conn, at: instant, with_usecase: UsecaseMock)
     assert_received {:instant, ^instant}
   end
 end
