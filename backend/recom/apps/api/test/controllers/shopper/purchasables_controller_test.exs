@@ -2,10 +2,14 @@ defmodule Api.Shopper.PurchasablesControllerTest do
   use ExUnit.Case, async: true
 
   alias Api.Shopper.PurchasablesController
+  alias Entities.Product
+
+
+  @instant Timex.to_datetime(~N[2019-02-15 15:07:39], "Etc/UTC")
 
   setup_all do
     %{conn: Plug.Test.conn(:get, "/purchasables"),
-      instant: Timex.now()}
+      instant: @instant}
   end
 
   # Collaboration tests
@@ -58,13 +62,13 @@ defmodule Api.Shopper.PurchasablesControllerTest do
 
   describe "given that some purchasables are available at the specified time" do
     defmodule UsecaseStub_SomePurchasables do
-      alias Entities.Product
+      @instant Timex.to_datetime(~N[2019-02-15 15:07:39], "Etc/UTC")
+      @next_day Timex.shift(@instant, days: 1)
+      @next_week Timex.shift(@instant, weeks: 1)
 
-      @tomorrow Timex.shift(Timex.now(), days: 1)
-      @next_week Timex.shift(Timex.now(), week: 1)
       @some_purchasables [
-        Product.new(name: "Apple Pie", time_span: Timex.Interval.new(from: @tomorrow, until: @next_week)),
-        Product.new(name: "Almond milk", time_span: Timex.Interval.new(from: @tomorrow, until: @next_week)),
+        Product.new(name: "Apple Pie", time_span: Timex.Interval.new(from: @next_day, until: @next_week)),
+        Product.new(name: "Almond milk", time_span: Timex.Interval.new(from: @next_day, until: @next_week)),
       ]
 
       def list_purchasables(_instant), do: {:ok, @some_purchasables}
@@ -85,6 +89,13 @@ defmodule Api.Shopper.PurchasablesControllerTest do
     test "then it responds with a json ccontent type", context do
       assert ["application/json"] == Plug.Conn.get_resp_header(context.response, "content-type")
     end
-  end
 
+    test "then it responds with a valid json document", context do
+      {:ok, document} = Jason.decode(context.response.resp_body, keys: :atoms)
+      assert document.purchasables == [
+        %{name: "Apple Pie", time_span: %{from: "2019-02-16T15:07:39Z", until: "2019-02-22T15:07:39Z"}},
+        %{name: "Almond milk", time_span: %{from: "2019-02-16T15:07:39Z", until: "2019-02-22T15:07:39Z"}},
+      ]
+    end
+  end
 end
