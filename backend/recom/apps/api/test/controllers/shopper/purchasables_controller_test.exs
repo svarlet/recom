@@ -22,7 +22,7 @@ defmodule Api.Shopper.PurchasablesControllerTest do
   end
 
   test "the controller request the purchasables for the specified instant", context do
-    defmodule UsecaseMock do
+    defmodule UsecaseSpy do
       def list_purchasables(instant) do
         send(self(), {:instant, instant})
         purchasables = []
@@ -32,7 +32,8 @@ defmodule Api.Shopper.PurchasablesControllerTest do
 
     PurchasablesController.list(context.conn,
       at: context.instant,
-      with_usecase: UsecaseMock)
+      with_usecase: UsecaseSpy)
+
     assert_received {:instant, instant}
     assert instant == context.instant
   end
