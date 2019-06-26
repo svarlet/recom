@@ -8,19 +8,6 @@ defmodule Api.Shopper.PurchasablesControllerTest do
       instant: Timex.now()}
   end
 
-  test "it returns a %Plug.Conn{}", context do
-    defmodule UsecaseMock do
-      def list_purchasables(_instant) do
-        purchasables = []
-        {:ok, purchasables}
-      end
-    end
-
-    assert %Plug.Conn{} = PurchasablesController.list(context.conn,
-      at: context.instant,
-      with_usecase: UsecaseMock)
-  end
-
   test "the controller request the purchasables for the specified instant", context do
     defmodule UsecaseSpy do
       def list_purchasables(instant) do
