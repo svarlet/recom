@@ -56,4 +56,31 @@ defmodule Api.Shopper.PurchasablesControllerTest do
     end
   end
 
+  describe "given that some purchasables are available at the specified time" do
+    defmodule UsecaseStub_SomePurchasables do
+      alias Entities.Product
+
+      @tomorrow Timex.shift(Timex.now(), days: 1)
+      @next_week Timex.shift(Timex.now(), week: 1)
+      @some_purchasables [
+        Product.new(name: "Apple Pie", time_span: Timex.Interval.new(from: @tomorrow, until: @next_week)),
+        Product.new(name: "Almond milk", time_span: Timex.Interval.new(from: @tomorrow, until: @next_week)),
+      ]
+
+      def list_purchasables(_instant), do: {:ok, @some_purchasables}
+    end
+
+    setup context do
+      response = PurchasablesController.list(context.conn,
+        at: context.instant,
+        with_usecase: UsecaseStub_SomePurchasables)
+
+      %{response: response}
+    end
+
+    test "then it responds with a 200 status", context do
+      assert %Plug.Conn{status: 200} = context.response
+    end
+  end
+
 end
