@@ -39,11 +39,11 @@ defmodule Api.Shopper.PurchasablesControllerTest do
   end
 
   describe "given that there are no purchasables at the specified instant" do
-    test "then it responds with a 200 status", context do
-      defmodule UsecaseStub_NoPurchasables do
-        def list_purchasables(_instant), do: {:ok, []}
-      end
+    defmodule UsecaseStub_NoPurchasables do
+      def list_purchasables(_instant), do: {:ok, []}
+    end
 
+    test "then it responds with a 200 status", context do
       conn = PurchasablesController.list(context.conn,
         at: context.instant,
         with_usecase: UsecaseStub_NoPurchasables)
@@ -52,10 +52,6 @@ defmodule Api.Shopper.PurchasablesControllerTest do
     end
 
     test "then it responds with a json content type", context do
-      defmodule UsecaseStub_NoPurchasables do
-        def list_purchasables(_instant), do: {:ok, []}
-      end
-
       conn = PurchasablesController.list(context.conn,
         at: context.instant,
         with_usecase: UsecaseStub_NoPurchasables)
