@@ -3,10 +3,12 @@ defmodule Api.Shopper.PurchasablesControllerTest do
 
   alias Api.Shopper.PurchasablesController
 
-  setup do
+  setup_all do
     %{conn: Plug.Test.conn(:get, "/purchasables"),
       instant: Timex.now()}
   end
+
+  # Collaboration tests
 
   test "the controller request the purchasables for the specified instant", context do
     defmodule UsecaseSpy do
@@ -24,6 +26,8 @@ defmodule Api.Shopper.PurchasablesControllerTest do
     assert_received {:instant, instant}
     assert instant == context.instant
   end
+
+  # Contract tests
 
   describe "given that there are no purchasables at the specified instant" do
     defmodule UsecaseStub_NoPurchasables do
