@@ -3,8 +3,11 @@ defmodule Api.Shopper.PurchasablesController do
 
   def list(conn, at: instant, with_usecase: usecase) do
     usecase.list_purchasables(instant)
+
+    {:ok, body} = Jason.encode_to_iodata(%{purchasables: []})
+
     conn
     |> put_resp_header("content-type", "application/json")
-    |> send_resp(200, "")
+    |> send_resp(200, body)
   end
 end

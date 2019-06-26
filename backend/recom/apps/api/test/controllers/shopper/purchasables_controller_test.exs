@@ -58,6 +58,11 @@ defmodule Api.Shopper.PurchasablesControllerTest do
     test "then it responds with a json content type", context do
       assert ["application/json"] == Plug.Conn.get_resp_header(context.response, "content-type")
     end
+
+    test "then it responds with a valid json document", context do
+      {:ok, document} = Jason.decode(context.response.resp_body, keys: :atoms)
+      assert document.purchasables == []
+    end
   end
 
 end
