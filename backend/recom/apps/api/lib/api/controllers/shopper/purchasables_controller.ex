@@ -3,6 +3,6 @@ defmodule Api.Shopper.PurchasablesController do
 
   def list(conn, at: instant, with_usecase: usecase) do
     usecase.list_purchasables(instant)
-    conn
+    send_resp(conn, 200, "")
   end
 end

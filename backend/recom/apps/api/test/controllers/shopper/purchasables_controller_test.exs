@@ -37,4 +37,16 @@ defmodule Api.Shopper.PurchasablesControllerTest do
     assert_received {:instant, instant}
     assert instant == context.instant
   end
+
+  describe "given that there are no purchasables at the specified instant" do
+    test "then it responds with a 200 status", context do
+      defmodule UsecaseStub_NoPurchasables do
+        def list_purchasables(instant), do: {:ok, []}
+      end
+      conn = PurchasablesController.list(context.conn,
+        at: context.instant,
+        with_usecase: UsecaseStub_NoPurchasables)
+      assert conn.status == 200
+    end
+  end
 end
