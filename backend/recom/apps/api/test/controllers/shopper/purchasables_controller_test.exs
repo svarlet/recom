@@ -41,12 +41,27 @@ defmodule Api.Shopper.PurchasablesControllerTest do
   describe "given that there are no purchasables at the specified instant" do
     test "then it responds with a 200 status", context do
       defmodule UsecaseStub_NoPurchasables do
-        def list_purchasables(instant), do: {:ok, []}
+        def list_purchasables(_instant), do: {:ok, []}
       end
+
       conn = PurchasablesController.list(context.conn,
         at: context.instant,
         with_usecase: UsecaseStub_NoPurchasables)
+
       assert conn.status == 200
     end
+
+    test "then it responds with a json content type", context do
+      defmodule UsecaseStub_NoPurchasables do
+        def list_purchasables(_instant), do: {:ok, []}
+      end
+
+      conn = PurchasablesController.list(context.conn,
+        at: context.instant,
+        with_usecase: UsecaseStub_NoPurchasables)
+
+      assert ["application/json"] == Plug.Conn.get_resp_header(conn, "content-type")
+    end
   end
+
 end
