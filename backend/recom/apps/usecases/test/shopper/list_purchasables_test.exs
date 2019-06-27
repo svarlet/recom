@@ -27,6 +27,20 @@ defmodule Usecases.Shopper.ListPurchasablesTest do
   # Contract tests
   #
 
+  describe "given a single purchasable is available, when retrieved successfully" do
+    test "it returns the purchasable" do
+      instant = Timex.now()
+
+      purchasable = Product.new(
+        name: "irrelevant name 1",
+        time_span: Interval.new(from: Timex.shift(instant, days: 2), until: [days: 3]))
+
+      Mox.stub(PurchasablesGateway.MockAdapter, :all, fn _instant -> {:ok, [purchasable]} end)
+
+      assert {:ok, [purchasable]} == list_purchasables(instant, PurchasablesGateway.MockAdapter)
+    end
+  end
+
   describe "given multiple purchasables are available, when retrieved successfully" do
     setup do
       instant = Timex.now()
@@ -40,12 +54,6 @@ defmodule Usecases.Shopper.ListPurchasablesTest do
         time_span: Interval.new(from: Timex.shift(instant, days: 2), until: [days: 3]))
 
       %{instant: instant, soon_purchasable: soon_purchasable, later_purchasable: later_purchasable}
-    end
-
-    test "on success, returns the found purchasables", context do
-      found_purchasables = [context.soon_purchasable, context.later_purchasable]
-      Mox.stub(PurchasablesGateway.MockAdapter, :all, fn _instant -> {:ok, found_purchasables} end)
-      assert {:ok, found_purchasables} == list_purchasables(context.instant, PurchasablesGateway.MockAdapter)
     end
 
     test "given multiple purchasables are availalbe when retrieved then they are sorted by start date and returned", context do
