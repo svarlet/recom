@@ -27,43 +27,34 @@ defmodule Entities.ProductTest do
   end
 
   describe "before?/2" do
-    test "returns false for 2 identical products" do
-      product = Product.new(
-        name: "irrelevant",
-        time_span: Timex.Interval.new(
-          from: Timex.now(),
-          until: [days: 1]))
-      refute Product.before?(product, product)
-    end
-
-    test "returns true when the first product starts before the second product" do
+    setup do
       now = Timex.now()
+
       product_sooner = Product.new(
         name: "irrelevant",
         time_span: Timex.Interval.new(
           from: now,
           until: [days: 1]))
+
       product_later = Product.new(
         name: "irrelevant",
         time_span: Timex.Interval.new(
           from: Timex.shift(now, hours: 2),
           until: [days: 1]))
-      assert Product.before?(product_sooner, product_later)
+
+      %{product_sooner: product_sooner, product_later: product_later}
     end
 
-    test "returns false when the first product starts after the second product" do
-      now = Timex.now()
-      product_sooner = Product.new(
-        name: "irrelevant",
-        time_span: Timex.Interval.new(
-          from: now,
-          until: [days: 1]))
-      product_later = Product.new(
-        name: "irrelevant",
-        time_span: Timex.Interval.new(
-          from: Timex.shift(now, hours: 2),
-          until: [days: 1]))
-      refute Product.before?(product_later, product_sooner)
+    test "returns false for 2 identical products", context do
+      refute Product.before?(context.product_sooner, context.product_sooner)
+    end
+
+    test "returns true when the first product starts before the second product", context do
+      assert Product.before?(context.product_sooner, context.product_later)
+    end
+
+    test "returns false when the first product starts after the second product", context do
+      refute Product.before?(context.product_later, context.product_sooner)
     end
   end
 end
