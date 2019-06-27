@@ -47,7 +47,7 @@ defmodule Api.Shopper.PurchasablesControllerTest do
     end
 
     test "then it responds with a 200 status", context do
-      assert %Plug.Conn{status: 200} = context.response
+      assert %Plug.Conn{status: 200, state: :sent} = context.response
     end
 
     test "then it responds with a json content type", context do
@@ -83,7 +83,7 @@ defmodule Api.Shopper.PurchasablesControllerTest do
     end
 
     test "then it responds with a 200 status", context do
-      assert %Plug.Conn{status: 200} = context.response
+      assert %Plug.Conn{status: 200, state: :sent} = context.response
     end
 
     test "then it responds with a json ccontent type", context do
