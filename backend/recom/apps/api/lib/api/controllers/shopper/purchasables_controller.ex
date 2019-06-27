@@ -4,7 +4,7 @@ defmodule Api.Shopper.PurchasablesController do
   def list(conn, at: instant, with_usecase: usecase) do
     {:ok, purchasables} = usecase.list_purchasables(instant)
 
-    {:ok, body} = Jason.encode_to_iodata(%{purchasables: purchasables})
+    {:ok, body} = Jason.encode_to_iodata(%{purchasables: purchasables, instant: instant})
 
     conn
     |> put_resp_header("content-type", "application/json")

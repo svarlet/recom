@@ -57,6 +57,7 @@ defmodule Api.Shopper.PurchasablesControllerTest do
     test "then it responds with a valid json document", context do
       {:ok, document} = Jason.decode(context.response.resp_body, keys: :atoms)
       assert document.purchasables == []
+      assert document.instant == "2019-02-15T15:07:39Z"
     end
   end
 
@@ -96,6 +97,7 @@ defmodule Api.Shopper.PurchasablesControllerTest do
         %{name: "Apple Pie", time_span: %{from: "2019-02-16T15:07:39Z", until: "2019-02-22T15:07:39Z"}},
         %{name: "Almond milk", time_span: %{from: "2019-02-16T15:07:39Z", until: "2019-02-22T15:07:39Z"}},
       ]
+      assert document.instant == "2019-02-15T15:07:39Z"
     end
   end
 end
