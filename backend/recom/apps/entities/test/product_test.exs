@@ -25,4 +25,15 @@ defmodule Entities.ProductTest do
       assert %Product{time_span: ^time_span} = Product.new(time_span: time_span)
     end
   end
+
+  describe "before?/2" do
+    test "returns false for 2 identical products" do
+      product = Product.new(
+        name: "irrelevant",
+        time_span: Timex.Interval.new(
+          from: Timex.now(),
+          until: [days: 1]))
+      refute Product.before?(product, product)
+    end
+  end
 end

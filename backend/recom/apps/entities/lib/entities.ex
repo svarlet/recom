@@ -7,5 +7,9 @@ defmodule Entities do
     def new(fields \\ []) do
       __struct__(fields)
     end
+
+    def before?(_, _) do
+      false
+    end
   end
 end
