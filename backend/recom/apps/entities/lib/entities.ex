@@ -8,8 +8,8 @@ defmodule Entities do
       __struct__(fields)
     end
 
-    def before?(_, _) do
-      false
+    def before?(p1, p2) do
+      Timex.before?(p1.time_span.from, p2.time_span.from)
     end
   end
 end

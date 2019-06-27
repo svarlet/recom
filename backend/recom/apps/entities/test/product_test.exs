@@ -35,5 +35,20 @@ defmodule Entities.ProductTest do
           until: [days: 1]))
       refute Product.before?(product, product)
     end
+
+    test "returns true when the first product starts before the second product" do
+      now = Timex.now()
+      product_sooner = Product.new(
+        name: "irrelevant",
+        time_span: Timex.Interval.new(
+          from: now,
+          until: [days: 1]))
+      product_later = Product.new(
+        name: "irrelevant",
+        time_span: Timex.Interval.new(
+          from: Timex.shift(now, hours: 2),
+          until: [days: 1]))
+      assert Product.before?(product_sooner, product_later)
+    end
   end
 end
