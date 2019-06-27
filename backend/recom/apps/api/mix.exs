@@ -31,7 +31,9 @@ defmodule Api.MixProject do
       # {:sibling_app_in_umbrella, in_umbrella: true}
       {:plug_cowboy, "~> 2.0"},
       {:plug, "~> 1.8.2"},
-      {:x509, "~> 0.6.0", only: [:dev, :test]}
+      {:x509, "~> 0.6.0", only: [:dev, :test]},
+      {:usecases, in_umbrella: true},
+      {:storage, in_umbrella: true},
       {:jason, "~> 1.1"}
     ]
   end
