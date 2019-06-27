@@ -4,9 +4,7 @@ defmodule Api.Router do
   plug :match
   plug :dispatch
 
-  get "/ping" do
-    send_resp(conn, 200, "pong")
-  end
+  get "/purchasables", to: CompositionRoot.Shopper.ListPurchasablesController
 
   match _ do
     send_resp(conn, 404, "oops, not found")
