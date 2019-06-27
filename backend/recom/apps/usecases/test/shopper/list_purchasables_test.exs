@@ -29,35 +29,30 @@ defmodule Usecases.Shopper.ListPurchasablesTest do
 
   describe "given multiple purchasables are available, when retrieved successfully" do
     setup do
-      %{instant: Timex.now()}
+      instant = Timex.now()
+
+      later_purchasable = Product.new(
+        name: "irrelevant name 2",
+        time_span: Interval.new(from: Timex.shift(instant, months: 1), until: [months: 1, days: 2]))
+
+      soon_purchasable = Product.new(
+        name: "irrelevant name 1",
+        time_span: Interval.new(from: Timex.shift(instant, days: 2), until: [days: 3]))
+
+      %{instant: instant, soon_purchasable: soon_purchasable, later_purchasable: later_purchasable}
     end
 
     test "on success, returns the found purchasables", context do
-      found_purchasables = [
-        Product.new(
-          name: "irrelevant name 1",
-          time_span: Interval.new(from: Timex.shift(context.instant, days: 2), until: [days: 3])),
-        Product.new(
-          name: "irrelevant name 2",
-        time_span: Interval.new(from: Timex.shift(context.instant, months: 1), until: [months: 1, days: 2]))
-      ]
+      found_purchasables = [context.soon_purchasable, context.later_purchasable]
       Mox.stub(PurchasablesGateway.MockAdapter, :all, fn _instant -> {:ok, found_purchasables} end)
       assert {:ok, found_purchasables} == list_purchasables(context.instant, PurchasablesGateway.MockAdapter)
     end
 
     test "given multiple purchasables are availalbe when retrieved then they are sorted by start date and returned", context do
-      later_purchasable = Product.new(
-        name: "irrelevant name 2",
-        time_span: Interval.new(from: Timex.shift(context.instant, months: 1), until: [months: 1, days: 2]))
-
-      soon_purchasable = Product.new(
-        name: "irrelevant name 1",
-        time_span: Interval.new(from: Timex.shift(context.instant, days: 2), until: [days: 3]))
-
       # purposedly sorted by their start date in descending order!
-      found_purchasables = [later_purchasable, soon_purchasable]
+      found_purchasables = [context.later_purchasable, context.soon_purchasable]
       Mox.stub(PurchasablesGateway.MockAdapter, :all, fn _instant -> {:ok, found_purchasables} end)
-      assert {:ok, [soon_purchasable, later_purchasable]} == list_purchasables(context.instant, PurchasablesGateway.MockAdapter)
+      assert {:ok, [context.soon_purchasable, context.later_purchasable]} == list_purchasables(context.instant, PurchasablesGateway.MockAdapter)
     end
   end
 
