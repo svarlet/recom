@@ -92,7 +92,11 @@ defmodule Api.Shopper.PurchasablesControllerTest do
   end
 
   describe "given the usecase returns an error" do
-    test "it responds with a 500"
+    test "it responds with a 500", context do
+      stub(ListPurchasables.Mock, :list_purchasables, fn _ -> :error end)
+      response = PurchasablesController.list(context.conn, at: @instant, with_usecase: ListPurchasables.Mock)
+      assert %Plug.Conn{state: :sent, status: 500} = response
+    end
 
     test "it provides information about the error in a json document"
   end
