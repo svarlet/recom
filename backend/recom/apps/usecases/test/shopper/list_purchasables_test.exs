@@ -66,7 +66,7 @@ defmodule Usecases.Shopper.ListPurchasablesTest do
 
   test "on failure, relays the error" do
     irrelevant_instant = Timex.now()
-    Mox.stub(PurchasablesGateway.MockAdapter, :all, fn _instant -> {:error, :something_failed} end)
-    assert {:error, :something_failed} == list_purchasables(irrelevant_instant, PurchasablesGateway.MockAdapter)
+    Mox.stub(PurchasablesGateway.MockAdapter, :all, fn _instant -> :error end)
+    assert :error == list_purchasables(irrelevant_instant, PurchasablesGateway.MockAdapter)
   end
 end

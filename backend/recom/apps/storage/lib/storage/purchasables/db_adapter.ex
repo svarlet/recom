@@ -10,10 +10,14 @@ defmodule Storage.PurchasablesGateway.DbAdapter do
 
   @impl true
   def all(instant) do
-    purchasables =
-      from(p in Product, where: p.end > ^instant)
-      |> Storage.Repo.all()
-      |> Enum.map(&DataMapper.convert/1)
-    {:ok, purchasables}
+    try do
+      purchasables =
+        from(p in Product, where: p.end > ^instant)
+        |> Storage.Repo.all()
+        |> Enum.map(&DataMapper.convert/1)
+      {:ok, purchasables}
+    rescue
+      _ -> :error
+    end
   end
 end
