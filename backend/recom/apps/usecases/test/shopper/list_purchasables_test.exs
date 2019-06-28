@@ -28,7 +28,7 @@ defmodule Usecases.Shopper.ListPurchasablesTest do
   #
 
   describe "given a single purchasable is available, when retrieved successfully" do
-    test "it returns the purchasable" do
+    test "it returns the purchasable as {:ok, [purchasable]}" do
       instant = Timex.now()
 
       purchasable = Product.new(
