@@ -44,6 +44,12 @@ defmodule Api.Shopper.PurchasablesControllerTest do
   #
 
   describe "given the usecase returns a list of purchasables" do
+    setup context do
+      products = context[:products] || []
+      stub(ListPurchasables.Mock, :list_purchasables, fn _ -> {:ok, products} end)
+      context
+    end
+
     defp get_purchasables(conn) do
       conn
       |> PurchasablesController.list(at: @instant, with_usecase: ListPurchasables.Mock)
@@ -52,21 +58,18 @@ defmodule Api.Shopper.PurchasablesControllerTest do
     end
 
     test "it adds the instant to the response body", context do
-      stub(ListPurchasables.Mock, :list_purchasables, fn _ -> {:ok, []} end)
       assert get_purchasables(context.conn).instant == "2019-02-15T15:07:39Z"
     end
 
     test "when the list is empty then it sets the purchasables key to []", context do
-      stub(ListPurchasables.Mock, :list_purchasables, fn _ -> {:ok, []} end)
       assert get_purchasables(context.conn).purchasables == []
     end
 
+    @tag products: [
+      Product.new(name: "carrots", time_span: Timex.Interval.new(from: Timex.shift(@instant, days: -2), until: [days: 12])),
+      Product.new(name: "apples", time_span: Timex.Interval.new(from: Timex.shift(@instant, days: -1), until: [days: 7]))
+    ]
     test "when the list is not empty then the order is conserved", context do
-      products = [
-        Product.new(name: "carrots", time_span: Timex.Interval.new(from: Timex.shift(@instant, days: -2), until: [days: 12])),
-        Product.new(name: "apples", time_span: Timex.Interval.new(from: Timex.shift(@instant, days: -1), until: [days: 7]))
-      ]
-      stub(ListPurchasables.Mock, :list_purchasables, fn _ -> {:ok, products} end)
       assert get_purchasables(context.conn).purchasables == [
         %{name: "carrots", time_span: %{from: "2019-02-13T15:07:39Z", until: "2019-02-25T15:07:39Z"}},
         %{name: "apples", time_span: %{from: "2019-02-14T15:07:39Z", until: "2019-02-21T15:07:39Z"}}
@@ -74,14 +77,15 @@ defmodule Api.Shopper.PurchasablesControllerTest do
     end
 
     test "it sends a response with the status set to 200", context do
-      stub(ListPurchasables.Mock, :list_purchasables, fn _ -> {:ok, []} end)
-      assert %Plug.Conn{status: 200, state: :sent} = PurchasablesController.list(context.conn, at: @instant, with_usecase: ListPurchasables.Mock)
+      response = PurchasablesController.list(context.conn, at: @instant, with_usecase: ListPurchasables.Mock)
+      assert %Plug.Conn{status: 200, state: :sent} = response
     end
 
     test "it sets the content-type header to application/json", context do
-      stub(ListPurchasables.Mock, :list_purchasables, fn _ -> {:ok, []} end)
-      response = PurchasablesController.list(context.conn, at: @instant, with_usecase: ListPurchasables.Mock)
-      assert ["application/json"] == Plug.Conn.get_resp_header(response, "content-type")
+      assert ["application/json"] ==
+        context.conn
+        |> PurchasablesController.list(at: @instant, with_usecase: ListPurchasables.Mock)
+        |> Plug.Conn.get_resp_header("content-type")
     end
   end
 
