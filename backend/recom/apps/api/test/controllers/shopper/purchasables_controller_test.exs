@@ -44,20 +44,21 @@ defmodule Api.Shopper.PurchasablesControllerTest do
   #
 
   describe "given the usecase returns a list of purchasables" do
+    defp get_purchasables(conn) do
+      conn
+      |> PurchasablesController.list(at: @instant, with_usecase: ListPurchasables.Mock)
+      |> Map.get(:resp_body)
+      |> Jason.decode!(keys: :atoms)
+    end
+
     test "it adds the instant to the response body", context do
       stub(ListPurchasables.Mock, :list_purchasables, fn _ -> {:ok, []} end)
-      response = PurchasablesController.list(context.conn,
-        at: @instant,
-        with_usecase: ListPurchasables.Mock)
-      document = Jason.decode!(response.resp_body, keys: :atoms)
-      assert document.instant == "2019-02-15T15:07:39Z"
+      assert get_purchasables(context.conn).instant == "2019-02-15T15:07:39Z"
     end
 
     test "when the list is empty then it sets the purchasables key to []", context do
       stub(ListPurchasables.Mock, :list_purchasables, fn _ -> {:ok, []} end)
-      response = PurchasablesController.list(context.conn, at: @instant, with_usecase: ListPurchasables.Mock)
-      document = Jason.decode!(response.resp_body, keys: :atoms)
-      assert document.purchasables == []
+      assert get_purchasables(context.conn).purchasables == []
     end
 
     test "when the list is not empty then the order is conserved"
