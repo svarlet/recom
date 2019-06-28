@@ -73,7 +73,10 @@ defmodule Api.Shopper.PurchasablesControllerTest do
       ]
     end
 
-    test "it sends a response with the status set to 200"
+    test "it sends a response with the status set to 200", context do
+      stub(ListPurchasables.Mock, :list_purchasables, fn _ -> {:ok, []} end)
+      assert %Plug.Conn{status: 200} = PurchasablesController.list(context.conn, at: @instant, with_usecase: ListPurchasables.Mock)
+    end
 
     test "it sets the content-type header to application/json"
   end
