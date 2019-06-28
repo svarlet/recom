@@ -61,7 +61,17 @@ defmodule Api.Shopper.PurchasablesControllerTest do
       assert get_purchasables(context.conn).purchasables == []
     end
 
-    test "when the list is not empty then the order is conserved"
+    test "when the list is not empty then the order is conserved", context do
+      products = [
+        Product.new(name: "carrots", time_span: Timex.Interval.new(from: Timex.shift(@instant, days: -2), until: [days: 12])),
+        Product.new(name: "apples", time_span: Timex.Interval.new(from: Timex.shift(@instant, days: -1), until: [days: 7]))
+      ]
+      stub(ListPurchasables.Mock, :list_purchasables, fn _ -> {:ok, products} end)
+      assert get_purchasables(context.conn).purchasables == [
+        %{name: "carrots", time_span: %{from: "2019-02-13T15:07:39Z", until: "2019-02-25T15:07:39Z"}},
+        %{name: "apples", time_span: %{from: "2019-02-14T15:07:39Z", until: "2019-02-21T15:07:39Z"}}
+      ]
+    end
 
     test "it sends a response with the status set to 200"
 
