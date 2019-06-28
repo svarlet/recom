@@ -56,7 +56,7 @@ defmodule Usecases.Shopper.ListPurchasablesTest do
       %{instant: instant, soon_purchasable: soon_purchasable, later_purchasable: later_purchasable}
     end
 
-    test "given multiple purchasables are availalbe when retrieved then they are sorted by start date and returned as {:ok, purchasables]}", context do
+    test "it sorts them by start date and returns them as {:ok, purchasables]}", context do
       # purposedly sorted by their start date in descending order!
       found_purchasables = [context.later_purchasable, context.soon_purchasable]
       Mox.stub(PurchasablesGateway.MockAdapter, :all, fn _instant -> {:ok, found_purchasables} end)
