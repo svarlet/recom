@@ -97,7 +97,5 @@ defmodule Api.Shopper.PurchasablesControllerTest do
       response = PurchasablesController.list(context.conn, at: @instant, with_usecase: ListPurchasables.Mock)
       assert %Plug.Conn{state: :sent, status: 500} = response
     end
-
-    test "it provides information about the error in a json document"
   end
 end
