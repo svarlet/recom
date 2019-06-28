@@ -53,7 +53,12 @@ defmodule Api.Shopper.PurchasablesControllerTest do
       assert document.instant == "2019-02-15T15:07:39Z"
     end
 
-    test "when the list is empty then it sets the purchasables key to []"
+    test "when the list is empty then it sets the purchasables key to []", context do
+      stub(ListPurchasables.Mock, :list_purchasables, fn _ -> {:ok, []} end)
+      response = PurchasablesController.list(context.conn, at: @instant, with_usecase: ListPurchasables.Mock)
+      document = Jason.decode!(response.resp_body, keys: :atoms)
+      assert document.purchasables == []
+    end
 
     test "when the list is not empty then the order is conserved"
 
