@@ -17,7 +17,7 @@ defmodule Storage.PurchasablesGatewayTest_ProductsAtVariousTimes do
   alias Storage.Product
   alias Storage.PurchasablesGateway.DbAdapter
 
-  test "given some products, when some expire after the instant, it returns those" do
+  test "given some products, when some expire after the instant, it returns them in an ok tuple" do
     instant = Timex.now()
 
     [%Product{
@@ -40,7 +40,7 @@ defmodule Storage.PurchasablesGatewayTest_ProductsAtVariousTimes do
     assert {:ok, [^future_product_as_entity]} = DbAdapter.all(instant)
   end
 
-  test "given some products, when some start exactly at the instant, it returns those" do
+  test "given some products, when some start exactly at the instant, it returns them in an ok tuple" do
     instant = Timex.now()
 
     %Product{
@@ -59,7 +59,7 @@ defmodule Storage.PurchasablesGatewayTest_ProductsAtVariousTimes do
     assert {:ok, [^product_as_entity]} = DbAdapter.all(instant)
   end
 
-  test "given a product which ends exactly at the instant, it doesn't return it" do
+  test "given a product which ends exactly at the instant, it returns {:ok, []}" do
     instant = Timex.now()
 
     %Product{
@@ -72,7 +72,7 @@ defmodule Storage.PurchasablesGatewayTest_ProductsAtVariousTimes do
     assert {:ok, []} == DbAdapter.all(instant)
   end
 
-  test "given a product which started before the instant and terminates later, it returns it" do
+  test "given a product which started before the instant and terminates later, it returns it as an ok tuple" do
     instant = Timex.now()
 
     %Product{
