@@ -20,6 +20,10 @@ defmodule Usecases.Shopper do
   defmodule ListPurchasables do
     alias Entities.Product
 
+    defmodule Behaviour do
+      @callback list_purchasables(instant :: DateTime.t) :: {:ok, list(Product.t)} | :error
+    end
+
     def list_purchasables(instant, purchasables_gateway) do
       case purchasables_gateway.all(instant) do
         {:ok, purchasables} ->

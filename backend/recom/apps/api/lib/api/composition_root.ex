@@ -1,6 +1,9 @@
 defmodule CompositionRoot do
   defmodule Shopper do
     defmodule ListPurchasablesUsecase do
+      @behaviour Usecases.Shopper.ListPurchasables.Behaviour
+
+      @impl true
       def list_purchasables(instant) do
         Usecases.Shopper.ListPurchasables.list_purchasables(instant, Storage.PurchasablesGateway.DbAdapter)
       end

@@ -1,16 +1,22 @@
 defmodule Api.Shopper.PurchasablesControllerTest do
   use ExUnit.Case, async: true
 
+  import Mox
+
   alias Api.Shopper.PurchasablesController
+  alias Usecases.Shopper.ListPurchasables
   alias Entities.Product
 
-
   @instant Timex.to_datetime(~N[2019-02-15 15:07:39], "Etc/UTC")
+
+  defmock ListPurchasables.Mock, for: ListPurchasables.Behaviour
 
   setup_all do
     %{conn: Plug.Test.conn(:get, "/purchasables"),
       instant: @instant}
   end
+
+  setup :verify_on_exit!
 
   #
   # Collaboration tests
@@ -37,71 +43,96 @@ defmodule Api.Shopper.PurchasablesControllerTest do
   # Contract tests
   #
 
-  describe "given that there are no purchasables at the specified instant" do
-    defmodule UsecaseStub_NoPurchasables do
-      def list_purchasables(_instant), do: {:ok, []}
-    end
-
-    setup context do
+  describe "given the usecase returns a list of purchasables" do
+    test "it adds the instant to the response body", context do
+      stub(ListPurchasables.Mock, :list_purchasables, fn _ -> {:ok, []} end)
       response = PurchasablesController.list(context.conn,
-        at: context.instant,
-        with_usecase: UsecaseStub_NoPurchasables)
-
-      %{response: response}
-    end
-
-    test "then it responds with a 200 status", context do
-      assert %Plug.Conn{status: 200, state: :sent} = context.response
-    end
-
-    test "then it responds with a json content type", context do
-      assert ["application/json"] == Plug.Conn.get_resp_header(context.response, "content-type")
-    end
-
-    test "then it responds with a valid json document", context do
-      {:ok, document} = Jason.decode(context.response.resp_body, keys: :atoms)
-      assert document.purchasables == []
+        at: @instant,
+        with_usecase: ListPurchasables.Mock)
+      document = Jason.decode!(response.resp_body, keys: :atoms)
       assert document.instant == "2019-02-15T15:07:39Z"
     end
+
+    test "when the list is empty then it sets the purchasables key to []"
+
+    test "when the list is not empty then the order is conserved"
+
+    test "it sends a response with the status set to 200"
+
+    test "it sets the content-type header to application/json"
   end
 
-  describe "given that some purchasables are available at the specified time" do
-    defmodule UsecaseStub_SomePurchasables do
-      @instant Timex.to_datetime(~N[2019-02-15 15:07:39], "Etc/UTC")
-      @next_day Timex.shift(@instant, days: 1)
-      @next_week Timex.shift(@instant, weeks: 1)
+  describe "given the usecase returns an error" do
+    test "it responds with a 500"
 
-      @some_purchasables [
-        Product.new(name: "Apple Pie", time_span: Timex.Interval.new(from: @next_day, until: @next_week)),
-        Product.new(name: "Almond milk", time_span: Timex.Interval.new(from: @next_day, until: @next_week)),
-      ]
-
-      def list_purchasables(_instant), do: {:ok, @some_purchasables}
-    end
-
-    setup context do
-      response = PurchasablesController.list(context.conn,
-        at: context.instant,
-        with_usecase: UsecaseStub_SomePurchasables)
-
-      %{response: response}
-    end
-
-    test "then it responds with a 200 status", context do
-      assert %Plug.Conn{status: 200, state: :sent} = context.response
-    end
-
-    test "then it responds with a json ccontent type", context do
-      assert ["application/json"] == Plug.Conn.get_resp_header(context.response, "content-type")
-    end
-
-    test "then it responds with a valid json document", context do
-      {:ok, document} = Jason.decode(context.response.resp_body, keys: :atoms)
-      assert document.purchasables == [
-        %{name: "Apple Pie", time_span: %{from: "2019-02-16T15:07:39Z", until: "2019-02-22T15:07:39Z"}},
-        %{name: "Almond milk", time_span: %{from: "2019-02-16T15:07:39Z", until: "2019-02-22T15:07:39Z"}},
-      ]
-      assert document.instant == "2019-02-15T15:07:39Z"
-    end
+    test "it provides information about the error in a json document"
   end
+
+  # describe "given that there are no purchasables at the specified instant" do
+  #   defmodule UsecaseStub_NoPurchasables do
+  #     def list_purchasables(_instant), do: {:ok, []}
+  #   end
+
+  #   setup context do
+  #     response = PurchasablesController.list(context.conn,
+  #       at: context.instant,
+  #       with_usecase: UsecaseStub_NoPurchasables)
+
+  #     %{response: response}
+  #   end
+
+  #   test "then it responds with a 200 status", context do
+  #     assert %Plug.Conn{status: 200, state: :sent} = context.response
+  #   end
+
+  #   test "then it responds with a json content type", context do
+  #     assert ["application/json"] == Plug.Conn.get_resp_header(context.response, "content-type")
+  #   end
+
+  #   test "then it responds with a valid json document", context do
+  #     {:ok, document} = Jason.decode(context.response.resp_body, keys: :atoms)
+  #     assert document.purchasables == []
+  #     assert document.instant == "2019-02-15T15:07:39Z"
+  #   end
+  # end
+
+  # describe "given that some purchasables are available at the specified time" do
+  #   defmodule UsecaseStub_SomePurchasables do
+  #     @instant Timex.to_datetime(~N[2019-02-15 15:07:39], "Etc/UTC")
+  #     @next_day Timex.shift(@instant, days: 1)
+  #     @next_week Timex.shift(@instant, weeks: 1)
+
+  #     @some_purchasables [
+  #       Product.new(name: "Apple Pie", time_span: Timex.Interval.new(from: @next_day, until: @next_week)),
+  #       Product.new(name: "Almond milk", time_span: Timex.Interval.new(from: @next_day, until: @next_week)),
+  #     ]
+
+  #     def list_purchasables(_instant), do: {:ok, @some_purchasables}
+  #   end
+
+  #   setup context do
+  #     response = PurchasablesController.list(context.conn,
+  #       at: context.instant,
+  #       with_usecase: UsecaseStub_SomePurchasables)
+
+  #     %{response: response}
+  #   end
+
+  #   test "then it responds with a 200 status", context do
+  #     assert %Plug.Conn{status: 200, state: :sent} = context.response
+  #   end
+
+  #   test "then it responds with a json ccontent type", context do
+  #     assert ["application/json"] == Plug.Conn.get_resp_header(context.response, "content-type")
+  #   end
+
+  #   test "then it responds with a valid json document", context do
+  #     {:ok, document} = Jason.decode(context.response.resp_body, keys: :atoms)
+  #     assert document.purchasables == [
+  #       %{name: "Apple Pie", time_span: %{from: "2019-02-16T15:07:39Z", until: "2019-02-22T15:07:39Z"}},
+  #       %{name: "Almond milk", time_span: %{from: "2019-02-16T15:07:39Z", until: "2019-02-22T15:07:39Z"}},
+  #     ]
+  #     assert document.instant == "2019-02-15T15:07:39Z"
+  #   end
+  # end
 end
