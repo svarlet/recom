@@ -12,7 +12,9 @@ defmodule Api.Shopper.PurchasablesControllerTest do
       instant: @instant}
   end
 
+  #
   # Collaboration tests
+  #
 
   test "the controller request the purchasables for the specified instant", context do
     defmodule UsecaseSpy do
@@ -31,7 +33,9 @@ defmodule Api.Shopper.PurchasablesControllerTest do
     assert instant == context.instant
   end
 
+  #
   # Contract tests
+  #
 
   describe "given that there are no purchasables at the specified instant" do
     defmodule UsecaseStub_NoPurchasables do
