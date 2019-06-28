@@ -78,7 +78,11 @@ defmodule Api.Shopper.PurchasablesControllerTest do
       assert %Plug.Conn{status: 200, state: :sent} = PurchasablesController.list(context.conn, at: @instant, with_usecase: ListPurchasables.Mock)
     end
 
-    test "it sets the content-type header to application/json"
+    test "it sets the content-type header to application/json", context do
+      stub(ListPurchasables.Mock, :list_purchasables, fn _ -> {:ok, []} end)
+      response = PurchasablesController.list(context.conn, at: @instant, with_usecase: ListPurchasables.Mock)
+      assert ["application/json"] == Plug.Conn.get_resp_header(response, "content-type")
+    end
   end
 
   describe "given the usecase returns an error" do
