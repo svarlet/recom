@@ -1,6 +1,8 @@
 defmodule Api.Shopper.PurchasablesControllerTest do
   use ExUnit.Case, async: true
+  use Timex
 
+  import Timex, only: [shift: 2]
   import Mox
 
   alias Api.Shopper.PurchasablesController
@@ -66,8 +68,8 @@ defmodule Api.Shopper.PurchasablesControllerTest do
     end
 
     @tag products: [
-      Product.new(name: "carrots", time_span: Timex.Interval.new(from: Timex.shift(@instant, days: -2), until: [days: 12])),
-      Product.new(name: "apples", time_span: Timex.Interval.new(from: Timex.shift(@instant, days: -1), until: [days: 7]))
+      Product.new(name: "carrots", time_span: Interval.new(from: shift(@instant, days: -2), until: [days: 12])),
+      Product.new(name: "apples", time_span: Interval.new(from: shift(@instant, days: -1), until: [days: 7]))
     ]
     test "when the list is not empty then the order is conserved", context do
       assert get_purchasables(context.conn).purchasables == [
