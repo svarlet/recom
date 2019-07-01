@@ -21,4 +21,6 @@ erl_crash.dump
 
 **/.DS_Store
 
-todos.org
+**/todos.org
+**/todos.org_archive
+**/.tool-versions
