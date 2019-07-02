@@ -5,9 +5,9 @@ defmodule Recom.Usecases.Shopkeeper.CreateProduct do
 
   def create(request, _) do
     if request.quantity < 0 do
-      {:error, {:validation, :negative_quantity}}
+      {:error, {:validation, quantity: [:negative]}}
     else
-      {:error, {:validation, :negative_price}}
+      {:error, {:validation, price: [:negative]}}
     end
   end
 end

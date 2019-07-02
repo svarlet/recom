@@ -20,7 +20,7 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
         products_gateway: unnecessary_products_gateway
       )
 
-    assert {:error, {:validation, :negative_price}} == response
+    assert {:error, {:validation, price: [:negative]}} == response
   end
 
   test "given a negative quantity, it returns {:error, {:validation, :negative_quantity}}" do
@@ -39,6 +39,6 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
         products_gateway: unnecessary_products_gateway
       )
 
-    assert {:error, {:validation, :negative_quantity}} == response
+    assert {:error, {:validation, quantity: [:negative]}} == response
   end
 end
