@@ -1,4 +1,4 @@
-defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
+defmodule Recom.Usecases.Shopkeeper.CreateProduct_InvalidRequest_Test do
   use ExUnit.Case, async: true
   use Timex
 
