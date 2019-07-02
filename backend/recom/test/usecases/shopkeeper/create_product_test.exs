@@ -4,58 +4,48 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
 
   alias Recom.Usecases.Shopkeeper.CreateProduct
 
-  test "given a negative price, it returns {:error, {:validation, :negative_price}}" do
-    unnecessary_notification_service = nil
-    unnecessary_products_gateway = nil
+  setup do
+    %{
+      notification_service: nil,
+      products_gateway: nil,
+      request: %CreateProduct.Request{
+        price: 100,
+        interval: Interval.new(from: Timex.now(), until: [days: 1]),
+        quantity: 45,
+        name: "irrelevant"
+      }
+    }
+  end
 
+  test "given a negative price, it returns {:error, {:validation, :negative_price}}", context do
     {:error, {:validation, validation_errors}} =
       CreateProduct.create(
-        %CreateProduct.Request{
-          price: -100,
-          interval: Interval.new(from: Timex.now(), until: [days: 1]),
-          quantity: 45,
-          name: "irrelevant"
-        },
-        notification_service: unnecessary_notification_service,
-        products_gateway: unnecessary_products_gateway
+        %CreateProduct.Request{context.request | price: -100},
+        notification_service: context.notification_service,
+        products_gateway: context.products_gateway
       )
 
     assert_negative_price_reported(validation_errors)
   end
 
-  test "given a negative quantity, it returns {:error, {:validation, :negative_quantity}}" do
-    unnecessary_notification_service = nil
-    unnecessary_products_gateway = nil
-
+  test "given a negative quantity, it returns {:error, {:validation, :negative_quantity}}",
+       context do
     {:error, {:validation, validation_errors}} =
       CreateProduct.create(
-        %CreateProduct.Request{
-          quantity: -1,
-          interval: Interval.new(from: Timex.now(), until: [days: 1]),
-          name: "irrelevant",
-          price: 100
-        },
-        notification_service: unnecessary_notification_service,
-        products_gateway: unnecessary_products_gateway
+        %CreateProduct.Request{context.request | quantity: -1},
+        notification_service: context.notification_service,
+        products_gateway: context.products_gateway
       )
 
     assert_negative_quantity_reported(validation_errors)
   end
 
-  test "given a negative price and a negative quantity, it returns both errors" do
-    unnecessary_notification_service = nil
-    unnecessary_products_gateway = nil
-
+  test "given a negative price and a negative quantity, it returns both errors", context do
     {:error, {:validation, validation_errors}} =
       CreateProduct.create(
-        %CreateProduct.Request{
-          quantity: -2,
-          price: -24,
-          interval: Interval.new(from: Timex.now(), until: [days: 1]),
-          name: "irrelevant"
-        },
-        notification_service: unnecessary_notification_service,
-        products_gateway: unnecessary_products_gateway
+        %CreateProduct.Request{context.request | quantity: -2, price: -24},
+        notification_service: context.notification_service,
+        products_gateway: context.products_gateway
       )
 
     assert_negative_price_reported(validation_errors)
