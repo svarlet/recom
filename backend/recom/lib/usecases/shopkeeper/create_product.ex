@@ -3,7 +3,11 @@ defmodule Recom.Usecases.Shopkeeper.CreateProduct do
     defstruct ~w(name interval price quantity)a
   end
 
-  def create(_, _) do
-    {:error, {:validation, :negative_price}}
+  def create(request, _) do
+    if request.quantity < 0 do
+      {:error, {:validation, :negative_quantity}}
+    else
+      {:error, {:validation, :negative_price}}
+    end
   end
 end
