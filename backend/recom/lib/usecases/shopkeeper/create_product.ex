@@ -8,6 +8,7 @@ defmodule Recom.Usecases.Shopkeeper.CreateProduct do
       []
       |> validate_request_quantity(request)
       |> validate_request_price(request)
+      |> validate_request_name(request)
 
     {:error, {:validation, validation_errors}}
   end
@@ -23,6 +24,14 @@ defmodule Recom.Usecases.Shopkeeper.CreateProduct do
   defp validate_request_quantity(validation_state, request) do
     if request.quantity < 0 do
       [{:quantity, [:negative]} | validation_state]
+    else
+      validation_state
+    end
+  end
+
+  defp validate_request_name(validation_state, request) do
+    if request.name == "" do
+      [{:name, [:empty]} | validation_state]
     else
       validation_state
     end

@@ -59,4 +59,19 @@ defmodule Recom.Usecases.Shopkeeper.CreateProduct_InvalidRequest_Test do
   defp assert_negative_price_reported(errors) do
     assert {:price, [:negative]} in errors
   end
+
+  test "given an empty name, it returns an error", context do
+    {:error, {:validation, validation_errors}} =
+      CreateProduct.create(
+        %CreateProduct.Request{context.request | name: ""},
+        notification_service: context.notification_service,
+        products_gateway: context.products_gateway
+      )
+
+    assert_empty_name_reported(validation_errors)
+  end
+
+  defp assert_empty_name_reported(errors) do
+    assert {:name, [:empty]} in errors
+  end
 end
