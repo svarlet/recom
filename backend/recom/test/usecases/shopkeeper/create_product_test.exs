@@ -8,7 +8,7 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
     unnecessary_notification_service = nil
     unnecessary_products_gateway = nil
 
-    response =
+    {:error, {:validation, validation_errors}} =
       CreateProduct.create(
         %CreateProduct.Request{
           price: -100,
@@ -20,14 +20,14 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
         products_gateway: unnecessary_products_gateway
       )
 
-    assert {:error, {:validation, price: [:negative]}} == response
+    assert_negative_price_reported(validation_errors)
   end
 
   test "given a negative quantity, it returns {:error, {:validation, :negative_quantity}}" do
     unnecessary_notification_service = nil
     unnecessary_products_gateway = nil
 
-    response =
+    {:error, {:validation, validation_errors}} =
       CreateProduct.create(
         %CreateProduct.Request{
           quantity: -1,
@@ -39,14 +39,14 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
         products_gateway: unnecessary_products_gateway
       )
 
-    assert {:error, {:validation, quantity: [:negative]}} == response
+    assert_negative_quantity_reported(validation_errors)
   end
 
   test "given a negative price and a negative quantity, it returns both errors" do
     unnecessary_notification_service = nil
     unnecessary_products_gateway = nil
 
-    response =
+    {:error, {:validation, validation_errors}} =
       CreateProduct.create(
         %CreateProduct.Request{
           quantity: -2,
@@ -58,6 +58,15 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
         products_gateway: unnecessary_products_gateway
       )
 
-    assert {:error, {:validation, price: [:negative], quantity: [:negative]}} == response
+    assert_negative_price_reported(validation_errors)
+    assert_negative_quantity_reported(validation_errors)
+  end
+
+  defp assert_negative_quantity_reported(errors) do
+    assert {:quantity, [:negative]} in errors
+  end
+
+  defp assert_negative_price_reported(errors) do
+    assert {:price, [:negative]} in errors
   end
 end
