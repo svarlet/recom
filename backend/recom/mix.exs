@@ -35,7 +35,8 @@ defmodule Recom.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:plug, "~> 1.8.2"},
       {:x509, "~> 0.6.0", only: [:dev, :test]},
-      {:jason, "~> 1.1"}
+      {:jason, "~> 1.1"},
+      {:decimal, "~> 1.8"}
     ]
   end
 end
