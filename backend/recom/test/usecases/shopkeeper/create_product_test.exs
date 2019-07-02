@@ -41,4 +41,23 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
 
     assert {:error, {:validation, quantity: [:negative]}} == response
   end
+
+  test "given a negative price and a negative quantity, it returns both errors" do
+    unnecessary_notification_service = nil
+    unnecessary_products_gateway = nil
+
+    response =
+      CreateProduct.create(
+        %CreateProduct.Request{
+          quantity: -2,
+          price: -24,
+          interval: Interval.new(from: Timex.now(), until: [days: 1]),
+          name: "irrelevant"
+        },
+        notification_service: unnecessary_notification_service,
+        products_gateway: unnecessary_products_gateway
+      )
+
+    assert {:error, {:validation, price: [:negative], quantity: [:negative]}} == response
+  end
 end
