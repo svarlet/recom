@@ -1,16 +1,12 @@
-defmodule Recom.Usecases.Shopkeeper.CreateProduct do
-  defmodule Request do
-    defstruct ~w(name interval price quantity)a
-  end
-
-  def create(request, _) do
+defmodule Recom.Usecases.Shopkeeper.CreateProduct.RequestValidator do
+  def validate(request) do
     validation_errors =
       []
       |> validate_request_quantity(request)
       |> validate_request_price(request)
       |> validate_request_name(request)
 
-    {:error, {:validation, validation_errors}}
+    {:validation, validation_errors}
   end
 
   defp validate_request_price(validation_state, request) do

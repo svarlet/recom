@@ -1,4 +1,4 @@
-defmodule Recom.Usecases.Shopkeeper.CreateProduct_InvalidRequest_Test do
+defmodule Recom.Usecases.Shopkeeper.CreateProduct.RequestValidatorTest do
   use ExUnit.Case, async: true
   use Timex
 
@@ -15,11 +15,9 @@ defmodule Recom.Usecases.Shopkeeper.CreateProduct_InvalidRequest_Test do
 
     overrides = Map.take(context, ~w{price quantity name interval}a)
 
-    {:error, {:validation, validation_errors}} =
-      CreateProduct.create(
-        Map.merge(valid_request, overrides),
-        notification_service: nil,
-        products_gateway: nil
+    {:validation, validation_errors} =
+      CreateProduct.RequestValidator.validate(
+        Map.merge(valid_request, overrides)
       )
 
     %{validation_errors: validation_errors}
