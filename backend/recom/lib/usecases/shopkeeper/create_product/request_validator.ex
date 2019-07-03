@@ -1,4 +1,6 @@
 defmodule Recom.Usecases.Shopkeeper.CreateProduct.RequestValidator do
+  alias Recom.Usecases.Shopkeeper.CreateProduct
+
   @type error :: {atom, nonempty_list(atom)}
   @type errors :: list(error())
 

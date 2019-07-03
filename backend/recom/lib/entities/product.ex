@@ -1,6 +1,8 @@
 defmodule Recom.Entities.Product do
   use Timex
 
+  @type t :: %__MODULE__{name: String.t, time_span: Timex.Interval.t}
+
   defstruct name: "", time_span: nil
 
   def new(fields \\ []) do
