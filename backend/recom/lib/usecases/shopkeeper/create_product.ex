@@ -30,7 +30,7 @@ defmodule Recom.Usecases.Shopkeeper.CreateProduct do
   end
 
   defp validate_request_name(validation_state, request) do
-    if request.name == "" do
+    if String.trim(request.name) == "" do
       [{:name, [:empty]} | validation_state]
     else
       validation_state
