@@ -1,4 +1,8 @@
 defmodule Recom.Usecases.Shopkeeper.CreateProduct.RequestValidator do
+  @type error :: {atom, nonempty_list(atom)}
+  @type errors :: list(error())
+
+  @spec validate(request :: CreateProduct.Request.t) :: {:validation, errors()}
   def validate(request) do
     validation_errors =
       []
