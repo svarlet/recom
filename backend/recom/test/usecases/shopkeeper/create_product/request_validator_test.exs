@@ -16,9 +16,9 @@ defmodule Recom.Usecases.Shopkeeper.CreateProduct.RequestValidatorTest do
     overrides = Map.take(context, ~w{price quantity name interval}a)
 
     {:validation, validation_errors} =
-      CreateProduct.RequestValidator.validate(
-        Map.merge(valid_request, overrides)
-      )
+      valid_request
+      |> Map.merge(overrides)
+      |> CreateProduct.RequestValidator.validate()
 
     %{validation_errors: validation_errors}
   end
