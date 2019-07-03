@@ -16,12 +16,6 @@ defmodule Recom.Usecases.Shopkeeper.CreateProduct do
     @callback validate(request :: Request.t()) :: {:validation, errors()}
   end
 
-  defmodule Usecase do
-    def create(_request, _) do
-      :fixme
-    end
-  end
-
   defmodule RequestValidator do
     @behaviour ValidatorBehaviour
 
@@ -59,5 +53,9 @@ defmodule Recom.Usecases.Shopkeeper.CreateProduct do
         validation_state
       end
     end
+  end
+
+  def create(request, with_validator: validator) do
+    validator.validate(request)
   end
 end
