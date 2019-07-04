@@ -31,16 +31,9 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
   #
 
   test "when validation fails, it returns a detailed error" do
-    request = %CreateProduct.Request{
-      name: "",
-      price: 10,
-      quantity: 10,
-      interval: Interval.new(from: Timex.now(), until: [hours: 2])
-    }
-
+    irrelevant_request = nil
     stub(CreateProduct.ValidatorMock, :validate, fn _ -> {:validation, name: [:empty]} end)
-
-    assert {:error, {:validation, name: [:empty]}} ==
-             CreateProduct.create(request, with_validator: CreateProduct.ValidatorMock)
+    result = CreateProduct.create(irrelevant_request, with_validator: CreateProduct.ValidatorMock)
+    assert {:error, {:validation, name: [:empty]}} == result
   end
 end
