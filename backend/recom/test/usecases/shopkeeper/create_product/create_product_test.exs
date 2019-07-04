@@ -8,7 +8,7 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
 
   setup :verify_on_exit!
 
-  defmock(CreateProduct.ValidatorSpy, for: CreateProduct.ValidatorBehaviour)
+  defmock(CreateProduct.ValidatorMock, for: CreateProduct.ValidatorBehaviour)
 
   test "it validates the request" do
     request = %CreateProduct.Request{
@@ -18,8 +18,8 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
       interval: Interval.new(from: Timex.now(), until: [hours: 2])
     }
 
-    expect(CreateProduct.ValidatorSpy, :validate, fn ^request -> {:validation, []} end)
+    expect(CreateProduct.ValidatorMock, :validate, fn ^request -> {:validation, []} end)
 
-    CreateProduct.create(request, with_validator: CreateProduct.ValidatorSpy)
+    CreateProduct.create(request, with_validator: CreateProduct.ValidatorMock)
   end
 end
