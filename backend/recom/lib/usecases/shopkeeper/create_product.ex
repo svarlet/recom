@@ -56,6 +56,6 @@ defmodule Recom.Usecases.Shopkeeper.CreateProduct do
   end
 
   def create(request, with_validator: validator) do
-    validator.validate(request)
+    {:error, validator.validate(request)}
   end
 end
