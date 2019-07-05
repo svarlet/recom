@@ -1,9 +1,14 @@
 defmodule Recom.Entities.Product do
   use Timex
 
-  @type t :: %__MODULE__{name: String.t, time_span: Timex.Interval.t}
+  @type t :: %__MODULE__{
+          name: String.t(),
+          time_span: Timex.Interval.t(),
+          price: non_neg_integer(),
+          quantity: non_neg_integer()
+        }
 
-  defstruct name: "", time_span: nil
+  defstruct name: "", time_span: nil, price: 0, quantity: 0
 
   def new(fields \\ []) do
     __struct__(fields)

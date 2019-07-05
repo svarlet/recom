@@ -1,4 +1,6 @@
 defmodule Recom.Usecases.Shopkeeper.CreateProduct do
+  alias Recom.Entities.Product
+
   defmodule Request do
     @type t :: %__MODULE__{
             name: String.t(),
@@ -14,6 +16,10 @@ defmodule Recom.Usecases.Shopkeeper.CreateProduct do
     @type errors :: list(error())
 
     @callback validate(request :: Request.t()) :: {:validation, errors()}
+  end
+
+  defmodule ProductsGateway do
+    @callback create(Entities.Product.t()) :: {:ok, Entities.Product.t()} | {:error, term}
   end
 
   defmodule RequestValidator do
@@ -55,7 +61,21 @@ defmodule Recom.Usecases.Shopkeeper.CreateProduct do
     end
   end
 
-  def create(request, with_validator: validator) do
-    {:error, validator.validate(request)}
+  def create(request, with_validator: validator, with_gateway: gateway) do
+    with {:validation, []} <- validator.validate(request) do
+      product =
+        Product.new(
+          name: request.name,
+          time_span: request.interval,
+          price: request.price,
+          quantity: request.quantity
+        )
+
+      case gateway.create(product) do
+        {:ok, product} -> {:ok, product}
+      end
+    else
+      {:validation, errors} -> {:error, {:validation, errors}}
+    end
   end
 end

@@ -5,10 +5,12 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
   import Mox
 
   alias Recom.Usecases.Shopkeeper.CreateProduct
+  alias Recom.Entities.Product
 
   setup :verify_on_exit!
 
-  defmock(CreateProduct.ValidatorMock, for: CreateProduct.ValidatorBehaviour)
+  defmock(CreateProduct.ValidatorDouble, for: CreateProduct.ValidatorBehaviour)
+  defmock(CreateProduct.ProductsGatewayMock, for: CreateProduct.ProductsGateway)
 
   # test "it validates the request" do
   #   request = %CreateProduct.Request{
@@ -23,17 +25,36 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
   #   CreateProduct.create(request, with_validator: CreateProduct.ValidatorMock)
   # end
 
-  describe "empty catalog" do
-    @tag :skip
-    test "it creates the product"
-
-    @tag :skip
-    test "it dispatches a notification"
-  end
-
   describe "original product" do
-    @tag :skip
-    test "it creates the product"
+    test "it creates the product" do
+      request = %CreateProduct.Request{
+        name: "irrelevant name",
+        interval: Interval.new(from: Timex.now(), until: [days: 1]),
+        price: 100,
+        quantity: 2_500
+      }
+
+      stub(CreateProduct.ValidatorDouble, :validate, fn _valid_request ->
+        {:validation, []}
+      end)
+
+      expect(CreateProduct.ProductsGatewayMock, :create, fn original_product ->
+        {:ok, original_product}
+      end)
+
+      expected_product = %Product{
+        name: request.name,
+        time_span: request.interval,
+        price: request.price,
+        quantity: request.quantity
+      }
+
+      assert {:ok, expected_product} ==
+               CreateProduct.create(request,
+                 with_validator: CreateProduct.ValidatorDouble,
+                 with_gateway: CreateProduct.ProductsGatewayMock
+               )
+    end
 
     @tag :skip
     test "it dispatches a notification"
@@ -49,13 +70,17 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
 
   describe "semantically invalid request" do
     test "it returns an error" do
-      stub(CreateProduct.ValidatorMock, :validate, fn :invalid_request ->
-        {:validation, name: [:empty]}
+      stub(CreateProduct.ValidatorDouble, :validate, fn :__invalid_request__ ->
+        {:validation, :__a_validation_error__}
       end)
 
-      result = CreateProduct.create(:invalid_request, with_validator: CreateProduct.ValidatorMock)
+      result =
+        CreateProduct.create(:__invalid_request__,
+          with_validator: CreateProduct.ValidatorDouble,
+          with_gateway: nil
+        )
 
-      assert {:error, {:validation, name: [:empty]}} == result
+      assert {:error, {:validation, :__a_validation_error__}} == result
     end
   end
 end
