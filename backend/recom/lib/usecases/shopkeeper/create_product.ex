@@ -19,7 +19,7 @@ defmodule Recom.Usecases.Shopkeeper.CreateProduct do
   end
 
   defmodule ProductsGateway do
-    @callback create(Entities.Product.t()) :: {:ok, Entities.Product.t()} | {:error, term}
+    @callback store(Entities.Product.t()) :: {:ok, Entities.Product.t()} | {:error, term}
   end
 
   defmodule RequestValidator do
@@ -71,7 +71,7 @@ defmodule Recom.Usecases.Shopkeeper.CreateProduct do
           quantity: request.quantity
         )
 
-      case gateway.create(product) do
+      case gateway.store(product) do
         {:ok, product} -> {:ok, product}
       end
     else

@@ -12,21 +12,8 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
   defmock(CreateProduct.ValidatorDouble, for: CreateProduct.ValidatorBehaviour)
   defmock(CreateProduct.ProductsGatewayMock, for: CreateProduct.ProductsGateway)
 
-  # test "it validates the request" do
-  #   request = %CreateProduct.Request{
-  #     name: "irrelevant",
-  #     price: 20,
-  #     quantity: 100,
-  #     interval: Interval.new(from: Timex.now(), until: [hours: 2])
-  #   }
-
-  #   expect(CreateProduct.ValidatorMock, :validate, fn ^request -> {:validation, []} end)
-
-  #   CreateProduct.create(request, with_validator: CreateProduct.ValidatorMock)
-  # end
-
   describe "original product" do
-    test "it creates the product" do
+    test "it stores the product" do
       request = %CreateProduct.Request{
         name: "irrelevant name",
         interval: Interval.new(from: Timex.now(), until: [days: 1]),
@@ -38,7 +25,7 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
         {:validation, []}
       end)
 
-      expect(CreateProduct.ProductsGatewayMock, :create, fn original_product ->
+      expect(CreateProduct.ProductsGatewayMock, :store, fn original_product ->
         {:ok, original_product}
       end)
 
