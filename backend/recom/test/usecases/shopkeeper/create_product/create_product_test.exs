@@ -9,19 +9,19 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
 
   setup :verify_on_exit!
 
-  defmock(CreateProduct.ValidatorDouble, for: CreateProduct.ValidatorBehaviour)
+  defmock(CreateProduct.ProductValidatorDouble, for: CreateProduct.ProductValidatorBehaviour)
   defmock(CreateProduct.ProductsGatewayMock, for: CreateProduct.ProductsGateway)
 
   describe "original product" do
     test "it stores the product" do
-      request = %CreateProduct.Request{
+      request = %Product{
         name: "irrelevant name",
-        interval: Interval.new(from: Timex.now(), until: [days: 1]),
+        time_span: Interval.new(from: Timex.now(), until: [days: 1]),
         price: 100,
         quantity: 2_500
       }
 
-      stub(CreateProduct.ValidatorDouble, :validate, fn _valid_request ->
+      stub(CreateProduct.ProductValidatorDouble, :validate, fn _valid_request ->
         {:validation, []}
       end)
 
@@ -31,14 +31,14 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
 
       expected_product = %Product{
         name: request.name,
-        time_span: request.interval,
+        time_span: request.time_span,
         price: request.price,
         quantity: request.quantity
       }
 
       assert {:ok, expected_product} ==
                CreateProduct.create(request,
-                 with_validator: CreateProduct.ValidatorDouble,
+                 with_validator: CreateProduct.ProductValidatorDouble,
                  with_gateway: CreateProduct.ProductsGatewayMock
                )
     end
@@ -57,13 +57,13 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
 
   describe "semantically invalid request" do
     test "it returns an error" do
-      stub(CreateProduct.ValidatorDouble, :validate, fn :__invalid_request__ ->
+      stub(CreateProduct.ProductValidatorDouble, :validate, fn :__invalid_request__ ->
         {:validation, :__a_validation_error__}
       end)
 
       result =
         CreateProduct.create(:__invalid_request__,
-          with_validator: CreateProduct.ValidatorDouble,
+          with_validator: CreateProduct.ProductValidatorDouble,
           with_gateway: nil
         )
 

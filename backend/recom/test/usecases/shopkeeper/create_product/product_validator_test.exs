@@ -1,24 +1,24 @@
-defmodule Recom.Usecases.Shopkeeper.CreateProduct.RequestValidatorTest do
+defmodule Recom.Usecases.Shopkeeper.CreateProduct.ProductValidatorTest do
   use ExUnit.Case, async: true
   use Timex
 
-  alias Recom.Usecases.Shopkeeper.CreateProduct
+  alias Recom.Usecases.Shopkeeper.CreateProduct.ProductValidator
+  alias Recom.Entities.Product
 
   setup context do
-    valid_request =
-      %CreateProduct.Request{
-        price: 100,
-        interval: Interval.new(from: Timex.now(), until: [days: 1]),
-        quantity: 45,
-        name: "irrelevant"
-      }
+    valid_product = %Product{
+      price: 100,
+      time_span: Interval.new(from: Timex.now(), until: [days: 1]),
+      quantity: 45,
+      name: "irrelevant"
+    }
 
-    overrides = Map.take(context, ~w{price quantity name interval}a)
+    overrides = Map.take(context, ~w{price quantity name time_span}a)
 
     {:validation, validation_errors} =
-      valid_request
+      valid_product
       |> Map.merge(overrides)
-      |> CreateProduct.RequestValidator.validate()
+      |> ProductValidator.validate()
 
     %{validation_errors: validation_errors}
   end
@@ -29,7 +29,8 @@ defmodule Recom.Usecases.Shopkeeper.CreateProduct.RequestValidatorTest do
   end
 
   @tag quantity: -1
-  test "given a negative quantity, it returns {:error, {:validation, :negative_quantity}}", context do
+  test "given a negative quantity, it returns {:error, {:validation, :negative_quantity}}",
+       context do
     assert_negative_quantity_reported(context.validation_errors)
   end
 
