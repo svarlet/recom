@@ -9,7 +9,8 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
   setup :verify_on_exit!
 
   defmock(CreateProduct.ProductValidatorDouble, for: CreateProduct.ProductValidatorBehaviour)
-  defmock(CreateProduct.ProductsGatewayMock, for: CreateProduct.ProductsGateway)
+  defmock(CreateProduct.ProductsGatewayDouble, for: CreateProduct.ProductsGateway)
+  defmock(CreateProduct.NotifierDouble, for: CreateProduct.Notifier)
 
   describe "original product" do
     test "it stores the product" do
@@ -17,19 +18,39 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
         {:validation, []}
       end)
 
-      expect(CreateProduct.ProductsGatewayMock, :store, fn :__original_product__ ->
+      expect(CreateProduct.ProductsGatewayDouble, :store, fn :__original_product__ ->
         {:ok, :__saved_product__}
       end)
+
+      stub(CreateProduct.NotifierDouble, :notify_of_product_creation, fn _ -> :ok end)
 
       assert {:ok, :__saved_product__} ==
                CreateProduct.create(:__original_product__,
                  with_validator: CreateProduct.ProductValidatorDouble,
-                 with_gateway: CreateProduct.ProductsGatewayMock
+                 with_gateway: CreateProduct.ProductsGatewayDouble,
+                 with_notifier: CreateProduct.NotifierDouble
                )
     end
 
-    @tag :skip
-    test "it dispatches a notification"
+    test "it dispatches a notification of product creation" do
+      stub(CreateProduct.ProductValidatorDouble, :validate, fn :__original_product__ ->
+        {:validation, []}
+      end)
+
+      stub(CreateProduct.ProductsGatewayDouble, :store, fn :__original_product__ ->
+        {:ok, :__saved_product__}
+      end)
+
+      expect(CreateProduct.NotifierDouble, :notify_of_product_creation, fn :__saved_product__ ->
+        :ok
+      end)
+
+      CreateProduct.create(:__original_product__,
+        with_validator: CreateProduct.ProductValidatorDouble,
+        with_gateway: CreateProduct.ProductsGatewayDouble,
+        with_notifier: CreateProduct.NotifierDouble
+      )
+    end
   end
 
   describe "dupplicate product" do
@@ -49,7 +70,8 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
       result =
         CreateProduct.create(:__invalid_request__,
           with_validator: CreateProduct.ProductValidatorDouble,
-          with_gateway: nil
+          with_gateway: nil,
+          with_notifier: nil
         )
 
       assert {:error, {:validation, :__a_validation_error__}} == result
