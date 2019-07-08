@@ -1,4 +1,4 @@
-defmodule Recom.Storage.PurchasablesGatewayTest_ProductsAtVariousTimes do
+defmodule Recom.Storage.PurchasablesGatewayTest_AtTimesBoundaries do
   use Recom.Storage.DataCase
   use Timex
 
@@ -11,22 +11,29 @@ defmodule Recom.Storage.PurchasablesGatewayTest_ProductsAtVariousTimes do
     test "given some products, when some expire after the instant, it returns them in an ok tuple" do
       instant = Timex.now()
 
-      [%Product{
+      [
+        %Product{
           name: "Pass for a product which expired 2 days ago",
           start: Timex.shift(instant, days: -5),
-          end: Timex.shift(instant, days: -2)},
-       %Product{
-         name: "Future Pass starting in 3 years from now and lasting 2 days",
-         start: Timex.shift(instant, years: 3),
-         end: Timex.shift(instant, years: 3, days: 2)}]
-         |> Enum.each(&Repo.insert!/1)
+          end: Timex.shift(instant, days: -2)
+        },
+        %Product{
+          name: "Future Pass starting in 3 years from now and lasting 2 days",
+          start: Timex.shift(instant, years: 3),
+          end: Timex.shift(instant, years: 3, days: 2)
+        }
+      ]
+      |> Enum.each(&Repo.insert!/1)
 
-      future_product_as_entity = Entities.Product.new(
-        name: "Future Pass starting in 3 years from now and lasting 2 days",
-        time_span: Interval.new(
-          from: Timex.shift(instant, years: 3),
-          until: [days: 2]
-        ))
+      future_product_as_entity =
+        Entities.Product.new(
+          name: "Future Pass starting in 3 years from now and lasting 2 days",
+          time_span:
+            Interval.new(
+              from: Timex.shift(instant, years: 3),
+              until: [days: 2]
+            )
+        )
 
       assert {:ok, [^future_product_as_entity]} = DbAdapter.all(instant)
     end
@@ -37,15 +44,19 @@ defmodule Recom.Storage.PurchasablesGatewayTest_ProductsAtVariousTimes do
       %Product{
         name: "Product starting exactly at the instant",
         start: instant,
-        end: Timex.shift(instant, days: 2)}
-        |> Repo.insert()
+        end: Timex.shift(instant, days: 2)
+      }
+      |> Repo.insert()
 
-      product_as_entity = Entities.Product.new(
-        name: "Product starting exactly at the instant",
-        time_span: Interval.new(
-          from: instant,
-          until: [days: 2]
-        ))
+      product_as_entity =
+        Entities.Product.new(
+          name: "Product starting exactly at the instant",
+          time_span:
+            Interval.new(
+              from: instant,
+              until: [days: 2]
+            )
+        )
 
       assert {:ok, [^product_as_entity]} = DbAdapter.all(instant)
     end
@@ -73,13 +84,15 @@ defmodule Recom.Storage.PurchasablesGatewayTest_ProductsAtVariousTimes do
       }
       |> Repo.insert!()
 
-      expected_product = Entities.Product.new(
-        name: "Product which started before the instant and finishes after",
-        time_span: Interval.new(
-          from: Timex.shift(instant, hours: -1),
-          until: Timex.shift(instant, hours: 1)
+      expected_product =
+        Entities.Product.new(
+          name: "Product which started before the instant and finishes after",
+          time_span:
+            Interval.new(
+              from: Timex.shift(instant, hours: -1),
+              until: Timex.shift(instant, hours: 1)
+            )
         )
-      )
 
       assert {:ok, [^expected_product]} = DbAdapter.all(instant)
     end
