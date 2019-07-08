@@ -1,6 +1,6 @@
 defmodule Recom.Storage.PurchasablesGateway.DbAdapter do
   @behaviour Recom.Usecases.Shopper.PurchasablesGateway
-  @behaviour Recom.Usecases.Shopkeeper.CreateProduct.ProductsGateway
+  @behaviour Recom.Usecases.Shopkeeper.ProductsGateway
 
   use Timex
 
