@@ -2,7 +2,8 @@ defmodule Recom.Usecases.Shopkeeper.CreateProduct do
   alias Recom.Entities.Product
 
   defmodule ProductsGateway do
-    @callback store(Entities.Product.t()) :: {:ok, Entities.Product.t()} | {:error, term}
+    @callback store(Entities.Product.t()) ::
+                {:ok, Entities.Product.t()} | {:error, :duplicate_product}
   end
 
   defmodule ProductValidatorBehaviour do
@@ -73,6 +74,7 @@ defmodule Recom.Usecases.Shopkeeper.CreateProduct do
       {:ok, product}
     else
       {:validation, errors} -> {:error, {:validation, errors}}
+      {:error, :duplicate_product} -> {:error, :duplicate_product}
     end
   end
 end

@@ -51,12 +51,23 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
     end
   end
 
-  describe "dupplicate product" do
-    @tag :skip
-    test "it returns an error"
+  describe "duplicate product" do
+    test "it returns an error" do
+      stub(CreateProduct.ProductValidatorDouble, :validate, fn :__duplicate_product__ ->
+        {:validation, []}
+      end)
 
-    @tag :skip
-    test "it dispatches a warning notification"
+      expect(CreateProduct.ProductsGatewayDouble, :store, fn :__duplicate_product__ ->
+        {:error, :duplicate_product}
+      end)
+
+      assert {:error, :duplicate_product} ==
+               CreateProduct.create(:__duplicate_product__,
+                 with_validator: CreateProduct.ProductValidatorDouble,
+                 with_gateway: CreateProduct.ProductsGatewayDouble,
+                 with_notifier: nil
+               )
+    end
   end
 
   describe "semantically invalid product" do
