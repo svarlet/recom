@@ -4,67 +4,67 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
 
   import Mox
 
-  alias Recom.Usecases.Shopkeeper.CreateProduct
+  alias Recom.Usecases.Shopkeeper
 
   setup :verify_on_exit!
 
-  defmock(CreateProduct.ProductValidatorDouble, for: CreateProduct.ProductValidatorBehaviour)
-  defmock(CreateProduct.ProductsGatewayDouble, for: CreateProduct.ProductsGateway)
-  defmock(CreateProduct.NotifierDouble, for: CreateProduct.Notifier)
+  defmock(Shopkeeper.ProductValidatorDouble, for: Shopkeeper.ProductValidatorBehaviour)
+  defmock(Shopkeeper.ProductsGatewayDouble, for: Shopkeeper.ProductsGateway)
+  defmock(Shopkeeper.NotifierDouble, for: Shopkeeper.Notifier)
 
   describe "original product" do
     setup do
-      stub(CreateProduct.ProductValidatorDouble, :validate, fn :__original_product__ ->
+      stub(Shopkeeper.ProductValidatorDouble, :validate, fn :__original_product__ ->
         {:validation, []}
       end)
 
       %{
         deps: [
-          with_validator: CreateProduct.ProductValidatorDouble,
-          with_gateway: CreateProduct.ProductsGatewayDouble,
-          with_notifier: CreateProduct.NotifierDouble
+          with_validator: Shopkeeper.ProductValidatorDouble,
+          with_gateway: Shopkeeper.ProductsGatewayDouble,
+          with_notifier: Shopkeeper.NotifierDouble
         ]
       }
     end
 
     test "it stores the product", context do
-      expect(CreateProduct.ProductsGatewayDouble, :store, fn :__original_product__ ->
+      expect(Shopkeeper.ProductsGatewayDouble, :store, fn :__original_product__ ->
         {:ok, :__saved_product__}
       end)
 
-      stub(CreateProduct.NotifierDouble, :notify_of_product_creation, fn _ -> :ok end)
+      stub(Shopkeeper.NotifierDouble, :notify_of_product_creation, fn _ -> :ok end)
 
       assert {:ok, :__saved_product__} ==
-               CreateProduct.create(:__original_product__, context.deps)
+               Shopkeeper.CreateProduct.create(:__original_product__, context.deps)
     end
 
     test "it dispatches a notification of product creation", context do
-      stub(CreateProduct.ProductsGatewayDouble, :store, fn :__original_product__ ->
+      stub(Shopkeeper.ProductsGatewayDouble, :store, fn :__original_product__ ->
         {:ok, :__saved_product__}
       end)
 
-      expect(CreateProduct.NotifierDouble, :notify_of_product_creation, fn :__saved_product__ ->
+      expect(Shopkeeper.NotifierDouble, :notify_of_product_creation, fn :__saved_product__ ->
         :ok
       end)
 
-      CreateProduct.create(:__original_product__, context.deps)
+      Shopkeeper.CreateProduct.create(:__original_product__, context.deps)
     end
   end
 
   describe "duplicate product" do
     test "it returns an error" do
-      stub(CreateProduct.ProductValidatorDouble, :validate, fn :__duplicate_product__ ->
+      stub(Shopkeeper.ProductValidatorDouble, :validate, fn :__duplicate_product__ ->
         {:validation, []}
       end)
 
-      expect(CreateProduct.ProductsGatewayDouble, :store, fn :__duplicate_product__ ->
+      expect(Shopkeeper.ProductsGatewayDouble, :store, fn :__duplicate_product__ ->
         {:error, :duplicate_product}
       end)
 
       assert {:error, :duplicate_product} ==
-               CreateProduct.create(:__duplicate_product__,
-                 with_validator: CreateProduct.ProductValidatorDouble,
-                 with_gateway: CreateProduct.ProductsGatewayDouble,
+               Shopkeeper.CreateProduct.create(:__duplicate_product__,
+                 with_validator: Shopkeeper.ProductValidatorDouble,
+                 with_gateway: Shopkeeper.ProductsGatewayDouble,
                  with_notifier: nil
                )
     end
@@ -72,13 +72,13 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
 
   describe "semantically invalid product" do
     test "it returns an error" do
-      stub(CreateProduct.ProductValidatorDouble, :validate, fn :__invalid_request__ ->
+      stub(Shopkeeper.ProductValidatorDouble, :validate, fn :__invalid_request__ ->
         {:validation, :__a_validation_error__}
       end)
 
       result =
-        CreateProduct.create(:__invalid_request__,
-          with_validator: CreateProduct.ProductValidatorDouble,
+        Shopkeeper.CreateProduct.create(:__invalid_request__,
+          with_validator: Shopkeeper.ProductValidatorDouble,
           with_gateway: nil,
           with_notifier: nil
         )

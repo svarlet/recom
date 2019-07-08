@@ -1,4 +1,4 @@
-defmodule Recom.Usecases.Shopkeeper.CreateProduct do
+defmodule Recom.Usecases.Shopkeeper do
   alias Recom.Entities.Product
 
   defmodule ProductsGateway do
@@ -67,14 +67,16 @@ defmodule Recom.Usecases.Shopkeeper.CreateProduct do
     @callback notify_of_product_creation(Product.t()) :: :ok
   end
 
-  def create(product, with_validator: validator, with_gateway: gateway, with_notifier: notifier) do
-    with {:validation, []} <- validator.validate(product),
-         {:ok, product} <- gateway.store(product),
-         :ok <- notifier.notify_of_product_creation(product) do
-      {:ok, product}
-    else
-      {:validation, errors} -> {:error, {:validation, errors}}
-      {:error, :duplicate_product} -> {:error, :duplicate_product}
+  defmodule CreateProduct do
+    def create(product, with_validator: validator, with_gateway: gateway, with_notifier: notifier) do
+      with {:validation, []} <- validator.validate(product),
+           {:ok, product} <- gateway.store(product),
+           :ok <- notifier.notify_of_product_creation(product) do
+        {:ok, product}
+      else
+        {:validation, errors} -> {:error, {:validation, errors}}
+        {:error, :duplicate_product} -> {:error, :duplicate_product}
+      end
     end
   end
 end

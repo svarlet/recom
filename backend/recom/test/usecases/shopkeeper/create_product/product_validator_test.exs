@@ -2,7 +2,7 @@ defmodule Recom.Usecases.Shopkeeper.CreateProduct.ProductValidatorTest do
   use ExUnit.Case, async: true
   use Timex
 
-  alias Recom.Usecases.Shopkeeper.CreateProduct.ProductValidator
+  alias Recom.Usecases.Shopkeeper.ProductValidator
   alias Recom.Entities.Product
 
   setup context do
