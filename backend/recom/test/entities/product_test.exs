@@ -67,15 +67,19 @@ defmodule Recom.Entities.ProductTest do
   end
 
   describe "equal?/2" do
-    setup do
-      %{
-        product: %Product{
-          name: "name",
-          quantity: 1,
-          price: 2,
-          time_span: Interval.new(from: Timex.now(), until: [days: 1])
-        }
+    setup context do
+      product = %Product{
+        name: "name",
+        quantity: 1,
+        price: 2,
+        time_span: Interval.new(from: Timex.now(), until: [days: 1])
       }
+
+      overrides = Map.take(context, ~w{name quantity price time_span}a)
+
+      different_product = Map.merge(product, overrides)
+
+      %{product: product, different_product: different_product}
     end
 
     test "when either is nil, return true", context do
@@ -83,18 +87,16 @@ defmodule Recom.Entities.ProductTest do
       refute Product.equal?(context.product, nil)
     end
 
+    @tag name: "different name"
     test "when names differ, return false", context do
-      product2 = %Product{context.product | name: "different name"}
-
-      refute Product.equal?(context.product, product2)
-      refute Product.equal?(product2, context.product)
+      refute Product.equal?(context.product, context.different_product)
+      refute Product.equal?(context.different_product, context.product)
     end
 
+    @tag price: 45
     test "when prices differ, return false", context do
-      product2 = %Product{context.product | price: 45}
-
-      refute Product.equal?(context.product, product2)
-      refute Product.equal?(product2, context.product)
+      refute Product.equal?(context.product, context.different_product)
+      refute Product.equal?(context.different_product, context.product)
     end
 
     @tag :skip
