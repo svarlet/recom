@@ -67,30 +67,27 @@ defmodule Recom.Entities.ProductTest do
   end
 
   describe "equal?/2" do
-    test "when either is nil, return true" do
-      product = %Product{
-        name: "name",
-        quantity: 1,
-        price: 2,
-        time_span: Interval.new(from: Timex.now(), until: [days: 1])
+    setup do
+      %{
+        product: %Product{
+          name: "name",
+          quantity: 1,
+          price: 2,
+          time_span: Interval.new(from: Timex.now(), until: [days: 1])
+        }
       }
-
-      refute Product.equal?(nil, product)
-      refute Product.equal?(product, nil)
     end
 
-    test "when names differ, return false" do
-      product1 = %Product{
-        name: "name",
-        quantity: 1,
-        price: 2,
-        time_span: Interval.new(from: Timex.now(), until: [days: 1])
-      }
+    test "when either is nil, return true", context do
+      refute Product.equal?(nil, context.product)
+      refute Product.equal?(context.product, nil)
+    end
 
-      product2 = %Product{product1 | name: "different name"}
+    test "when names differ, return false", context do
+      product2 = %Product{context.product | name: "different name"}
 
-      refute Product.equal?(product1, product2)
-      refute Product.equal?(product2, product1)
+      refute Product.equal?(context.product, product2)
+      refute Product.equal?(product2, context.product)
     end
 
     @tag :skip
