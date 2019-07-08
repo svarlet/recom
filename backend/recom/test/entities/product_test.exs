@@ -115,7 +115,8 @@ defmodule Recom.Entities.ProductTest do
       refute Product.equal?(different_product, context.product)
     end
 
-    @tag :skip
-    test "when prices, quantities, names and intervals are equal, return true"
+    test "when prices, quantities, names and intervals are equal, return true", context do
+      assert Product.equal?(context.product, context.product)
+    end
   end
 end
