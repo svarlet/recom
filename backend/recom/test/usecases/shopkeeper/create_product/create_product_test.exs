@@ -5,7 +5,6 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
   import Mox
 
   alias Recom.Usecases.Shopkeeper.CreateProduct
-  alias Recom.Entities.Product
 
   setup :verify_on_exit!
 
@@ -14,30 +13,16 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
 
   describe "original product" do
     test "it stores the product" do
-      request = %Product{
-        name: "irrelevant name",
-        time_span: Interval.new(from: Timex.now(), until: [days: 1]),
-        price: 100,
-        quantity: 2_500
-      }
-
-      stub(CreateProduct.ProductValidatorDouble, :validate, fn _valid_request ->
+      stub(CreateProduct.ProductValidatorDouble, :validate, fn :__original_product__ ->
         {:validation, []}
       end)
 
-      expect(CreateProduct.ProductsGatewayMock, :store, fn original_product ->
-        {:ok, original_product}
+      expect(CreateProduct.ProductsGatewayMock, :store, fn :__original_product__ ->
+        {:ok, :__saved_product__}
       end)
 
-      expected_product = %Product{
-        name: request.name,
-        time_span: request.time_span,
-        price: request.price,
-        quantity: request.quantity
-      }
-
-      assert {:ok, expected_product} ==
-               CreateProduct.create(request,
+      assert {:ok, :__saved_product__} ==
+               CreateProduct.create(:__original_product__,
                  with_validator: CreateProduct.ProductValidatorDouble,
                  with_gateway: CreateProduct.ProductsGatewayMock
                )
