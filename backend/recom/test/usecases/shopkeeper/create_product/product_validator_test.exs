@@ -51,6 +51,11 @@ defmodule Recom.Usecases.Shopkeeper.CreateProduct.ProductValidatorTest do
     assert_empty_name_reported(context.validation_errors)
   end
 
+  @tag time_span: nil
+  test "a product must have a time span", context do
+    assert_blank_time_span_reported(context.validation_errors)
+  end
+
   #
   # Custom Assertions
   #
@@ -65,5 +70,9 @@ defmodule Recom.Usecases.Shopkeeper.CreateProduct.ProductValidatorTest do
 
   defp assert_empty_name_reported(errors) do
     assert {:name, [:empty]} in errors
+  end
+
+  defp assert_blank_time_span_reported(errors) do
+    assert {:time_span, [:blank]} in errors
   end
 end

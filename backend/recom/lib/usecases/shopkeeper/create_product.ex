@@ -18,15 +18,18 @@ defmodule Recom.Usecases.Shopkeeper.CreateProduct do
     @impl true
     def validate(product) do
       validation_errors =
-        []
-        |> validate_request_quantity(product)
-        |> validate_request_price(product)
-        |> validate_request_name(product)
+        initial_validation_state()
+        |> validate_quantity(product)
+        |> validate_price(product)
+        |> validate_name(product)
+        |> validate_time_span(product)
 
       {:validation, validation_errors}
     end
 
-    defp validate_request_price(validation_state, product) do
+    defp initial_validation_state(), do: []
+
+    defp validate_price(validation_state, product) do
       if product.price < 0 do
         [{:price, [:negative]} | validation_state]
       else
@@ -34,7 +37,7 @@ defmodule Recom.Usecases.Shopkeeper.CreateProduct do
       end
     end
 
-    defp validate_request_quantity(validation_state, product) do
+    defp validate_quantity(validation_state, product) do
       if product.quantity < 0 do
         [{:quantity, [:negative]} | validation_state]
       else
@@ -42,9 +45,17 @@ defmodule Recom.Usecases.Shopkeeper.CreateProduct do
       end
     end
 
-    defp validate_request_name(validation_state, product) do
+    defp validate_name(validation_state, product) do
       if String.trim(product.name) == "" do
         [{:name, [:empty]} | validation_state]
+      else
+        validation_state
+      end
+    end
+
+    defp validate_time_span(validation_state, product) do
+      if product.time_span == nil do
+        [{:time_span, [:blank]} | validation_state]
       else
         validation_state
       end
