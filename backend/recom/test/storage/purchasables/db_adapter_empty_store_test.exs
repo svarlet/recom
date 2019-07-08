@@ -34,8 +34,12 @@ defmodule Recom.Storage.PurchasablesGateway.DbAdapter_EmptyStoreTest do
       assert saved_product.price == 145
       assert saved_product.quantity == 1_000
       saved_time_span = Interval.new(from: saved_product.start, until: saved_product.end)
-      assert Interval.contains?(saved_time_span, product.time_span)
-      assert Interval.contains?(product.time_span, saved_time_span)
+      assert_equal_interval(saved_time_span, product.time_span)
+    end
+
+    defp assert_equal_interval(interval1, interval2) do
+      assert Interval.contains?(interval1, interval2)
+      assert Interval.contains?(interval2, interval1)
     end
 
     @tag :skip
