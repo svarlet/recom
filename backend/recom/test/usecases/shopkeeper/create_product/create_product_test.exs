@@ -13,11 +13,21 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
   defmock(CreateProduct.NotifierDouble, for: CreateProduct.Notifier)
 
   describe "original product" do
-    test "it stores the product" do
+    setup do
       stub(CreateProduct.ProductValidatorDouble, :validate, fn :__original_product__ ->
         {:validation, []}
       end)
 
+      %{
+        deps: [
+          with_validator: CreateProduct.ProductValidatorDouble,
+          with_gateway: CreateProduct.ProductsGatewayDouble,
+          with_notifier: CreateProduct.NotifierDouble
+        ]
+      }
+    end
+
+    test "it stores the product", context do
       expect(CreateProduct.ProductsGatewayDouble, :store, fn :__original_product__ ->
         {:ok, :__saved_product__}
       end)
@@ -25,18 +35,10 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
       stub(CreateProduct.NotifierDouble, :notify_of_product_creation, fn _ -> :ok end)
 
       assert {:ok, :__saved_product__} ==
-               CreateProduct.create(:__original_product__,
-                 with_validator: CreateProduct.ProductValidatorDouble,
-                 with_gateway: CreateProduct.ProductsGatewayDouble,
-                 with_notifier: CreateProduct.NotifierDouble
-               )
+               CreateProduct.create(:__original_product__, context.deps)
     end
 
-    test "it dispatches a notification of product creation" do
-      stub(CreateProduct.ProductValidatorDouble, :validate, fn :__original_product__ ->
-        {:validation, []}
-      end)
-
+    test "it dispatches a notification of product creation", context do
       stub(CreateProduct.ProductsGatewayDouble, :store, fn :__original_product__ ->
         {:ok, :__saved_product__}
       end)
@@ -45,11 +47,7 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
         :ok
       end)
 
-      CreateProduct.create(:__original_product__,
-        with_validator: CreateProduct.ProductValidatorDouble,
-        with_gateway: CreateProduct.ProductsGatewayDouble,
-        with_notifier: CreateProduct.NotifierDouble
-      )
+      CreateProduct.create(:__original_product__, context.deps)
     end
   end
 
