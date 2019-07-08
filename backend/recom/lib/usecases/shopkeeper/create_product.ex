@@ -68,8 +68,8 @@ defmodule Recom.Usecases.Shopkeeper.CreateProduct do
 
   def create(product, with_validator: validator, with_gateway: gateway, with_notifier: notifier) do
     with {:validation, []} <- validator.validate(product),
-         {:ok, product} <- gateway.store(product) do
-      notifier.notify_of_product_creation(product)
+         {:ok, product} <- gateway.store(product),
+         :ok <- notifier.notify_of_product_creation(product) do
       {:ok, product}
     else
       {:validation, errors} -> {:error, {:validation, errors}}
