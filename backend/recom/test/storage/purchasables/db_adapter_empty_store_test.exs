@@ -14,27 +14,31 @@ defmodule Recom.Storage.PurchasablesGateway.DbAdapter_EmptyStoreTest do
   end
 
   describe "store/1" do
-    test "it saves the product into the database" do
-      product =
-        Entities.Product.new(
-          name: "apples",
-          price: 145,
-          quantity: 1_000,
-          time_span:
-            Interval.new(
-              from: Timex.now(),
-              until: [days: 1]
-            )
-        )
+    setup do
+      %{
+        product:
+          Entities.Product.new(
+            name: "apples",
+            price: 145,
+            quantity: 1_000,
+            time_span:
+              Interval.new(
+                from: Timex.now(),
+                until: [days: 1]
+              )
+          )
+      }
+    end
 
-      DbAdapter.store(product)
+    test "it saves the product into the database", context do
+      DbAdapter.store(context.product)
 
       saved_product = Repo.one(Storage.Product)
       assert saved_product.name == "apples"
       assert saved_product.price == 145
       assert saved_product.quantity == 1_000
       saved_time_span = Interval.new(from: saved_product.start, until: saved_product.end)
-      assert_equal_interval(saved_time_span, product.time_span)
+      assert_equal_interval(saved_time_span, context.product.time_span)
     end
 
     defp assert_equal_interval(interval1, interval2) do
@@ -42,20 +46,8 @@ defmodule Recom.Storage.PurchasablesGateway.DbAdapter_EmptyStoreTest do
       assert Interval.contains?(interval2, interval1)
     end
 
-    test "it returns a product entity" do
-      product =
-        Entities.Product.new(
-          name: "apples",
-          price: 145,
-          quantity: 1_000,
-          time_span:
-            Interval.new(
-              from: Timex.now(),
-              until: [days: 1]
-            )
-        )
-
-      assert {:ok, %Entities.Product{}} = DbAdapter.store(product)
+    test "it returns a product entity", context do
+      assert {:ok, %Entities.Product{}} = DbAdapter.store(context.product)
     end
   end
 end
