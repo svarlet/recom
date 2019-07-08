@@ -30,17 +30,25 @@ defmodule Recom.Entities.ProductTest do
     setup do
       now = Timex.now()
 
-      product_sooner = Product.new(
-        name: "irrelevant",
-        time_span: Timex.Interval.new(
-          from: now,
-          until: [days: 1]))
+      product_sooner =
+        Product.new(
+          name: "irrelevant",
+          time_span:
+            Timex.Interval.new(
+              from: now,
+              until: [days: 1]
+            )
+        )
 
-      product_later = Product.new(
-        name: "irrelevant",
-        time_span: Timex.Interval.new(
-          from: Timex.shift(now, hours: 2),
-          until: [days: 1]))
+      product_later =
+        Product.new(
+          name: "irrelevant",
+          time_span:
+            Timex.Interval.new(
+              from: Timex.shift(now, hours: 2),
+              until: [days: 1]
+            )
+        )
 
       %{product_sooner: product_sooner, product_later: product_later}
     end
@@ -56,5 +64,34 @@ defmodule Recom.Entities.ProductTest do
     test "returns false when the first product starts after the second product", context do
       refute Product.before?(context.product_later, context.product_sooner)
     end
+  end
+
+  describe "equal?/2" do
+    test "when either is nil, return true" do
+      product = %Product{
+        name: "name",
+        quantity: 1,
+        price: 2,
+        time_span: Interval.new(from: Timex.now(), until: [days: 1])
+      }
+
+      refute Product.equal?(nil, product)
+      refute Product.equal?(product, nil)
+    end
+
+    @tag :skip
+    test "when names differ, return false"
+
+    @tag :skip
+    test "when prices differ, return false"
+
+    @tag :skip
+    test "when quantities differ, return false"
+
+    @tag :skip
+    test "when intervals differ, return false"
+
+    @tag :skip
+    test "when prices, quantities, names and intervals are equal, return true"
   end
 end

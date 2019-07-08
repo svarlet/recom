@@ -17,4 +17,7 @@ defmodule Recom.Entities.Product do
   def before?(p1, p2) do
     Timex.before?(p1.time_span.from, p2.time_span.from)
   end
+
+  def equal?(nil, _), do: false
+  def equal?(_, nil), do: false
 end
