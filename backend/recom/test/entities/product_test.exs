@@ -79,8 +79,19 @@ defmodule Recom.Entities.ProductTest do
       refute Product.equal?(product, nil)
     end
 
-    @tag :skip
-    test "when names differ, return false"
+    test "when names differ, return false" do
+      product1 = %Product{
+        name: "name",
+        quantity: 1,
+        price: 2,
+        time_span: Interval.new(from: Timex.now(), until: [days: 1])
+      }
+
+      product2 = %Product{product1 | name: "different name"}
+
+      refute Product.equal?(product1, product2)
+      refute Product.equal?(product2, product1)
+    end
 
     @tag :skip
     test "when prices differ, return false"

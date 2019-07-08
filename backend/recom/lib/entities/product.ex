@@ -20,4 +20,5 @@ defmodule Recom.Entities.Product do
 
   def equal?(nil, _), do: false
   def equal?(_, nil), do: false
+  def equal?(%__MODULE__{name: n1}, %__MODULE__{name: n2}) when n1 != n2, do: false
 end
