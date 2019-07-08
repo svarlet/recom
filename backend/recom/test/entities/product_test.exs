@@ -105,8 +105,15 @@ defmodule Recom.Entities.ProductTest do
       refute Product.equal?(context.different_product, context.product)
     end
 
-    @tag :skip
-    test "when intervals differ, return false"
+    test "when intervals differ, return false", context do
+      different_product = %Product{
+        context.product
+        | time_span: Interval.new(from: Timex.shift(Timex.now(), days: 1), until: [days: 1])
+      }
+
+      refute Product.equal?(context.product, different_product)
+      refute Product.equal?(different_product, context.product)
+    end
 
     @tag :skip
     test "when prices, quantities, names and intervals are equal, return true"

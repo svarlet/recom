@@ -23,4 +23,8 @@ defmodule Recom.Entities.Product do
   def equal?(%__MODULE__{name: n1}, %__MODULE__{name: n2}) when n1 != n2, do: false
   def equal?(%__MODULE__{price: p1}, %__MODULE__{price: p2}) when p1 != p2, do: false
   def equal?(%__MODULE__{quantity: q1}, %__MODULE__{quantity: q2}) when q1 != q2, do: false
+
+  def equal?(%__MODULE__{time_span: ts1}, %__MODULE__{time_span: ts2}) do
+    Interval.contains?(ts1, ts2) && Interval.contains?(ts2, ts1)
+  end
 end
