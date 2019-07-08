@@ -91,7 +91,8 @@ defmodule Recom.Entities.ProductTest do
     end
 
     test "when prices differ, return false", context do
-      product2 = %Product{context.product | price: context.product.price + 1}
+      product2 = %Product{context.product | price: 45}
+
       refute Product.equal?(context.product, product2)
       refute Product.equal?(product2, context.product)
     end
