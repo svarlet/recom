@@ -26,13 +26,16 @@ defmodule Recom.Storage.PurchasablesGateway.DbAdapter do
 
   @impl true
   def store(product) do
-    %Storage.Product{
+    product_to_save = %Storage.Product{
       name: product.name,
       price: product.price,
       quantity: product.quantity,
       start: Timex.to_datetime(product.time_span.from, "Etc/UTC"),
       end: Timex.to_datetime(product.time_span.until, "Etc/UTC")
     }
-    |> Repo.insert()
+
+    {:ok, saved_product} = Repo.insert(product_to_save)
+
+    {:ok, DataMapper.convert(saved_product)}
   end
 end

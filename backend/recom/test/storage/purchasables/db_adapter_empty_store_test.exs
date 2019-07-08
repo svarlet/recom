@@ -42,7 +42,20 @@ defmodule Recom.Storage.PurchasablesGateway.DbAdapter_EmptyStoreTest do
       assert Interval.contains?(interval2, interval1)
     end
 
-    @tag :skip
-    test "it returns a product entity"
+    test "it returns a product entity" do
+      product =
+        Entities.Product.new(
+          name: "apples",
+          price: 145,
+          quantity: 1_000,
+          time_span:
+            Interval.new(
+              from: Timex.now(),
+              until: [days: 1]
+            )
+        )
+
+      assert {:ok, %Entities.Product{}} = DbAdapter.store(product)
+    end
   end
 end
