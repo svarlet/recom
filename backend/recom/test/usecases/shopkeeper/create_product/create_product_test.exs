@@ -59,7 +59,7 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
     test "it dispatches a warning notification"
   end
 
-  describe "semantically invalid request" do
+  describe "semantically invalid product" do
     test "it returns an error" do
       stub(CreateProduct.ProductValidatorDouble, :validate, fn :__invalid_request__ ->
         {:validation, :__a_validation_error__}
