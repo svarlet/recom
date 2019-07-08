@@ -99,8 +99,11 @@ defmodule Recom.Entities.ProductTest do
       refute Product.equal?(context.different_product, context.product)
     end
 
-    @tag :skip
-    test "when quantities differ, return false"
+    @tag quantity: 14
+    test "when quantities differ, return false", context do
+      refute Product.equal?(context.product, context.different_product)
+      refute Product.equal?(context.different_product, context.product)
+    end
 
     @tag :skip
     test "when intervals differ, return false"
