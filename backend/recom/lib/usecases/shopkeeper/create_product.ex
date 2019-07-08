@@ -64,9 +64,7 @@ defmodule Recom.Usecases.Shopkeeper.CreateProduct do
 
   def create(product, with_validator: validator, with_gateway: gateway) do
     with {:validation, []} <- validator.validate(product) do
-      case gateway.store(product) do
-        {:ok, product} -> {:ok, product}
-      end
+      {:ok, _product} = gateway.store(product)
     else
       {:validation, errors} -> {:error, {:validation, errors}}
     end
