@@ -27,3 +27,5 @@ recom_tmp-*.tar
 **/todos.org
 **/todos.org_archive
 **/.tool-versions
+
+**/.elixir_ls
