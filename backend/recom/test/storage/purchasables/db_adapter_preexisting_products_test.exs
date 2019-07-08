@@ -10,7 +10,7 @@ defmodule Recom.Storage.PurchasablesGateway_PreexistingProductsTest do
   alias Recom.Entities
 
   describe "store/1" do
-    test "it saves the product" do
+    setup do
       start = Timex.now()
       the_end = Timex.shift(start, days: 2)
 
@@ -22,11 +22,15 @@ defmodule Recom.Storage.PurchasablesGateway_PreexistingProductsTest do
         end: the_end
       })
 
+      %{start: start, end: the_end}
+    end
+
+    test "it saves the product", context do
       product_to_save = %Entities.Product{
         name: "Orange Juice",
         quantity: 232,
         price: 123,
-        time_span: Interval.new(from: start, until: the_end)
+        time_span: Interval.new(from: context.start, until: context.end)
       }
 
       DbAdapter.store(product_to_save)
@@ -38,9 +42,12 @@ defmodule Recom.Storage.PurchasablesGateway_PreexistingProductsTest do
       assert orange_juice.name == "Orange Juice"
       assert orange_juice.price == 123
       assert orange_juice.quantity == 232
-      assert orange_juice.start == start
-      assert orange_juice.end == the_end
+      assert orange_juice.start == context.start
+      assert orange_juice.end == context.end
     end
+
+    @tag :skip
+    test "it returns a product entity"
 
     @tag :skip
     test "given a duplicate, it returns an error"
