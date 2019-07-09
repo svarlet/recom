@@ -25,25 +25,23 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
         |> Enum.map(fn {key, value} -> {to_string(key), value} end)
         |> Enum.into(%{})
 
-      %{invalid_payload: Map.merge(valid_payload, overrides)}
+      invalid_payload = Map.merge(valid_payload, overrides)
+
+      response =
+        Plug.Test.conn(:post, "/create_product", invalid_payload)
+        |> CreateProductController.create_product(with_usecase: nil)
+
+      %{response: response}
     end
 
     @tag name: 1
     test "it sends a response", context do
-      response =
-        Plug.Test.conn(:post, "/create_product", context.invalid_payload)
-        |> CreateProductController.create_product(with_usecase: nil)
-
-      assert response.state == :sent
+      assert context.response.state == :sent
     end
 
     @tag name: 1
     test "when the name is not a string, it responds with a 422 status code", context do
-      response =
-        Plug.Test.conn(:post, "/create_product", context.invalid_payload)
-        |> CreateProductController.create_product(with_usecase: nil)
-
-      assert response.status == 422
+      assert context.response.status == 422
     end
 
     @tag :skip
