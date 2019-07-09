@@ -68,6 +68,11 @@ defmodule Recom.Usecases.Shopkeeper do
   end
 
   defmodule CreateProduct do
+    defmodule Behaviour do
+      @type result :: {:ok, Product.t()} | {:error, :duplicate_product} | :error
+      @callback create(Product.t()) :: result
+    end
+
     def create(product, with_validator: validator, with_gateway: gateway, with_notifier: notifier) do
       with {:validation, []} <- validator.validate(product),
            {:ok, product} <- gateway.store(product),
