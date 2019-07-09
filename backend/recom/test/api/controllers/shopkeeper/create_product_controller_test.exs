@@ -10,27 +10,37 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
   alias Recom.Api.Shopkeeper.CreateProductController
 
   describe "http payload fails syntaxic validation" do
-    test "it sends a response" do
-      invalid_payload = %{}
+    setup context do
+      valid_payload = %{
+        "name" => "Orange Juice with bits",
+        "quantity" => 2_000,
+        "price" => 345,
+        "start" => "2019-07-08T12:13:03.104019Z",
+        "end" => "2019-07-11T12:13:03.104019Z"
+      }
 
+      overrides =
+        context
+        |> Map.take(~w{name quantity price start end}a)
+        |> Enum.map(fn {key, value} -> {to_string(key), value} end)
+        |> Enum.into(%{})
+
+      %{invalid_payload: Map.merge(valid_payload, overrides)}
+    end
+
+    @tag name: 1
+    test "it sends a response", context do
       response =
-        Plug.Test.conn(:post, "/create_product", invalid_payload)
+        Plug.Test.conn(:post, "/create_product", context.invalid_payload)
         |> CreateProductController.create_product(with_usecase: nil)
 
       assert response.state == :sent
     end
 
-    test "when the name is not a string, it responds with a 422 status code" do
-      invalid_payload = %{
-        "name" => 1,
-        "quantity" => 2,
-        "price" => 3,
-        "start" => "2019-07-08T12:13:03.104019Z",
-        "end" => "2019-07-10T12:13:03.104019Z"
-      }
-
+    @tag name: 1
+    test "when the name is not a string, it responds with a 422 status code", context do
       response =
-        Plug.Test.conn(:post, "/create_product", invalid_payload)
+        Plug.Test.conn(:post, "/create_product", context.invalid_payload)
         |> CreateProductController.create_product(with_usecase: nil)
 
       assert response.status == 422
