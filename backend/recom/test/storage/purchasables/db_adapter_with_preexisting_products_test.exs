@@ -1,4 +1,4 @@
-defmodule Recom.Storage.PurchasablesGateway_PreexistingProductsTest do
+defmodule Recom.Storage.PurchasablesGateway_WithPreexistingProductsTest do
   use Recom.Storage.DataCase
   use Timex
 
@@ -54,19 +54,10 @@ defmodule Recom.Storage.PurchasablesGateway_PreexistingProductsTest do
         time_span: Interval.new(from: context.start, until: context.end)
       }
 
-      assert {:ok, %Entities.Product{} = product} = DbAdapter.store(product_to_save)
-      assert product.name == product_to_save.name
-      assert product.quantity == product_to_save.quantity
-      assert product.price == product_to_save.price
-      assert_equal_interval(product.time_span, product_to_save.time_span)
+      assert {:ok, product} = DbAdapter.store(product_to_save)
+      assert Entities.Product.equals?(product, product_to_save)
     end
 
-    defp assert_equal_interval(interval1, interval2) do
-      assert Interval.contains?(interval1, interval2)
-      assert Interval.contains?(interval2, interval1)
-    end
-
-    @tag :skip
     test "given a duplicate, it returns an error"
   end
 end
