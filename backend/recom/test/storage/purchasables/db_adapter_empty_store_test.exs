@@ -47,7 +47,8 @@ defmodule Recom.Storage.PurchasablesGateway.DbAdapter_EmptyStoreTest do
     end
 
     test "it returns a product entity", context do
-      assert {:ok, %Entities.Product{}} = DbAdapter.store(context.product)
+      assert {:ok, %Entities.Product{} = product} = DbAdapter.store(context.product)
+      assert Entities.Product.equals?(product, context.product)
     end
   end
 end
