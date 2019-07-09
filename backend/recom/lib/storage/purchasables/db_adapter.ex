@@ -9,7 +9,6 @@ defmodule Recom.Storage.PurchasablesGateway.DbAdapter do
   alias Recom.Repo
   alias Recom.Storage
   alias Recom.Storage.PurchasablesGateway.DataMapper
-  alias Ecto.Changeset
 
   @impl true
   def all(instant) do
@@ -42,10 +41,14 @@ defmodule Recom.Storage.PurchasablesGateway.DbAdapter do
       {:ok, saved_product} ->
         {:ok, DataMapper.convert(saved_product)}
 
-      {:error, %Changeset{errors: errors}} ->
-        if Enum.any?(errors, fn {:name, {_, [{:constraint, :unique} | _]}} -> true end) do
+      {:error, changeset} ->
+        if unique_constraint_violation?(changeset, on: :name) do
           {:error, :duplicate_product}
         end
     end
+  end
+
+  defp unique_constraint_violation?(changeset, on: key) do
+    Enum.any?(changeset.errors, fn {^key, {_, [{:constraint, :unique} | _]}} -> true end)
   end
 end
