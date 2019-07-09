@@ -1,6 +1,6 @@
 defmodule Recom.Api.Shopkeeper.CreateProductController do
   def create_product(conn, _) do
-    Plug.Conn.send_resp(conn, 200, "")
+    Plug.Conn.send_resp(conn, 422, "")
   end
 end
 
@@ -20,8 +20,21 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
       assert response.state == :sent
     end
 
-    @tag :skip
-    test "when the name is not a string, it responds with a 422 status code"
+    test "when the name is not a string, it responds with a 422 status code" do
+      invalid_payload = %{
+        "name" => 1,
+        "quantity" => 2,
+        "price" => 3,
+        "start" => "2019-07-08T12:13:03.104019Z",
+        "end" => "2019-07-10T12:13:03.104019Z"
+      }
+
+      response =
+        Plug.Test.conn(:post, "/create_product", invalid_payload)
+        |> CreateProductController.create_product(with_usecase: nil)
+
+      assert response.status == 422
+    end
 
     @tag :skip
     test "when the name is missing, it responds with a 422 status code"
