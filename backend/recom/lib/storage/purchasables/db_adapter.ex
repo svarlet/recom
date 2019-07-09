@@ -34,17 +34,21 @@ defmodule Recom.Storage.PurchasablesGateway.DbAdapter do
       end: Timex.to_datetime(product.time_span.until, "Etc/UTC")
     }
 
-    %Storage.Product{}
-    |> Storage.Product.changeset(record_properties)
-    |> Repo.insert()
-    |> case do
-      {:ok, saved_product} ->
-        {:ok, DataMapper.convert(saved_product)}
+    try do
+      %Storage.Product{}
+      |> Storage.Product.changeset(record_properties)
+      |> Repo.insert()
+      |> case do
+        {:ok, saved_product} ->
+          {:ok, DataMapper.convert(saved_product)}
 
-      {:error, changeset} ->
-        if unique_constraint_violation?(changeset, on: :name) do
-          {:error, :duplicate_product}
-        end
+        {:error, changeset} ->
+          if unique_constraint_violation?(changeset, on: :name) do
+            {:error, :duplicate_product}
+          end
+      end
+    rescue
+      _ -> :error
     end
   end
 
