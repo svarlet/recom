@@ -66,7 +66,7 @@ defmodule Recom.Entities.ProductTest do
     end
   end
 
-  describe "equal?/2" do
+  describe "equals?/2" do
     setup context do
       product = %Product{
         name: "name",
@@ -83,26 +83,26 @@ defmodule Recom.Entities.ProductTest do
     end
 
     test "when either is nil, return true", context do
-      refute Product.equal?(nil, context.product)
-      refute Product.equal?(context.product, nil)
+      refute Product.equals?(nil, context.product)
+      refute Product.equals?(context.product, nil)
     end
 
     @tag name: "different name"
     test "when names differ, return false", context do
-      refute Product.equal?(context.product, context.different_product)
-      refute Product.equal?(context.different_product, context.product)
+      refute Product.equals?(context.product, context.different_product)
+      refute Product.equals?(context.different_product, context.product)
     end
 
     @tag price: 45
     test "when prices differ, return false", context do
-      refute Product.equal?(context.product, context.different_product)
-      refute Product.equal?(context.different_product, context.product)
+      refute Product.equals?(context.product, context.different_product)
+      refute Product.equals?(context.different_product, context.product)
     end
 
     @tag quantity: 14
     test "when quantities differ, return false", context do
-      refute Product.equal?(context.product, context.different_product)
-      refute Product.equal?(context.different_product, context.product)
+      refute Product.equals?(context.product, context.different_product)
+      refute Product.equals?(context.different_product, context.product)
     end
 
     test "when intervals differ, return false", context do
@@ -111,12 +111,12 @@ defmodule Recom.Entities.ProductTest do
         | time_span: Interval.new(from: Timex.shift(Timex.now(), days: 1), until: [days: 1])
       }
 
-      refute Product.equal?(context.product, different_product)
-      refute Product.equal?(different_product, context.product)
+      refute Product.equals?(context.product, different_product)
+      refute Product.equals?(different_product, context.product)
     end
 
     test "when prices, quantities, names and intervals are equal, return true", context do
-      assert Product.equal?(context.product, context.product)
+      assert Product.equals?(context.product, context.product)
     end
   end
 end
