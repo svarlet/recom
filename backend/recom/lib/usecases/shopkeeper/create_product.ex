@@ -3,7 +3,7 @@ defmodule Recom.Usecases.Shopkeeper do
 
   defmodule ProductsGateway do
     @callback store(Entities.Product.t()) ::
-                {:ok, Entities.Product.t()} | {:error, :duplicate_product}
+                {:ok, Entities.Product.t()} | {:error, :duplicate_product} | :error
   end
 
   defmodule ProductValidatorBehaviour do
@@ -76,6 +76,7 @@ defmodule Recom.Usecases.Shopkeeper do
       else
         {:validation, errors} -> {:error, {:validation, errors}}
         {:error, :duplicate_product} -> {:error, :duplicate_product}
+        :error -> :error
       end
     end
   end

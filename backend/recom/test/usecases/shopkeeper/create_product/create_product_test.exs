@@ -86,4 +86,21 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
       assert {:error, {:validation, :__a_validation_error__}} == result
     end
   end
+
+  describe "handling of a gateway failure" do
+    test "it returns an error" do
+      stub(Shopkeeper.ProductValidatorDouble, :validate, fn :__valid_product__ ->
+        {:validation, []}
+      end)
+
+      stub(Shopkeeper.ProductsGatewayDouble, :store, fn :__valid_product__ -> :error end)
+
+      assert :error ==
+               Shopkeeper.CreateProduct.create(:__valid_product__,
+                 with_validator: Shopkeeper.ProductValidatorDouble,
+                 with_gateway: Shopkeeper.ProductsGatewayDouble,
+                 with_notifier: nil
+               )
+    end
+  end
 end
