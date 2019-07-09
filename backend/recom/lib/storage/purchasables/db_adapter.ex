@@ -9,6 +9,7 @@ defmodule Recom.Storage.PurchasablesGateway.DbAdapter do
   alias Recom.Repo
   alias Recom.Storage
   alias Recom.Storage.PurchasablesGateway.DataMapper
+  alias Ecto.Changeset
 
   @impl true
   def all(instant) do
@@ -26,7 +27,7 @@ defmodule Recom.Storage.PurchasablesGateway.DbAdapter do
 
   @impl true
   def store(product) do
-    product_to_save = %Storage.Product{
+    record_properties = %{
       name: product.name,
       price: product.price,
       quantity: product.quantity,
@@ -34,8 +35,17 @@ defmodule Recom.Storage.PurchasablesGateway.DbAdapter do
       end: Timex.to_datetime(product.time_span.until, "Etc/UTC")
     }
 
-    {:ok, saved_product} = Repo.insert(product_to_save)
+    %Storage.Product{}
+    |> Storage.Product.changeset(record_properties)
+    |> Repo.insert()
+    |> case do
+      {:ok, saved_product} ->
+        {:ok, DataMapper.convert(saved_product)}
 
-    {:ok, DataMapper.convert(saved_product)}
+      {:error, %Changeset{errors: errors}} ->
+        if Enum.any?(errors, fn {:name, {_, [{:constraint, :unique} | _]}} -> true end) do
+          {:error, :duplicate_product}
+        end
+    end
   end
 end

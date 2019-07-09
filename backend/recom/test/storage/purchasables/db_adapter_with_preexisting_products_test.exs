@@ -6,7 +6,7 @@ defmodule Recom.Storage.PurchasablesGateway_WithPreexistingProductsTest do
 
   alias Recom.Repo
   alias Recom.Storage
-  alias Recom.Storage.PurchasablesGateway.DbAdapter
+  alias Recom.Storage.PurchasablesGateway.{DataMapper, DbAdapter}
   alias Recom.Entities
 
   describe "store/1" do
@@ -14,15 +14,17 @@ defmodule Recom.Storage.PurchasablesGateway_WithPreexistingProductsTest do
       start = Timex.now()
       the_end = Timex.shift(start, days: 2)
 
-      Repo.insert(%Storage.Product{
+      product = %Storage.Product{
         name: "preexisting product",
         price: 123,
         quantity: 232,
         start: start,
         end: the_end
-      })
+      }
 
-      %{start: start, end: the_end}
+      Repo.insert(product)
+
+      %{preexisting_product_record: product, start: start, end: the_end}
     end
 
     test "it saves the product", context do
@@ -58,6 +60,11 @@ defmodule Recom.Storage.PurchasablesGateway_WithPreexistingProductsTest do
       assert Entities.Product.equals?(product, product_to_save)
     end
 
-    test "given a duplicate, it returns an error"
+    test "given a duplicate, it returns an error", context do
+      assert {:error, :duplicate_product} ==
+               context.preexisting_product_record
+               |> DataMapper.convert()
+               |> DbAdapter.store()
+    end
   end
 end
