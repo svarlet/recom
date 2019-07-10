@@ -6,26 +6,17 @@ jobs:
   build:
     parallelism: 1
     docker:
-      # specify the version here
       - image: circleci/elixir:1.9
-        environment:  # environment variables for primary container
+        environment:
           MIX_ENV: test
-      - image: circleci/postgres:10.1-alpine  # database image
-        environment:  # environment variables for database
+      - image: circleci/postgres:10.1-alpine
+        environment:
           POSTGRES_USER: postgres
           POSTGRES_DB: recom_repo
           POSTGRES_PASSWORD: password
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/postgres:9.4
-
     working_directory: ~/app
     steps:
       - checkout
-
-      # specify any bash command here prefixed with `run: `
       - run:
           name: Install Hex
           command: mix local.hex --force
@@ -46,11 +37,11 @@ jobs:
           name: Compile the project
           command: mix compile
           working_directory: backend/recom
-      # - restore_cache:
-      #     name: restore dependencies from cache
-      #     key: recom-deps-cache-{{ checksum "mix.lock" }}
-
-      - run:  # special utility that stalls main process until DB is ready
+      - restore_cache:
+          name: restore dependencies from cache
+          key: recom-cache-{{ checksum "mix.lock" }}
+          working_directory: backend/recom
+      - run:
           name: Wait for DB
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
       - run:
@@ -68,11 +59,10 @@ jobs:
           name: Run the tests
           command: mix test
           working_directory: backend/recom
-      # - save_cache:
-      #     name: cache dependencies
-      #     key: recom-deps-cache-{{ checksum "mix.lock" }}
-      #     paths:
-      #       - deps
-      #       - _build
-      # - run:
-      #     echo "Job done!"
+      - save_cache:
+          name: Cache dependencies
+          key: recom-cache-{{ checksum "mix.lock" }}
+          working_directory: backend/recom
+          paths:
+            - deps
+            - _build
