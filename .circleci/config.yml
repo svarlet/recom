@@ -33,6 +33,8 @@ jobs:
           command: mix deps.get
           working_directory: backend/recom
       - run:
+          command: env
+      - run:
           name: Compile dependencies
           command: mix deps.compile
           working_directory: backend/recom
