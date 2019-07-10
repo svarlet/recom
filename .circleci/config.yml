@@ -33,8 +33,6 @@ jobs:
           command: mix deps.get
           working_directory: backend/recom
       - run:
-          command: env
-      - run:
           name: Compile dependencies
           command: mix deps.compile
           working_directory: backend/recom
@@ -48,10 +46,6 @@ jobs:
       - run:
           name: Add docker host entry to enable ecto to connect to postgres
           command: echo 127.0.0.1 docker | sudo tee -a /etc/hosts
-      - run:
-          name: Create the database
-          command: mix ecto.create
-          working_directory: backend/recom
       - run:
           name: Migrate the database
           command: mix ecto.migrate
