@@ -57,6 +57,14 @@ jobs:
           name: Add docker host entry to enable ecto to connect to postgres
           command: echo 127.0.0.1 docker | sudo tee -a /etc/hosts
       - run:
+          name: Create the database
+          command: mix ecto.create
+          working_directory: backend/recom
+      - run:
+          name: Migrate the database
+          command: mix ecto.migrate
+          working_directory: backend/recom
+      - run:
           name: Run the tests
           command: mix test
           working_directory: backend/recom
