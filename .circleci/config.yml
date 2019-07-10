@@ -27,7 +27,7 @@ jobs:
           working_directory: backend/recom
       - restore_cache:
           name: restore dependencies from cache
-          key: recom-cache-{{ checksum "mix.lock" }}
+          key: recom-cache-{{ checksum "backend/recom/mix.lock" }}
       - run:
           name: Fetch mix dependencies
           command: mix deps.get
@@ -60,7 +60,7 @@ jobs:
           working_directory: backend/recom
       - save_cache:
           name: Cache dependencies
-          key: recom-cache-{{ checksum "mix.lock" }}
+          key: recom-cache-{{ checksum "backend/recom/mix.lock" }}
           paths:
             - backend/recom/deps
             - backend/recom/_build
