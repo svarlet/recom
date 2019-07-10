@@ -25,6 +25,9 @@ jobs:
           name: Install Rebar
           command: mix local.rebar --force
           working_directory: backend/recom
+      - restore_cache:
+          name: restore dependencies from cache
+          key: recom-cache-{{ checksum "mix.lock" }}
       - run:
           name: Fetch mix dependencies
           command: mix deps.get
@@ -36,10 +39,6 @@ jobs:
       - run:
           name: Compile the project
           command: mix compile
-          working_directory: backend/recom
-      - restore_cache:
-          name: restore dependencies from cache
-          key: recom-cache-{{ checksum "mix.lock" }}
           working_directory: backend/recom
       - run:
           name: Wait for DB
@@ -62,7 +61,6 @@ jobs:
       - save_cache:
           name: Cache dependencies
           key: recom-cache-{{ checksum "mix.lock" }}
-          working_directory: backend/recom
           paths:
-            - deps
-            - _build
+            - backend/recom/deps
+            - backend/recom/_build
