@@ -26,11 +26,26 @@ jobs:
       - checkout
 
       # specify any bash command here prefixed with `run: `
-      - run: mix local.hex --force
-      - run: mix local.rebar --force
-      - run: mix deps.get
-      - run: mix deps.compile
-      - run: mix compile
+      - run:
+          name: Install Hex
+          command: mix local.hex --force
+          working_directory: backend/recom
+      - run:
+          name: Install Rebar
+          command: mix local.rebar --force
+          working_directory: backend/recom
+      - run:
+          name: Fetch mix dependencies
+          command: mix deps.get
+          working_directory: backend/recom
+      - run:
+          name: Compile dependencies
+          command: mix deps.compile
+          working_directory: backend/recom
+      - run:
+          name: Compile the project
+          command: mix compile
+          working_directory: backend/recom
       # - restore_cache:
       #     name: restore dependencies from cache
       #     key: recom-deps-cache-{{ checksum "mix.lock" }}
@@ -39,7 +54,7 @@ jobs:
           name: Wait for DB
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
       - run:
-          name: add docker host entry to enable ecto to connect to postgres
+          name: Add docker host entry to enable ecto to connect to postgres
           command: echo 127.0.0.1 docker | tee -a /etc/hosts
       - run:
           name: Run the tests
