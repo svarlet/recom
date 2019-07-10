@@ -9,7 +9,7 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
 
   alias Recom.Api.Shopkeeper.CreateProductController
 
-  describe "http payload fails syntaxic validation" do
+  describe "http payload fails validation" do
     setup context do
       valid_payload = %{
         "name" => "Orange Juice with bits",
@@ -74,17 +74,6 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
     test "when the end date is missing, it responds with a 422 status code"
   end
 
-  describe "http payload fails semantic validation" do
-    @tag :skip
-    test "it responds with a 422 status code"
-
-    @tag :skip
-    test "it sets the content type of the response to application/json"
-
-    @tag :skip
-    test "it puts the validation errors in the body of the response as a json document"
-  end
-
   describe "valid request" do
     @tag :skip
     test "it delegates the creation to the usecase"
@@ -96,6 +85,12 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
   describe "duplicate product" do
     @tag :skip
     test "it responds with a 409 status code"
+
+    @tag :skip
+    test "it sets the content type of the response to application/json"
+
+    @tag :skip
+    test "it informs the product is a duplicate in the body"
   end
 
   describe "failed creation of the product" do

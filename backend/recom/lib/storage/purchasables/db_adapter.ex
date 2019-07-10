@@ -1,4 +1,5 @@
 defmodule Recom.Storage.PurchasablesGateway.DbAdapter do
+  # TODO: split this module, move store/1 to a ProductGateway otherwise it's confusing
   @behaviour Recom.Usecases.Shopper.PurchasablesGateway
   @behaviour Recom.Usecases.Shopkeeper.ProductsGateway
 
