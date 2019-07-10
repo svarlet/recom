@@ -55,7 +55,7 @@ jobs:
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
       - run:
           name: Add docker host entry to enable ecto to connect to postgres
-          command: echo 127.0.0.1 docker | tee -a /etc/hosts
+          command: echo 127.0.0.1 docker | sudo tee -a /etc/hosts
       - run:
           name: Run the tests
           command: mix test
