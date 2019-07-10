@@ -29,6 +29,9 @@ jobs:
           name: restore dependencies from cache
           key: recom-cache-{{ checksum "backend/recom/mix.lock" }}
       - run:
+          name: "Check restored deps"
+          command: find .
+      - run:
           name: Fetch mix dependencies
           command: mix deps.get
           working_directory: backend/recom
