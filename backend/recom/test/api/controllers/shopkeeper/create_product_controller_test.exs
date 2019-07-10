@@ -35,12 +35,8 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
     end
 
     @tag name: 1
-    test "it sends a response", context do
-      assert context.response.state == :sent
-    end
-
-    @tag name: 1
     test "when the name is not a string, it responds with a 422 status code", context do
+      assert context.response.state == :sent
       assert context.response.status == 422
     end
 
