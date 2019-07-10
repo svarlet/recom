@@ -14,10 +14,10 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
     test "it responds with a 400 status code and"
 
     @tag :skip
-    test "it sets the body with an informative error formatted as a json document" do
+    test "it sets the body with an informative error formatted as a json document"
 
     @tag :skip
-    test "it sets the content type header to application/json" do
+    test "it sets the content type header to application/json"
   end
 
   describe "JSON payload has invalid or missing fields" do
