@@ -43,7 +43,7 @@ jobs:
           command: echo 127.0.0.1 docker | tee -a /etc/hosts
       - run:
           name: Run the tests
-          comand: mix test
+          command: mix test
           working_directory: backend/recom
       # - save_cache:
       #     name: cache dependencies
