@@ -9,7 +9,18 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
 
   alias Recom.Api.Shopkeeper.CreateProductController
 
-  describe "http payload fails validation" do
+  describe "http payload is not a json document" do
+    @tag :skip
+    test "it responds with a 400 status code and"
+
+    @tag :skip
+    test "it sets the body with an informative error formatted as a json document" do
+
+    @tag :skip
+    test "it sets the content type header to application/json" do
+  end
+
+  describe "JSON payload has invalid or missing fields" do
     setup context do
       valid_payload = %{
         "name" => "Orange Juice with bits",
@@ -69,7 +80,7 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
     test "when the end date is missing, it responds with a 422 status code"
   end
 
-  describe "valid request" do
+  describe "JSON payload describes a valid product" do
     @tag :skip
     test "it delegates the creation to the usecase"
 
@@ -77,7 +88,7 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
     test "it responds with a 201"
   end
 
-  describe "duplicate product" do
+  describe "JSON payload describe an already existing product" do
     @tag :skip
     test "it responds with a 409 status code"
 
@@ -88,7 +99,7 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
     test "it informs the product is a duplicate in the body"
   end
 
-  describe "failed creation of the product" do
+  describe "Unsuccessful creation of the product" do
     @tag :skip
     test "it responds with a 500"
   end
