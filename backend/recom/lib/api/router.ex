@@ -3,10 +3,14 @@ defmodule Recom.Api.Router do
 
   alias Recom.CompositionRoot
 
-  plug :match
-  plug :dispatch
+  if Mix.env() == :dev do
+    use Plug.Debugger
+  end
 
-  get "/purchasables", to: CompositionRoot.Shopper.ListPurchasablesController
+  plug(:match)
+  plug(:dispatch)
+
+  get("/purchasables", to: CompositionRoot.Shopper.ListPurchasablesController)
 
   match _ do
     send_resp(conn, 404, "oops, not found")
