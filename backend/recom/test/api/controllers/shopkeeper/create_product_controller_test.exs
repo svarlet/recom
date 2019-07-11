@@ -9,17 +9,6 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
 
   alias Recom.Api.Shopkeeper.CreateProductController
 
-  describe "http payload is not a json document" do
-    @tag :skip
-    test "it responds with a 400 status code and"
-
-    @tag :skip
-    test "it sets the body with an informative error formatted as a json document"
-
-    @tag :skip
-    test "it sets the content type header to application/json"
-  end
-
   describe "JSON payload has invalid or missing fields" do
     setup context do
       valid_payload = %{
