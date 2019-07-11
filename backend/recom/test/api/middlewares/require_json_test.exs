@@ -11,6 +11,8 @@ defmodule Recom.Middlewares.RequireJsonTest do
       |> put_req_header("content-type", "application/json")
       |> Middlewares.RequireJson.call(nil)
 
+    assert response.state == :sent
+    assert response.status == 400
     assert response.status == 400
     assert ["application/json"] == get_req_header(response, "content-type")
 
