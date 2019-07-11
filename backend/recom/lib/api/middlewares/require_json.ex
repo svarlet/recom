@@ -8,12 +8,10 @@ defmodule Recom.Middlewares.RequireJson do
   end
 
   def call(conn, _) do
-    {:ok, body, conn} = Plug.Conn.read_body(conn)
-
-    case Jason.decode(body) do
-      {:ok, object} ->
-        %Plug.Conn{conn | body_params: object}
-
+    with {:ok, body, conn} <- Plug.Conn.read_body(conn),
+         {:ok, object} <- Jason.decode(body) do
+      %Plug.Conn{conn | body_params: object}
+    else
       {:error, _} ->
         send_resp(conn, 400, ~s"""
         {
