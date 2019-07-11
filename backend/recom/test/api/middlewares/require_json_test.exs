@@ -13,11 +13,26 @@ defmodule Recom.Middlewares.RequireJsonTest do
 
     assert response.state == :sent
     assert response.status == 400
-    assert response.status == 400
     assert ["application/json"] == get_req_header(response, "content-type")
 
     assert Jason.decode!(response.resp_body) == %{
              "message" => "JSON parsing error"
            }
+  end
+
+  test "a request with a well formed JSON" do
+    conn =
+      Plug.Test.conn(:get, "/irrelevant", ~S"""
+      {
+        "name": "Victor Hugo",
+        "profession": "Writer"
+      }
+      """)
+      |> put_req_header("content-type", "application/json")
+
+    conn = Middlewares.RequireJson.call(conn, nil)
+
+    assert conn.body_params["name"] == "Victor Hugo"
+    assert conn.body_params["profession"] == "Writer"
   end
 end
