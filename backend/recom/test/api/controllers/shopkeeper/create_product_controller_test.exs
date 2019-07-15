@@ -14,6 +14,8 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
   use ExUnit.Case, async: true
 
   import Mox
+  import Plug.Test, only: [conn: 3]
+  import Plug.Conn, only: [get_resp_header: 2]
 
   setup :verify_on_exit!
 
@@ -35,7 +37,7 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
       %{
         response:
           :post
-          |> Plug.Test.conn("/create_product", invalid_payload)
+          |> conn("/create_product", invalid_payload)
           |> CreateProductController.create_product(
             with_scanner: CreateProductPayloadScanner.Stub,
             with_usecase: nil,
@@ -50,7 +52,7 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
 
     test "it sets the response content-type to application/json", context do
       assert ["application/json"] ==
-               Plug.Conn.get_resp_header(context.response, "content-type")
+               get_resp_header(context.response, "content-type")
     end
 
     test "it delegates the creation of the response body to the presenter", context do
