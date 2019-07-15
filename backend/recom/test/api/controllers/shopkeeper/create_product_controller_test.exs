@@ -25,24 +25,36 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
   defmock(CreateProductPayloadScanner.Stub, for: CreateProductPayloadScanner)
   defmock(CreateProductPresenter.Stub, for: CreateProductPresenter)
 
-  test "invalid json payload" do
-    stub(CreateProductPayloadScanner.Stub, :scan, fn _ -> %ScanningError{} end)
-    stub(CreateProductPresenter.Stub, :present, fn _ -> "the body" end)
+  describe "invalid json payload" do
+    setup do
+      stub(CreateProductPayloadScanner.Stub, :scan, fn _ -> %ScanningError{} end)
+      stub(CreateProductPresenter.Stub, :present, fn _ -> "the body" end)
 
-    invalid_payload = %{irrelevant_field: 0}
+      invalid_payload = %{irrelevant_field: 0}
 
-    {status, headers, body} =
-      :post
-      |> Plug.Test.conn("/create_product", invalid_payload)
-      |> CreateProductController.create_product(
-        with_scanner: CreateProductPayloadScanner.Stub,
-        with_usecase: nil,
-        with_presenter: CreateProductPresenter.Stub
-      )
-      |> Plug.Test.sent_resp()
+      %{
+        response:
+          :post
+          |> Plug.Test.conn("/create_product", invalid_payload)
+          |> CreateProductController.create_product(
+            with_scanner: CreateProductPayloadScanner.Stub,
+            with_usecase: nil,
+            with_presenter: CreateProductPresenter.Stub
+          )
+      }
+    end
 
-    assert status == 422
-    assert {"content-type", "application/json"} in headers
-    assert body == "the body"
+    test "it sets the status to 422", context do
+      assert context.response.status == 422
+    end
+
+    test "it sets the response content-type to application/json", context do
+      assert ["application/json"] ==
+               Plug.Conn.get_resp_header(context.response, "content-type")
+    end
+
+    test "it delegates the creation of the response body to the presenter", context do
+      assert context.response.resp_body == "the body"
+    end
   end
 end
