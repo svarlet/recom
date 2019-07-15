@@ -7,6 +7,6 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScanner do
 
   def call(conn, _) do
     conn
-    |> send_resp(123, "")
+    |> send_resp(422, "")
   end
 end

@@ -13,5 +13,13 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScannerTest do
 
       assert response.state == :sent
     end
+
+    test "it sets the status of the reponse to 422" do
+      response =
+        conn(:post, "/create_product", %{"wrong" => "field"})
+        |> ProductScanner.call(nil)
+
+      assert response.status == 422
+    end
   end
 end
