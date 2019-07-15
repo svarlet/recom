@@ -21,5 +21,9 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScannerTest do
     test "it sets the status of the reponse to 422", context do
       assert context.response.state == :sent
     end
+
+    test "it sets the content-type to application/json", context do
+      assert Plug.Conn.get_resp_header(context.response, "content-type") == ["application/json"]
+    end
   end
 end

@@ -7,6 +7,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScanner do
 
   def call(conn, _) do
     conn
+    |> put_resp_header("content-type", "application/json")
     |> send_resp(422, "")
   end
 end
