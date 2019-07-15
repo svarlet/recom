@@ -17,19 +17,17 @@ defmodule Recom.Api.Shopkeeper.CreateProductController do
   alias Recom.Entities.Product
 
   def create_product(conn, with_scanner: scanner, with_usecase: usecase, with_presenter: presenter) do
-    body =
-      case scanner.scan(conn.params) do
-        %ScanningError{} = error ->
-          error
+    case scanner.scan(conn.params) do
+      %ScanningError{} = error ->
+        body = presenter.present(error)
 
-        %Product{} = product ->
-          {:ok, saved_product} = usecase.create(product)
-          saved_product
-      end
-      |> presenter.present()
+        conn
+        |> put_resp_header("content-type", "application/json")
+        |> send_resp(422, body)
 
-    conn
-    |> put_resp_header("content-type", "application/json")
-    |> send_resp(422, body)
+      %Product{} = product ->
+        {:ok, _saved_product} = usecase.create(product)
+        send_resp(conn, 201, "")
+    end
   end
 end
