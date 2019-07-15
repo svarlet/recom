@@ -74,7 +74,7 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
     setup %{product: product} do
       stub(CreateProductPayloadScanner.Stub, :scan, fn _ -> product end)
       expect(CreateProduct.Mock, :create, fn ^product -> {:ok, product} end)
-      stub(CreateProductPresenter.Stub, :present, fn _ -> "" end)
+      stub(CreateProductPresenter.Stub, :present, fn _ -> "empty body" end)
 
       %{
         deps: [
@@ -93,6 +93,14 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
         |> CreateProductController.create_product(context.deps)
 
       assert response.status == 201
+    end
+
+    test "it delegates the creation of the response body to the presenter", context do
+      response =
+        http_request(with_payload: context.payload)
+        |> CreateProductController.create_product(context.deps)
+
+      assert response.resp_body == "empty body"
     end
   end
 end

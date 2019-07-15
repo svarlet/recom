@@ -1,5 +1,5 @@
 defmodule Recom.Api.Shopkeeper.CreateProductPayloadScanner do
-  @callback scan(map()) :: ScanningError.t()
+  @callback scan(map()) :: ScanningError.t() | Product.t()
 
   defmodule ScanningError do
     defstruct [:message, :errors]
@@ -28,8 +28,14 @@ defmodule Recom.Api.Shopkeeper.CreateProductController do
       %Product{} = product ->
         # SMELL the saved product is not used, we can probably change
         # the usecase api to be :ok | :already_exists | :error
-        {:ok, _saved_product} = usecase.create(product)
-        send_resp(conn, 201, "")
+        # {:ok, _saved_product} = usecase.create(product)
+
+        body =
+          product
+          |> usecase.create()
+          |> presenter.present()
+
+        send_resp(conn, 201, body)
     end
   end
 end
