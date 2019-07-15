@@ -26,6 +26,8 @@ defmodule Recom.Api.Shopkeeper.CreateProductController do
         |> send_resp(422, body)
 
       %Product{} = product ->
+        # SMELL the saved product is not used, we can probably change
+        # the usecase api to be :ok | :already_exists | :error
         {:ok, _saved_product} = usecase.create(product)
         send_resp(conn, 201, "")
     end

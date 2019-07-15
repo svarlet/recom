@@ -71,14 +71,16 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
       }
     end
 
-    test "it delegates the creation of the product to the usecase", %{
-      new_product_payload: payload,
-      product: product
-    } do
+    setup %{product: product} do
       stub(CreateProductPayloadScanner.Stub, :scan, fn _ -> product end)
       expect(CreateProduct.Mock, :create, fn ^product -> {:ok, product} end)
       stub(CreateProductPresenter.Stub, :present, fn _ -> "" end)
+      :ok
+    end
 
+    test "it delegates the creation of the product to the usecase", %{
+      new_product_payload: payload
+    } do
       :post
       |> conn("/create_product", payload)
       |> CreateProductController.create_product(
@@ -88,11 +90,7 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
       )
     end
 
-    test "it sets the response status to 201", %{new_product_payload: payload, product: product} do
-      stub(CreateProductPayloadScanner.Stub, :scan, fn _ -> product end)
-      expect(CreateProduct.Mock, :create, fn ^product -> {:ok, product} end)
-      stub(CreateProductPresenter.Stub, :present, fn _ -> "" end)
-
+    test "it sets the response status to 201", %{new_product_payload: payload} do
       response =
         :post
         |> conn("/create_product", payload)
