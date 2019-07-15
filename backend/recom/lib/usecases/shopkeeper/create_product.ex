@@ -12,7 +12,7 @@ defmodule Recom.Usecases.Shopkeeper do
 
   defmodule CreateProduct do
     defmodule Behaviour do
-      @type result :: {:ok, Product.t()} | {:error, :duplicate_product} | :error
+      @type result :: {:ok, Product.t()} | :duplicate_product | :error
       @callback create(Product.t()) :: result
     end
 
@@ -21,7 +21,7 @@ defmodule Recom.Usecases.Shopkeeper do
            :ok <- notifier.notify_of_product_creation(product) do
         {:ok, product}
       else
-        {:error, :duplicate_product} -> {:error, :duplicate_product}
+        {:error, :duplicate_product} -> :duplicate_product
         :error -> :error
       end
     end

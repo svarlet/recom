@@ -51,7 +51,7 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
         {:error, :duplicate_product}
       end)
 
-      assert {:error, :duplicate_product} ==
+      assert :duplicate_product ==
                Shopkeeper.CreateProduct.create(:__duplicate_product__,
                  with_gateway: Shopkeeper.ProductsGatewayDouble,
                  with_notifier: nil
