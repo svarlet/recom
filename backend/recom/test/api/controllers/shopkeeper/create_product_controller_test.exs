@@ -75,28 +75,27 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
       stub(CreateProductPayloadScanner.Stub, :scan, fn _ -> product end)
       expect(CreateProduct.Mock, :create, fn ^product -> {:ok, product} end)
       stub(CreateProductPresenter.Stub, :present, fn _ -> "" end)
-      :ok
+
+      %{
+        deps: [
+          with_scanner: CreateProductPayloadScanner.Stub,
+          with_usecase: CreateProduct.Mock,
+          with_presenter: CreateProductPresenter.Stub
+        ]
+      }
     end
 
     defp http_request(with_payload: payload), do: conn(:post, "/create_product", payload)
 
     test "it delegates the creation of the product to the usecase", context do
       http_request(with_payload: context.payload)
-      |> CreateProductController.create_product(
-        with_scanner: CreateProductPayloadScanner.Stub,
-        with_usecase: CreateProduct.Mock,
-        with_presenter: CreateProductPresenter.Stub
-      )
+      |> CreateProductController.create_product(context.deps)
     end
 
     test "it sets the response status to 201", context do
       response =
         http_request(with_payload: context.payload)
-        |> CreateProductController.create_product(
-          with_scanner: CreateProductPayloadScanner.Stub,
-          with_usecase: CreateProduct.Mock,
-          with_presenter: CreateProductPresenter.Stub
-        )
+        |> CreateProductController.create_product(context.deps)
 
       assert response.status == 201
     end
