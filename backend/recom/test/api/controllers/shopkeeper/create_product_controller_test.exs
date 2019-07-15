@@ -77,7 +77,7 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
     } do
       stub(CreateProductPayloadScanner.Stub, :scan, fn _ -> product end)
       expect(CreateProduct.Mock, :create, fn ^product -> {:ok, product} end)
-      stub(CreateProductPresenter.Stub, :present, fn _ -> "irrelevant body" end)
+      stub(CreateProductPresenter.Stub, :present, fn _ -> "" end)
 
       :post
       |> conn("/create_product", payload)
@@ -91,7 +91,7 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
     test "it sets the response status to 201", %{new_product_payload: payload, product: product} do
       stub(CreateProductPayloadScanner.Stub, :scan, fn _ -> product end)
       expect(CreateProduct.Mock, :create, fn ^product -> {:ok, product} end)
-      stub(CreateProductPresenter.Stub, :present, fn _ -> "irrelevant body" end)
+      stub(CreateProductPresenter.Stub, :present, fn _ -> "" end)
 
       response =
         :post
