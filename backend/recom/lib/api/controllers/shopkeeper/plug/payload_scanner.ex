@@ -1,4 +1,4 @@
-defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScanner do
+defmodule Recom.Api.Shopkeeper.Plug.PayloadScanner do
   @behaviour Plug
 
   import Plug.Conn

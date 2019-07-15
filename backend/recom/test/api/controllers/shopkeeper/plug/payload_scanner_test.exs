@@ -1,10 +1,10 @@
-defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScannerTest do
+defmodule Recom.Api.Shopkeeper.Plug.PayloadScannerTest do
   use ExUnit.Case, async: true
   use Timex
 
   import Plug.Test, only: [conn: 3]
 
-  alias Recom.Api.Shopkeeper.CreateProduct.ProductScanner
+  alias Recom.Api.Shopkeeper.Plug.PayloadScanner
   alias Recom.Entities.Product
 
   defmodule AlwaysInvalidProductScanner do
@@ -16,7 +16,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScannerTest do
       [
         response:
           conn(:post, "/create_product", %{"wrong" => "field"})
-          |> ProductScanner.call(scanner: AlwaysInvalidProductScanner)
+          |> PayloadScanner.call(scanner: AlwaysInvalidProductScanner)
       ]
     end
 
@@ -71,7 +71,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScannerTest do
       [
         conn:
           conn(:post, "/create_product", payload)
-          |> ProductScanner.call(scanner: AlwaysSuccessfulProductScanner)
+          |> PayloadScanner.call(scanner: AlwaysSuccessfulProductScanner)
       ]
     end
 
