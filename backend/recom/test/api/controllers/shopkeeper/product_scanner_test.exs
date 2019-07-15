@@ -6,20 +6,20 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScannerTest do
   alias Recom.Api.Shopkeeper.CreateProduct.ProductScanner
 
   describe "given a request, when params don't represent a product" do
-    test "it sends a response" do
-      response =
-        conn(:post, "/create_product", %{"wrong" => "field"})
-        |> ProductScanner.call(nil)
-
-      assert response.state == :sent
+    setup do
+      [
+        response:
+          conn(:post, "/create_product", %{"wrong" => "field"})
+          |> ProductScanner.call(nil)
+      ]
     end
 
-    test "it sets the status of the reponse to 422" do
-      response =
-        conn(:post, "/create_product", %{"wrong" => "field"})
-        |> ProductScanner.call(nil)
+    test "it sends a response", context do
+      assert context.response.state == :sent
+    end
 
-      assert response.status == 422
+    test "it sets the status of the reponse to 422", context do
+      assert context.response.state == :sent
     end
   end
 end
