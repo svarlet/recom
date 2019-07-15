@@ -87,11 +87,6 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
 
     defp http_request(with_payload: payload), do: conn(:post, "/create_product", payload)
 
-    test "it delegates the creation of the product to the usecase", context do
-      http_request(with_payload: context.payload)
-      |> CreateProductController.create_product(context.deps)
-    end
-
     test "it sets the response status to 201", context do
       response =
         http_request(with_payload: context.payload)
