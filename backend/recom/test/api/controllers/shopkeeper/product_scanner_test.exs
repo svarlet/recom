@@ -5,12 +5,16 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScannerTest do
 
   alias Recom.Api.Shopkeeper.CreateProduct.ProductScanner
 
+  defmodule AlwaysInvalidProductScanner do
+    def scan(_payload), do: :error
+  end
+
   describe "given a request, when params don't represent a product" do
     setup do
       [
         response:
           conn(:post, "/create_product", %{"wrong" => "field"})
-          |> ProductScanner.call(nil)
+          |> ProductScanner.call(scanner: AlwaysInvalidProductScanner)
       ]
     end
 
@@ -32,6 +36,47 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScannerTest do
                "message": "Not a valid representation of a product"
              }
              """
+    end
+  end
+
+  defmodule AlwaysSuccessfulProductScanner do
+    use Timex
+
+    alias Recom.Entities.Product
+
+    def scan(_payload) do
+      %Product{
+        name: "Orange Juice 2L",
+        price: 1200,
+        quantity: 100_000,
+        time_span:
+          Interval.new(
+            from: ~U[2019-12-12 14:00:00.000000Z],
+            until: ~U[2019-12-14 14:00:00.000000Z]
+          )
+      }
+    end
+  end
+
+  describe "given a request, when params represent a product" do
+    setup do
+      payload = %{
+        "name" => "Orange Juice 2L",
+        "price" => 1200,
+        "quantity" => 100_000,
+        "from" => ~U[2019-12-12 14:00:00.000000Z],
+        "end" => ~U[2019-12-14 14:00:00.000000Z]
+      }
+
+      [
+        response:
+          conn(:post, "/create_product", payload)
+          |> ProductScanner.call(scanner: AlwaysSuccessfulProductScanner)
+      ]
+    end
+
+    test "it doesn't send the response", context do
+      assert context.response.state != :sent
     end
   end
 end
