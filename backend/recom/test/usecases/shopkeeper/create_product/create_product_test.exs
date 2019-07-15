@@ -28,8 +28,7 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
 
       stub(Shopkeeper.NotifierDouble, :notify_of_product_creation, fn _ -> :ok end)
 
-      assert {:ok, :__saved_product__} ==
-               Shopkeeper.CreateProduct.create(:__original_product__, context.deps)
+      assert :ok == Shopkeeper.CreateProduct.create(:__original_product__, context.deps)
     end
 
     test "it dispatches a notification of product creation", context do
