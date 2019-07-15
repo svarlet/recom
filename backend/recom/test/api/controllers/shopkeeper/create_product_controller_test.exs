@@ -88,29 +88,14 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
       )
     end
 
-    test "it sets the response status to 201" do
-      new_product_payload = %{
-        "name" => "irrelevant",
-        "price" => 1,
-        "quantity" => 1,
-        "from" => "2019-01-31T13:00:00.000000Z",
-        "end" => "2019-02-01T13:00:00.000000Z"
-      }
-
-      product = %Product{
-        name: "irrelevant",
-        price: 1,
-        quantity: 1,
-        time_span: Interval.new(from: ~U[2019-01-31 13:00:00.000000Z], until: [days: 1])
-      }
-
+    test "it sets the response status to 201", %{new_product_payload: payload, product: product} do
       stub(CreateProductPayloadScanner.Stub, :scan, fn _ -> product end)
       expect(CreateProduct.Mock, :create, fn ^product -> {:ok, product} end)
       stub(CreateProductPresenter.Stub, :present, fn _ -> "irrelevant body" end)
 
       response =
         :post
-        |> conn("/create_product", new_product_payload)
+        |> conn("/create_product", payload)
         |> CreateProductController.create_product(
           with_scanner: CreateProductPayloadScanner.Stub,
           with_usecase: CreateProduct.Mock,
