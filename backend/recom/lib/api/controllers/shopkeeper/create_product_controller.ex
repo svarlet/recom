@@ -17,25 +17,17 @@ defmodule Recom.Api.Shopkeeper.CreateProductController do
   alias Recom.Entities.Product
 
   def create_product(conn, with_scanner: scanner, with_usecase: usecase, with_presenter: presenter) do
-    case scanner.scan(conn.params) do
+    with %Product{} = product <- scanner.scan(conn.params),
+         :ok <- usecase.create(product),
+         body <- presenter.present(:ok) do
+      send_resp(conn, 201, body)
+    else
       %ScanningError{} = error ->
         body = presenter.present(error)
 
         conn
         |> put_resp_header("content-type", "application/json")
         |> send_resp(422, body)
-
-      %Product{} = product ->
-        # SMELL the saved product is not used, we can probably change
-        # the usecase api to be :ok | :already_exists | :error
-        # {:ok, _saved_product} = usecase.create(product)
-
-        body =
-          product
-          |> usecase.create()
-          |> presenter.present()
-
-        send_resp(conn, 201, body)
     end
   end
 end

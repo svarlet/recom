@@ -71,7 +71,7 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
       }
 
       stub(CreateProductPayloadScanner.Stub, :scan, fn _ -> product end)
-      expect(CreateProduct.Mock, :create, fn ^product -> {:ok, product} end)
+      expect(CreateProduct.Mock, :create, fn ^product -> :ok end)
       stub(CreateProductPresenter.Stub, :present, fn _ -> "empty body" end)
 
       [
