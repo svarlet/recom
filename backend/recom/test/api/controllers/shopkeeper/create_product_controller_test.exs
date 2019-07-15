@@ -55,7 +55,7 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
   describe "payload for an original product" do
     setup do
       %{
-        new_product_payload: %{
+        payload: %{
           "name" => "irrelevant",
           "price" => 1,
           "quantity" => 1,
@@ -78,11 +78,10 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
       :ok
     end
 
-    test "it delegates the creation of the product to the usecase", %{
-      new_product_payload: payload
-    } do
-      :post
-      |> conn("/create_product", payload)
+    defp http_request(with_payload: payload), do: conn(:post, "/create_product", payload)
+
+    test "it delegates the creation of the product to the usecase", context do
+      http_request(with_payload: context.payload)
       |> CreateProductController.create_product(
         with_scanner: CreateProductPayloadScanner.Stub,
         with_usecase: CreateProduct.Mock,
@@ -90,10 +89,9 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
       )
     end
 
-    test "it sets the response status to 201", %{new_product_payload: payload} do
+    test "it sets the response status to 201", context do
       response =
-        :post
-        |> conn("/create_product", payload)
+        http_request(with_payload: context.payload)
         |> CreateProductController.create_product(
           with_scanner: CreateProductPayloadScanner.Stub,
           with_usecase: CreateProduct.Mock,
