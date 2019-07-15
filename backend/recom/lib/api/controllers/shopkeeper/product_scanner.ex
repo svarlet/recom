@@ -9,8 +9,9 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScanner do
 
   def call(conn, scanner: product_scanner) do
     case product_scanner.scan(conn.params) do
-      %Product{} ->
+      %Product{} = product ->
         conn
+        |> put_private(:product, product)
 
       :error ->
         conn

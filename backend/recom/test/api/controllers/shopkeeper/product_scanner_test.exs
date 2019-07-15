@@ -1,9 +1,11 @@
 defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScannerTest do
   use ExUnit.Case, async: true
+  use Timex
 
   import Plug.Test, only: [conn: 3]
 
   alias Recom.Api.Shopkeeper.CreateProduct.ProductScanner
+  alias Recom.Entities.Product
 
   defmodule AlwaysInvalidProductScanner do
     def scan(_payload), do: :error
@@ -40,8 +42,6 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScannerTest do
   end
 
   defmodule AlwaysSuccessfulProductScanner do
-    use Timex
-
     alias Recom.Entities.Product
 
     def scan(_payload) do
@@ -69,14 +69,27 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScannerTest do
       }
 
       [
-        response:
+        conn:
           conn(:post, "/create_product", payload)
           |> ProductScanner.call(scanner: AlwaysSuccessfulProductScanner)
       ]
     end
 
     test "it doesn't send the response", context do
-      assert context.response.state != :sent
+      assert context.conn.state != :sent
+    end
+
+    test "it saves the Product entity into the conn", context do
+      assert context.conn.private.product == %Product{
+               name: "Orange Juice 2L",
+               price: 1200,
+               quantity: 100_000,
+               time_span:
+                 Interval.new(
+                   from: ~U[2019-12-12 14:00:00.000000Z],
+                   until: ~U[2019-12-14 14:00:00.000000Z]
+                 )
+             }
     end
   end
 end
