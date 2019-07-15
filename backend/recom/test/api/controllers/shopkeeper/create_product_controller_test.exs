@@ -7,7 +7,7 @@ defmodule Recom.Api.Shopkeeper.CreateProductPayloadScanner do
 end
 
 defmodule Recom.Api.Shopkeeper.CreateProductPresenter do
-  @callback respond(Conn.t(), ScanningError.t()) :: Conn.t()
+  @callback present(ScanningError.t()) :: String.t()
 end
 
 defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
@@ -23,7 +23,7 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
   alias Recom.Api.Shopkeeper.CreateProductPayloadScanner.ScanningError
 
   defmock(CreateProductPayloadScanner.Stub, for: CreateProductPayloadScanner)
-  defmock(CreateProductPresenter.Mock, for: CreateProductPresenter)
+  defmock(CreateProductPresenter.Stub, for: CreateProductPresenter)
 
   test "invalid json payload" do
     invalid_payload = %{irrelevant_field: 0}
@@ -35,12 +35,26 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
     }
 
     stub(CreateProductPayloadScanner.Stub, :scan, fn _ -> scanning_errors end)
-    expect(CreateProductPresenter.Mock, :respond, fn ^request, ^scanning_errors -> :ok end)
 
-    CreateProductController.create_product(request,
-      with_scanner: CreateProductPayloadScanner.Stub,
-      with_usecase: nil,
-      with_presenter: CreateProductPresenter.Mock
-    )
+    body = ~S"""
+    {
+      "the": "body"
+    }
+    """
+
+    stub(CreateProductPresenter.Stub, :present, fn ^scanning_errors -> body end)
+
+    {status, headers, actual_body} =
+      request
+      |> CreateProductController.create_product(
+        with_scanner: CreateProductPayloadScanner.Stub,
+        with_usecase: nil,
+        with_presenter: CreateProductPresenter.Stub
+      )
+      |> Plug.Test.sent_resp()
+
+    assert status == 422
+    assert {"content-type", "application/json"} in headers
+    assert actual_body == body
   end
 end
