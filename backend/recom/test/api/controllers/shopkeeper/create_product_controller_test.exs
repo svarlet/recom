@@ -53,28 +53,34 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
   end
 
   describe "payload for an original product" do
-    test "it delegates the creation of the product to the usecase" do
-      new_product_payload = %{
-        "name" => "irrelevant",
-        "price" => 1,
-        "quantity" => 1,
-        "from" => "2019-01-31T13:00:00.000000Z",
-        "end" => "2019-02-01T13:00:00.000000Z"
+    setup do
+      %{
+        new_product_payload: %{
+          "name" => "irrelevant",
+          "price" => 1,
+          "quantity" => 1,
+          "from" => "2019-01-31T13:00:00.000000Z",
+          "end" => "2019-02-01T13:00:00.000000Z"
+        },
+        product: %Product{
+          name: "irrelevant",
+          price: 1,
+          quantity: 1,
+          time_span: Interval.new(from: ~U[2019-01-31 13:00:00.000000Z], until: [days: 1])
+        }
       }
+    end
 
-      product = %Product{
-        name: "irrelevant",
-        price: 1,
-        quantity: 1,
-        time_span: Interval.new(from: ~U[2019-01-31 13:00:00.000000Z], until: [days: 1])
-      }
-
+    test "it delegates the creation of the product to the usecase", %{
+      new_product_payload: payload,
+      product: product
+    } do
       stub(CreateProductPayloadScanner.Stub, :scan, fn _ -> product end)
       expect(CreateProduct.Mock, :create, fn ^product -> {:ok, product} end)
       stub(CreateProductPresenter.Stub, :present, fn _ -> "irrelevant body" end)
 
       :post
-      |> conn("/create_product", new_product_payload)
+      |> conn("/create_product", payload)
       |> CreateProductController.create_product(
         with_scanner: CreateProductPayloadScanner.Stub,
         with_usecase: CreateProduct.Mock,
@@ -99,7 +105,7 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
       }
 
       stub(CreateProductPayloadScanner.Stub, :scan, fn _ -> product end)
-      stub(CreateProduct.Mock, :create, fn ^product -> {:ok, product} end)
+      expect(CreateProduct.Mock, :create, fn ^product -> {:ok, product} end)
       stub(CreateProductPresenter.Stub, :present, fn _ -> "irrelevant body" end)
 
       response =
