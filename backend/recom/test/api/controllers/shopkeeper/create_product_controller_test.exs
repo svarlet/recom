@@ -1,95 +1,46 @@
-defmodule Recom.Api.Shopkeeper.CreateProductController do
-  def create_product(conn, _) do
-    Plug.Conn.send_resp(conn, 422, "")
+defmodule Recom.Api.Shopkeeper.CreateProductPayloadScanner do
+  @callback scan(map()) :: ScanningError.t()
+
+  defmodule ScanningError do
+    defstruct [:message, :errors]
   end
+end
+
+defmodule Recom.Api.Shopkeeper.CreateProductPresenter do
+  @callback respond(Conn.t(), ScanningError.t()) :: Conn.t()
 end
 
 defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
   use ExUnit.Case, async: true
 
+  import Mox
+
+  setup :verify_on_exit!
+
   alias Recom.Api.Shopkeeper.CreateProductController
+  alias Recom.Api.Shopkeeper.CreateProductPresenter
+  alias Recom.Api.Shopkeeper.CreateProductPayloadScanner
+  alias Recom.Api.Shopkeeper.CreateProductPayloadScanner.ScanningError
 
-  describe "JSON payload has invalid or missing fields" do
-    setup context do
-      valid_payload = %{
-        "name" => "Orange Juice with bits",
-        "quantity" => 2_000,
-        "price" => 345,
-        "start" => "2019-07-08T12:13:03.104019Z",
-        "end" => "2019-07-11T12:13:03.104019Z"
-      }
+  defmock(CreateProductPayloadScanner.Stub, for: CreateProductPayloadScanner)
+  defmock(CreateProductPresenter.Mock, for: CreateProductPresenter)
 
-      overrides =
-        context
-        |> Map.take(~w{name quantity price start end}a)
-        |> Enum.map(fn {key, value} -> {to_string(key), value} end)
-        |> Enum.into(%{})
+  test "invalid json payload" do
+    invalid_payload = %{irrelevant_field: 0}
+    request = Plug.Test.conn(:post, "/create_product", invalid_payload)
 
-      invalid_payload = Map.merge(valid_payload, overrides)
+    scanning_errors = %ScanningError{
+      message: :__message__,
+      errors: :__errors__
+    }
 
-      response =
-        Plug.Test.conn(:post, "/create_product", invalid_payload)
-        |> CreateProductController.create_product(with_usecase: nil)
+    stub(CreateProductPayloadScanner.Stub, :scan, fn _ -> scanning_errors end)
+    expect(CreateProductPresenter.Mock, :respond, fn ^request, ^scanning_errors -> :ok end)
 
-      %{response: response}
-    end
-
-    @tag name: 1
-    test "when the name is not a string, it responds with a 422 status code", context do
-      assert {422, _, _} = Plug.Test.sent_resp(context.response)
-    end
-
-    @tag :skip
-    test "when the name is missing, it responds with a 422 status code"
-
-    @tag :skip
-    test "when the quantity is not an integer, it responds with a 422 status code"
-
-    # isn't it optional? wouldn't it default to 0?
-    @tag :skip
-    test "when the quantity is missing, it responds with a 422 status code"
-
-    @tag :skip
-    test "when the price is not an integer, it responds with a 422 status code"
-
-    # isn't it optional? wouldn't it default to 0?
-    @tag :skip
-    test "when the price is missing, it responds with a 422 status code"
-
-    @tag :skip
-    test "when the start date is not a datetime, it responds with a 422 status code"
-
-    @tag :skip
-    test "when the start date is missing, it responds with a 422 status code"
-
-    @tag :skip
-    test "when the end date is not a datetime, it responds with a 422 status code"
-
-    @tag :skip
-    test "when the end date is missing, it responds with a 422 status code"
-  end
-
-  describe "JSON payload describes a valid product" do
-    @tag :skip
-    test "it delegates the creation to the usecase"
-
-    @tag :skip
-    test "it responds with a 201"
-  end
-
-  describe "JSON payload describe an already existing product" do
-    @tag :skip
-    test "it responds with a 409 status code"
-
-    @tag :skip
-    test "it sets the content type of the response to application/json"
-
-    @tag :skip
-    test "it informs the product is a duplicate in the body"
-  end
-
-  describe "Unsuccessful creation of the product" do
-    @tag :skip
-    test "it responds with a 500"
+    CreateProductController.create_product(request,
+      with_scanner: CreateProductPayloadScanner.Stub,
+      with_usecase: nil,
+      with_presenter: CreateProductPresenter.Mock
+    )
   end
 end
