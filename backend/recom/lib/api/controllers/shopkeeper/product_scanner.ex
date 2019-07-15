@@ -8,6 +8,10 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScanner do
   def call(conn, _) do
     conn
     |> put_resp_header("content-type", "application/json")
-    |> send_resp(422, "")
+    |> send_resp(422, ~S"""
+    {
+      "message": "Not a valid representation of a product"
+    }
+    """)
   end
 end

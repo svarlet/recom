@@ -25,5 +25,13 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScannerTest do
     test "it sets the content-type to application/json", context do
       assert Plug.Conn.get_resp_header(context.response, "content-type") == ["application/json"]
     end
+
+    test "it sets the body with an informative error structured in json", context do
+      assert context.response.resp_body == ~S"""
+             {
+               "message": "Not a valid representation of a product"
+             }
+             """
+    end
   end
 end
