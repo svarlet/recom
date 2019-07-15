@@ -26,15 +26,12 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
   defmock(CreateProductPresenter.Stub, for: CreateProductPresenter)
 
   test "invalid json payload" do
-    invalid_payload = %{irrelevant_field: 0}
-    request = Plug.Test.conn(:post, "/create_product", invalid_payload)
-
-    scanning_errors = %ScanningError{
-      message: :__message__,
-      errors: :__errors__
-    }
-
-    stub(CreateProductPayloadScanner.Stub, :scan, fn _ -> scanning_errors end)
+    stub(CreateProductPayloadScanner.Stub, :scan, fn _ ->
+      %ScanningError{
+        message: :__message__,
+        errors: :__errors__
+      }
+    end)
 
     body = ~S"""
     {
@@ -42,7 +39,10 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
     }
     """
 
-    stub(CreateProductPresenter.Stub, :present, fn ^scanning_errors -> body end)
+    stub(CreateProductPresenter.Stub, :present, fn _ -> body end)
+
+    invalid_payload = %{irrelevant_field: 0}
+    request = Plug.Test.conn(:post, "/create_product", invalid_payload)
 
     {status, headers, actual_body} =
       request
