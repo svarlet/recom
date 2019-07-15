@@ -19,6 +19,8 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
   defmock(CreateProductPresenter.Stub, for: CreateProductPresenter)
   defmock(CreateProduct.Mock, for: CreateProduct.Behaviour)
 
+  defp http_request(with_payload: payload), do: conn(:post, "/create_product", payload)
+
   describe "invalid json payload" do
     setup do
       stub(CreateProductPayloadScanner.Stub, :scan, fn _ -> %ScanningError{} end)
@@ -28,8 +30,7 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
 
       %{
         response:
-          :post
-          |> conn("/create_product", invalid_payload)
+          http_request(with_payload: invalid_payload)
           |> CreateProductController.create_product(
             with_scanner: CreateProductPayloadScanner.Stub,
             with_usecase: nil,
@@ -83,8 +84,6 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
           )
       ]
     end
-
-    defp http_request(with_payload: payload), do: conn(:post, "/create_product", payload)
 
     test "it sets the response status to 201", context do
       assert context.response.status == 201
