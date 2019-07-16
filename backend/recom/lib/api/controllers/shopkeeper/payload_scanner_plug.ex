@@ -10,8 +10,7 @@ defmodule Recom.Api.Shopkeeper.PayloadScannerPlug do
   def call(conn, scanner: product_scanner) do
     case product_scanner.scan(conn.params) do
       {:ok, result} ->
-        conn
-        |> put_private(:scanner, %{result: result})
+        put_private(conn, :scanner, %{result: result})
 
       {:error, reason} ->
         conn
