@@ -20,7 +20,7 @@ defmodule Recom.Api.Shopkeeper.Plug.PayloadScanner do
         |> put_resp_header("content-type", "application/json")
         |> send_resp(422, ~S"""
         {
-          "message": "Not a valid representation of a product"
+          "message": "Invalid payload schema"
         }
         """)
     end

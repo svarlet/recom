@@ -11,7 +11,7 @@ defmodule Recom.Api.Shopkeeper.Plug.PayloadScannerTest do
     def scan(_payload), do: :error
   end
 
-  describe "given a request, when params don't represent a product" do
+  describe "given a request, when the payload is not successfully scanned" do
     setup do
       [
         response:
@@ -35,7 +35,7 @@ defmodule Recom.Api.Shopkeeper.Plug.PayloadScannerTest do
     test "it sets the body with an informative error structured in json", context do
       assert context.response.resp_body == ~S"""
              {
-               "message": "Not a valid representation of a product"
+               "message": "Invalid payload schema"
              }
              """
     end
