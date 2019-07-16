@@ -69,7 +69,7 @@ defmodule Recom.Api.Shopkeeper.Plug.PayloadScannerTest do
       }
     end
 
-    def scan(_payload), do: result()
+    def scan(_payload), do: {:ok, result()}
   end
 
   describe "given a request, when the payload matches the schema" do

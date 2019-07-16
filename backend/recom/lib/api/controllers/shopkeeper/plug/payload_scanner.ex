@@ -3,17 +3,15 @@ defmodule Recom.Api.Shopkeeper.Plug.PayloadScanner do
 
   import Plug.Conn
 
-  alias Recom.Entities.Product
-
   @callback scan(map()) :: {:ok, term} | {:error, String.t()}
 
   def init(scanner: product_scanner), do: [scanner: product_scanner]
 
   def call(conn, scanner: product_scanner) do
     case product_scanner.scan(conn.params) do
-      %Product{} = product ->
+      {:ok, result} ->
         conn
-        |> put_private(:scanner, %{result: product})
+        |> put_private(:scanner, %{result: result})
 
       {:error, reason} ->
         conn
