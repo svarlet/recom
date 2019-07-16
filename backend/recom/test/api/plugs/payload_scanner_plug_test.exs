@@ -1,11 +1,11 @@
-defmodule Recom.Api.Shopkeeper.PayloadScannerPlugTest do
+defmodule Recom.Api.PayloadScannerPlugTest do
   use ExUnit.Case, async: true
   use Timex
 
   import Plug.Test, only: [conn: 3]
   import Mox
 
-  alias Recom.Api.Shopkeeper.PayloadScannerPlug
+  alias Recom.Api.PayloadScannerPlug
   alias Recom.Entities.Product
 
   defmock(Scanner.Stub, for: PayloadScannerPlug)

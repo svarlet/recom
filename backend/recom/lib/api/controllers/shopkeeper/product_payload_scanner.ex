@@ -6,7 +6,7 @@ defmodule Recom.Api.Shopkeeper.ProductPayloadScanner do
 
   alias Recom.Entities.Product
 
-  @behaviour Recom.Api.Shopkeeper.PayloadScannerPlug
+  @behaviour Recom.Api.PayloadScannerPlug
 
   embedded_schema do
     field(:name, :string)
