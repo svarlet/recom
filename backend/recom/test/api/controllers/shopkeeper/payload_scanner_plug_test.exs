@@ -8,6 +8,8 @@ defmodule Recom.Api.Shopkeeper.PayloadScannerPlugTest do
   alias Recom.Entities.Product
 
   defmodule Scanner.AlwaysFailing do
+    @behaviour Recom.Api.Shopkeeper.PayloadScannerPlug
+
     def scan(_payload), do: {:error, "Invalid payload schema"}
   end
 
@@ -41,6 +43,8 @@ defmodule Recom.Api.Shopkeeper.PayloadScannerPlugTest do
 
   defmodule Scanner.AlwaysSucceeding do
     alias Recom.Entities.Product
+
+    @behaviour Recom.Api.Shopkeeper.PayloadScannerPlug
 
     def payload() do
       %{
