@@ -40,43 +40,33 @@ defmodule Recom.Api.Shopkeeper.PayloadScannerPlugTest do
     end
   end
 
-  defmodule Scanner.AlwaysSucceeding do
-    alias Recom.Entities.Product
-
-    @behaviour Recom.Api.Shopkeeper.PayloadScannerPlug
-
-    def payload() do
-      %{
-        "name" => "Orange Juice 2L",
-        "price" => 1200,
-        "quantity" => 100_000,
-        "from" => ~U[2019-12-12 14:00:00.000000Z],
-        "end" => ~U[2019-12-14 14:00:00.000000Z]
-      }
-    end
-
-    def result() do
-      %Product{
-        name: "Orange Juice 2L",
-        price: 1200,
-        quantity: 100_000,
-        time_span:
-          Interval.new(
-            from: ~U[2019-12-12 14:00:00.000000Z],
-            until: ~U[2019-12-14 14:00:00.000000Z]
-          )
-      }
-    end
-
-    def scan(_payload), do: {:ok, result()}
-  end
-
   describe "given a request, when the payload matches the schema" do
+    @payload %{
+      "name" => "Orange Juice 2L",
+      "price" => 1200,
+      "quantity" => 100_000,
+      "from" => ~U[2019-12-12 14:00:00.000000Z],
+      "end" => ~U[2019-12-14 14:00:00.000000Z]
+    }
+
+    @product %Product{
+      name: "Orange Juice 2L",
+      price: 1200,
+      quantity: 100_000,
+      time_span:
+        Interval.new(
+          from: ~U[2019-12-12 14:00:00.000000Z],
+          until: ~U[2019-12-14 14:00:00.000000Z]
+        )
+    }
+
     setup do
+      stub(Scanner.Stub, :scan, fn _ -> {:ok, @product} end)
+
       [
         conn:
-          conn(:post, "/irrelevant_path", Scanner.AlwaysSucceeding.payload())
-          |> PayloadScannerPlug.call(scanner: Scanner.AlwaysSucceeding)
+          conn(:post, "/irrelevant_path", @payload)
+          |> PayloadScannerPlug.call(scanner: Scanner.Stub)
       ]
     end
 
@@ -85,7 +75,7 @@ defmodule Recom.Api.Shopkeeper.PayloadScannerPlugTest do
     end
 
     test "it saves the scanner result into conn.private", context do
-      assert context.conn.private.scanner.result == Scanner.AlwaysSucceeding.result()
+      assert context.conn.private.scanner.result == @product
     end
   end
 end
