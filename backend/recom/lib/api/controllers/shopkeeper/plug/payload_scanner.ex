@@ -5,6 +5,8 @@ defmodule Recom.Api.Shopkeeper.Plug.PayloadScanner do
 
   alias Recom.Entities.Product
 
+  @callback scan(map()) :: term | :error
+
   def init(scanner: product_scanner), do: [scanner: product_scanner]
 
   def call(conn, scanner: product_scanner) do
