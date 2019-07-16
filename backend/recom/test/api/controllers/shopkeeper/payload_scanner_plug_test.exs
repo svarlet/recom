@@ -3,22 +3,21 @@ defmodule Recom.Api.Shopkeeper.PayloadScannerPlugTest do
   use Timex
 
   import Plug.Test, only: [conn: 3]
+  import Mox
 
   alias Recom.Api.Shopkeeper.PayloadScannerPlug
   alias Recom.Entities.Product
 
-  defmodule Scanner.AlwaysFailing do
-    @behaviour Recom.Api.Shopkeeper.PayloadScannerPlug
-
-    def scan(_payload), do: {:error, "Invalid payload schema"}
-  end
+  defmock(Scanner.Stub, for: PayloadScannerPlug)
 
   describe "given a request, when the payload is not successfully scanned" do
     setup do
+      stub(Scanner.Stub, :scan, fn _ -> {:error, "Invalid payload schema"} end)
+
       [
         response:
           conn(:post, "/irrelevant_path", %{"bad" => "schema"})
-          |> PayloadScannerPlug.call(scanner: Scanner.AlwaysFailing)
+          |> PayloadScannerPlug.call(scanner: Scanner.Stub)
       ]
     end
 
