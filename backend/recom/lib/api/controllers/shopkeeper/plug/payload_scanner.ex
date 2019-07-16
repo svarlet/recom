@@ -5,7 +5,7 @@ defmodule Recom.Api.Shopkeeper.Plug.PayloadScanner do
 
   alias Recom.Entities.Product
 
-  @callback scan(map()) :: term | :error
+  @callback scan(map()) :: {:ok, term} | {:error, String.t()}
 
   def init(scanner: product_scanner), do: [scanner: product_scanner]
 
@@ -15,14 +15,10 @@ defmodule Recom.Api.Shopkeeper.Plug.PayloadScanner do
         conn
         |> put_private(:product, product)
 
-      :error ->
+      {:error, reason} ->
         conn
         |> put_resp_header("content-type", "application/json")
-        |> send_resp(422, ~S"""
-        {
-          "message": "Invalid payload schema"
-        }
-        """)
+        |> send_resp(422, reason)
     end
   end
 end

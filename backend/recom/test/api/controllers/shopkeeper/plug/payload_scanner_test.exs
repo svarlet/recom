@@ -8,7 +8,14 @@ defmodule Recom.Api.Shopkeeper.Plug.PayloadScannerTest do
   alias Recom.Entities.Product
 
   defmodule Scanner.AlwaysFailing do
-    def scan(_payload), do: :error
+    def scan(_payload),
+      do:
+        {:error,
+         ~S"""
+         {
+           "message": "Invalid payload schema"
+         }
+         """}
   end
 
   describe "given a request, when the payload is not successfully scanned" do
