@@ -1,10 +1,10 @@
-defmodule Recom.Api.Shopkeeper.Plug.PayloadScannerTest do
+defmodule Recom.Api.Shopkeeper.PayloadScannerPlugTest do
   use ExUnit.Case, async: true
   use Timex
 
   import Plug.Test, only: [conn: 3]
 
-  alias Recom.Api.Shopkeeper.Plug.PayloadScanner
+  alias Recom.Api.Shopkeeper.PayloadScannerPlug
   alias Recom.Entities.Product
 
   defmodule Scanner.AlwaysFailing do
@@ -16,7 +16,7 @@ defmodule Recom.Api.Shopkeeper.Plug.PayloadScannerTest do
       [
         response:
           conn(:post, "/irrelevant_path", %{"bad" => "schema"})
-          |> PayloadScanner.call(scanner: Scanner.AlwaysFailing)
+          |> PayloadScannerPlug.call(scanner: Scanner.AlwaysFailing)
       ]
     end
 
@@ -77,7 +77,7 @@ defmodule Recom.Api.Shopkeeper.Plug.PayloadScannerTest do
       [
         conn:
           conn(:post, "/irrelevant_path", Scanner.AlwaysSucceeding.payload())
-          |> PayloadScanner.call(scanner: Scanner.AlwaysSucceeding)
+          |> PayloadScannerPlug.call(scanner: Scanner.AlwaysSucceeding)
       ]
     end
 
