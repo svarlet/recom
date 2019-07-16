@@ -5,10 +5,10 @@ defmodule Recom.Api.Shopkeeper.PayloadScannerPlug do
 
   @callback scan(map()) :: {:ok, term} | {:error, String.t()}
 
-  def init(scanner: product_scanner), do: [scanner: product_scanner]
+  def init(scanner: scanner), do: [scanner: scanner]
 
-  def call(conn, scanner: product_scanner) do
-    case product_scanner.scan(conn.params) do
+  def call(conn, scanner: scanner) do
+    case scanner.scan(conn.params) do
       {:ok, result} ->
         put_private(conn, :scanner, %{result: result})
 
