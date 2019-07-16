@@ -15,7 +15,7 @@ defmodule Recom.Api.Shopkeeper.Plug.PayloadScannerTest do
     setup do
       [
         response:
-          conn(:post, "/create_product", %{"wrong" => "field"})
+          conn(:post, "/irrelevant_path", %{"bad" => "schema"})
           |> PayloadScanner.call(scanner: Scanner.AlwaysFailing)
       ]
     end
@@ -60,7 +60,7 @@ defmodule Recom.Api.Shopkeeper.Plug.PayloadScannerTest do
     end
   end
 
-  describe "given a request, when params represent a product" do
+  describe "given a request, when the payload matches the schema" do
     setup do
       payload = %{
         "name" => "Orange Juice 2L",
@@ -72,7 +72,7 @@ defmodule Recom.Api.Shopkeeper.Plug.PayloadScannerTest do
 
       [
         conn:
-          conn(:post, "/create_product", payload)
+          conn(:post, "/irrelevant_path", payload)
           |> PayloadScanner.call(scanner: Scanner.AlwaysSucceeding)
       ]
     end
@@ -81,8 +81,8 @@ defmodule Recom.Api.Shopkeeper.Plug.PayloadScannerTest do
       assert context.conn.state != :sent
     end
 
-    test "it saves the Product entity into the conn", context do
-      assert context.conn.private.product == %Product{
+    test "it saves the scanner result into conn.private", context do
+      assert context.conn.private.scanner.result == %Product{
                name: "Orange Juice 2L",
                price: 1200,
                quantity: 100_000,

@@ -13,7 +13,7 @@ defmodule Recom.Api.Shopkeeper.Plug.PayloadScanner do
     case product_scanner.scan(conn.params) do
       %Product{} = product ->
         conn
-        |> put_private(:product, product)
+        |> put_private(:scanner, %{result: product})
 
       {:error, reason} ->
         conn
