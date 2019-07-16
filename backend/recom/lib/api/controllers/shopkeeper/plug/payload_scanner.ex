@@ -18,7 +18,11 @@ defmodule Recom.Api.Shopkeeper.Plug.PayloadScanner do
       {:error, reason} ->
         conn
         |> put_resp_header("content-type", "application/json")
-        |> send_resp(422, reason)
+        |> send_resp(422, ~s"""
+        {
+          "message": "#{reason}"
+        }
+        """)
     end
   end
 end

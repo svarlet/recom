@@ -8,14 +8,7 @@ defmodule Recom.Api.Shopkeeper.Plug.PayloadScannerTest do
   alias Recom.Entities.Product
 
   defmodule Scanner.AlwaysFailing do
-    def scan(_payload),
-      do:
-        {:error,
-         ~S"""
-         {
-           "message": "Invalid payload schema"
-         }
-         """}
+    def scan(_payload), do: {:error, "Invalid payload schema"}
   end
 
   describe "given a request, when the payload is not successfully scanned" do
@@ -39,7 +32,9 @@ defmodule Recom.Api.Shopkeeper.Plug.PayloadScannerTest do
       assert Plug.Conn.get_resp_header(context.response, "content-type") == ["application/json"]
     end
 
-    test "it sets the body with an informative error structured in json", context do
+    # SMELL "and" in a test may mean multiple responsibilities and is an invitation to refactor. Here we could extract a module to hold the responsibility of formatting errors into json
+    test "it converts the error provided by the scanner into a json document and sets the response body with it",
+         context do
       assert context.response.resp_body == ~S"""
              {
                "message": "Invalid payload schema"
