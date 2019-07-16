@@ -46,7 +46,17 @@ defmodule Recom.Api.Shopkeeper.Plug.PayloadScannerTest do
   defmodule Scanner.AlwaysSucceeding do
     alias Recom.Entities.Product
 
-    def scan(_payload) do
+    def payload() do
+      %{
+        "name" => "Orange Juice 2L",
+        "price" => 1200,
+        "quantity" => 100_000,
+        "from" => ~U[2019-12-12 14:00:00.000000Z],
+        "end" => ~U[2019-12-14 14:00:00.000000Z]
+      }
+    end
+
+    def result() do
       %Product{
         name: "Orange Juice 2L",
         price: 1200,
@@ -58,21 +68,15 @@ defmodule Recom.Api.Shopkeeper.Plug.PayloadScannerTest do
           )
       }
     end
+
+    def scan(_payload), do: result()
   end
 
   describe "given a request, when the payload matches the schema" do
     setup do
-      payload = %{
-        "name" => "Orange Juice 2L",
-        "price" => 1200,
-        "quantity" => 100_000,
-        "from" => ~U[2019-12-12 14:00:00.000000Z],
-        "end" => ~U[2019-12-14 14:00:00.000000Z]
-      }
-
       [
         conn:
-          conn(:post, "/irrelevant_path", payload)
+          conn(:post, "/irrelevant_path", Scanner.AlwaysSucceeding.payload())
           |> PayloadScanner.call(scanner: Scanner.AlwaysSucceeding)
       ]
     end
@@ -82,16 +86,7 @@ defmodule Recom.Api.Shopkeeper.Plug.PayloadScannerTest do
     end
 
     test "it saves the scanner result into conn.private", context do
-      assert context.conn.private.scanner.result == %Product{
-               name: "Orange Juice 2L",
-               price: 1200,
-               quantity: 100_000,
-               time_span:
-                 Interval.new(
-                   from: ~U[2019-12-12 14:00:00.000000Z],
-                   until: ~U[2019-12-14 14:00:00.000000Z]
-                 )
-             }
+      assert context.conn.private.scanner.result == Scanner.AlwaysSucceeding.result()
     end
   end
 end
