@@ -35,11 +35,7 @@ defmodule Recom.Api.Shopkeeper.PayloadScannerPlugTest do
     # SMELL "and" in a test may mean multiple responsibilities and is an invitation to refactor. Here we could extract a module to hold the responsibility of formatting errors into json
     test "it converts the error provided by the scanner into a json document and sets the response body with it",
          context do
-      assert context.response.resp_body == ~S"""
-             {
-               "message": "Invalid payload schema"
-             }
-             """
+      assert context.response.resp_body == ~S[{"message":"Invalid payload schema"}]
     end
   end
 
