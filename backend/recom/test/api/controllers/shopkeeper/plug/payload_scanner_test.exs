@@ -7,7 +7,7 @@ defmodule Recom.Api.Shopkeeper.Plug.PayloadScannerTest do
   alias Recom.Api.Shopkeeper.Plug.PayloadScanner
   alias Recom.Entities.Product
 
-  defmodule AlwaysInvalidProductScanner do
+  defmodule Scanner.AlwaysFailing do
     def scan(_payload), do: :error
   end
 
@@ -16,7 +16,7 @@ defmodule Recom.Api.Shopkeeper.Plug.PayloadScannerTest do
       [
         response:
           conn(:post, "/create_product", %{"wrong" => "field"})
-          |> PayloadScanner.call(scanner: AlwaysInvalidProductScanner)
+          |> PayloadScanner.call(scanner: Scanner.AlwaysFailing)
       ]
     end
 
@@ -41,7 +41,7 @@ defmodule Recom.Api.Shopkeeper.Plug.PayloadScannerTest do
     end
   end
 
-  defmodule AlwaysSuccessfulProductScanner do
+  defmodule Scanner.AlwaysSucceeding do
     alias Recom.Entities.Product
 
     def scan(_payload) do
@@ -71,7 +71,7 @@ defmodule Recom.Api.Shopkeeper.Plug.PayloadScannerTest do
       [
         conn:
           conn(:post, "/create_product", payload)
-          |> PayloadScanner.call(scanner: AlwaysSuccessfulProductScanner)
+          |> PayloadScanner.call(scanner: Scanner.AlwaysSucceeding)
       ]
     end
 
