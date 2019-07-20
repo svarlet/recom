@@ -41,6 +41,10 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
       [response: response]
     end
 
+    test "it sends a response", context do
+      assert context.response.state == :sent
+    end
+
     test "it sets the status to 422", context do
       assert context.response.status == 422
     end
@@ -86,6 +90,10 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
       ]
     end
 
+    test "it sends a response", context do
+      assert context.response.state == :sent
+    end
+
     test "it sets the response status to 201", context do
       assert context.response.status == 201
     end
@@ -125,6 +133,10 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
         )
 
       [response: response]
+    end
+
+    test "it sends a response", context do
+      assert context.response.state == :sent
     end
 
     test "it responds with a 422 status", context do
@@ -170,6 +182,10 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
         )
 
       [response: response]
+    end
+
+    test "it sends a response", context do
+      assert context.response.state == :sent
     end
 
     test "it responds with a 422 status", context do
