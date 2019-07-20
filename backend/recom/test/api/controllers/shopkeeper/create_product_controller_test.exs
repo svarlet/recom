@@ -140,9 +140,48 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
     end
   end
 
-  describe "gateway error" do
-  end
-
   describe "semantic error" do
+    setup do
+      payload = %{
+        "name" => "irrelevant",
+        "price" => 1,
+        "quantity" => 1,
+        "from" => "2019-01-31T13:00:00.000000Z",
+        "end" => "2019-02-01T13:00:00.000000Z"
+      }
+
+      product = %Product{
+        name: "irrelevant",
+        price: 1,
+        quantity: 1,
+        time_span: Interval.new(from: ~U[2019-01-31 13:00:00.000000Z], until: [days: 1])
+      }
+
+      stub(CreateProductPayloadScanner.Stub, :scan, fn _ -> product end)
+      stub(CreateProduct.Double, :create, fn _product -> :invalid end)
+      stub(CreateProductPresenter.Stub, :present, fn _ -> "descriptive explanation" end)
+
+      response =
+        http_request(with_payload: payload)
+        |> CreateProductController.create_product(
+          with_scanner: CreateProductPayloadScanner.Stub,
+          with_usecase: CreateProduct.Double,
+          with_presenter: CreateProductPresenter.Stub
+        )
+
+      [response: response]
+    end
+
+    test "it responds with a 422 status", context do
+      assert context.response.status == 422
+    end
+
+    test "it explains the error in the body of the response", context do
+      assert context.response.resp_body == "descriptive explanation"
+    end
+
+    test "it sets the content-type header of the response to application/json", context do
+      assert_json_response(context.response)
+    end
   end
 end
