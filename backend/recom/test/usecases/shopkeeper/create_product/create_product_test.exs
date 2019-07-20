@@ -5,6 +5,7 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
   import Mox
 
   alias Recom.Usecases.Shopkeeper
+  alias Recom.Usecases.Shopkeeper.CreateProduct.DuplicateProductError
 
   setup :verify_on_exit!
 
@@ -50,7 +51,7 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
         {:error, :duplicate_product}
       end)
 
-      assert :duplicate_product ==
+      assert %DuplicateProductError{message: "This product already exists."} ==
                Shopkeeper.CreateProduct.create(:__duplicate_product__,
                  with_gateway: Shopkeeper.ProductsGatewayDouble,
                  with_notifier: nil

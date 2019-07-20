@@ -16,6 +16,10 @@ defmodule Recom.Usecases.Shopkeeper do
       @callback create(Product.t()) :: result
     end
 
+    defmodule DuplicateProductError do
+      defstruct message: "This product already exists."
+    end
+
     def create(product, deps) do
       gateway = deps[:with_gateway]
       notifier = deps[:with_notifier]
@@ -24,7 +28,7 @@ defmodule Recom.Usecases.Shopkeeper do
            :ok <- notifier.notify_of_product_creation(product) do
         :ok
       else
-        {:error, :duplicate_product} -> :duplicate_product
+        {:error, :duplicate_product} -> %DuplicateProductError{}
         :error -> :error
       end
     end
