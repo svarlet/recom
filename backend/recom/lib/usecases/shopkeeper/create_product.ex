@@ -16,7 +16,10 @@ defmodule Recom.Usecases.Shopkeeper do
       @callback create(Product.t()) :: result
     end
 
-    def create(product, with_gateway: gateway, with_notifier: notifier) do
+    def create(product, deps) do
+      gateway = Keyword.fetch!(deps, :with_gateway)
+      notifier = Keyword.fetch!(deps, :with_notifier)
+
       with {:ok, product} <- gateway.store(product),
            :ok <- notifier.notify_of_product_creation(product) do
         :ok
