@@ -1,4 +1,4 @@
-defmodule Recom.Api.Shopkeeper.CreateProductPayloadScanner do
+defmodule Recom.Api.Shopkeeper.CreateProduct.PayloadScanner do
   @callback scan(map()) :: ScanningError.t() | Product.t()
 
   defmodule ScanningError do
@@ -13,7 +13,7 @@ end
 defmodule Recom.Api.Shopkeeper.CreateProductController do
   import Plug.Conn, only: [send_resp: 3, put_resp_header: 3]
 
-  alias Recom.Api.Shopkeeper.CreateProductPayloadScanner.ScanningError
+  alias Recom.Api.Shopkeeper.CreateProduct.PayloadScanner.ScanningError
   alias Recom.Entities.Product
 
   def create_product(conn, with_scanner: scanner, with_usecase: usecase, with_presenter: presenter) do
@@ -22,6 +22,7 @@ defmodule Recom.Api.Shopkeeper.CreateProductController do
          body <- presenter.present(:ok) do
       send_resp(conn, 201, body)
     else
+      # REFACTOR Create a protocol accepting a struct and the conn for a polymorphic presenter and shrink this code significantly
       %ScanningError{} = error ->
         body = presenter.present(error)
 

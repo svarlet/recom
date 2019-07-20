@@ -10,12 +10,12 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
 
   alias Recom.Api.Shopkeeper.CreateProductController
   alias Recom.Api.Shopkeeper.CreateProductPresenter
-  alias Recom.Api.Shopkeeper.CreateProductPayloadScanner
-  alias Recom.Api.Shopkeeper.CreateProductPayloadScanner.ScanningError
+  alias Recom.Api.Shopkeeper.CreateProduct.PayloadScanner
+  alias Recom.Api.Shopkeeper.CreateProduct.PayloadScanner.ScanningError
   alias Recom.Usecases.Shopkeeper.CreateProduct
   alias Recom.Entities.Product
 
-  defmock(CreateProductPayloadScanner.Stub, for: CreateProductPayloadScanner)
+  defmock(PayloadScanner.Stub, for: PayloadScanner)
   defmock(CreateProductPresenter.Stub, for: CreateProductPresenter)
   defmock(CreateProduct.Double, for: CreateProduct.Behaviour)
 
@@ -27,13 +27,13 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
 
   describe "invalid json payload" do
     setup do
-      stub(CreateProductPayloadScanner.Stub, :scan, fn _ -> %ScanningError{} end)
+      stub(PayloadScanner.Stub, :scan, fn _ -> %ScanningError{} end)
       stub(CreateProductPresenter.Stub, :present, fn _ -> "details about the scanning error" end)
 
       response =
         http_request(with_payload: "invalid_payload")
         |> CreateProductController.create_product(
-          with_scanner: CreateProductPayloadScanner.Stub,
+          with_scanner: PayloadScanner.Stub,
           with_usecase: nil,
           with_presenter: CreateProductPresenter.Stub
         )
@@ -75,7 +75,7 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
         time_span: Interval.new(from: ~U[2019-01-31 13:00:00.000000Z], until: [days: 1])
       }
 
-      stub(CreateProductPayloadScanner.Stub, :scan, fn _ -> product end)
+      stub(PayloadScanner.Stub, :scan, fn _ -> product end)
       expect(CreateProduct.Double, :create, fn ^product -> :ok end)
       stub(CreateProductPresenter.Stub, :present, fn _ -> "empty body" end)
 
@@ -83,7 +83,7 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
         response:
           http_request(with_payload: payload)
           |> CreateProductController.create_product(
-            with_scanner: CreateProductPayloadScanner.Stub,
+            with_scanner: PayloadScanner.Stub,
             with_usecase: CreateProduct.Double,
             with_presenter: CreateProductPresenter.Stub
           )
@@ -120,14 +120,14 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
         time_span: Interval.new(from: ~U[2019-01-31 13:00:00.000000Z], until: [days: 1])
       }
 
-      stub(CreateProductPayloadScanner.Stub, :scan, fn _ -> product end)
+      stub(PayloadScanner.Stub, :scan, fn _ -> product end)
       stub(CreateProduct.Double, :create, fn _product -> :duplicate_product end)
       stub(CreateProductPresenter.Stub, :present, fn _ -> "descriptive explanation" end)
 
       response =
         http_request(with_payload: payload)
         |> CreateProductController.create_product(
-          with_scanner: CreateProductPayloadScanner.Stub,
+          with_scanner: PayloadScanner.Stub,
           with_usecase: CreateProduct.Double,
           with_presenter: CreateProductPresenter.Stub
         )
@@ -169,14 +169,14 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
         time_span: Interval.new(from: ~U[2019-01-31 13:00:00.000000Z], until: [days: 1])
       }
 
-      stub(CreateProductPayloadScanner.Stub, :scan, fn _ -> product end)
+      stub(PayloadScanner.Stub, :scan, fn _ -> product end)
       stub(CreateProduct.Double, :create, fn _product -> :invalid end)
       stub(CreateProductPresenter.Stub, :present, fn _ -> "descriptive explanation" end)
 
       response =
         http_request(with_payload: payload)
         |> CreateProductController.create_product(
-          with_scanner: CreateProductPayloadScanner.Stub,
+          with_scanner: PayloadScanner.Stub,
           with_usecase: CreateProduct.Double,
           with_presenter: CreateProductPresenter.Stub
         )
