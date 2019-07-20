@@ -11,6 +11,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.Controller_OriginalProductTest do
   alias Recom.Api.Shopkeeper.CreateProduct.Presenter
   alias Recom.Api.Shopkeeper.CreateProduct.PayloadScanner
   alias Recom.Usecases.Shopkeeper.CreateProduct
+  alias Recom.Usecases.Shopkeeper.CreateProduct.ProductCreated
   alias Recom.Entities.Product
 
   defp http_request(with_payload: payload), do: conn(:post, "/create_product", payload)
@@ -32,7 +33,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.Controller_OriginalProductTest do
     }
 
     stub(PayloadScanner.Stub, :scan, fn _ -> product end)
-    expect(CreateProduct.Double, :create, fn ^product -> :ok end)
+    expect(CreateProduct.Double, :create, fn ^product -> %ProductCreated{} end)
     stub(Presenter.Stub, :present, fn _ -> "empty body" end)
 
     [

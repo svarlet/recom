@@ -6,6 +6,7 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
 
   alias Recom.Usecases.Shopkeeper
   alias Recom.Usecases.Shopkeeper.CreateProduct.DuplicateProductError
+  alias Recom.Usecases.Shopkeeper.CreateProduct.ProductCreated
 
   setup :verify_on_exit!
 
@@ -29,7 +30,8 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
 
       stub(Shopkeeper.NotifierDouble, :notify_of_product_creation, fn _ -> :ok end)
 
-      assert :ok == Shopkeeper.CreateProduct.create(:__original_product__, context.deps)
+      assert %ProductCreated{message: "The product was successfully created."} ==
+               Shopkeeper.CreateProduct.create(:__original_product__, context.deps)
     end
 
     test "it dispatches a notification of product creation", context do

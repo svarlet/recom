@@ -20,13 +20,17 @@ defmodule Recom.Usecases.Shopkeeper do
       defstruct message: "This product already exists."
     end
 
+    defmodule ProductCreated do
+      defstruct message: "The product was successfully created."
+    end
+
     def create(product, deps) do
       gateway = deps[:with_gateway]
       notifier = deps[:with_notifier]
 
       with {:ok, product} <- gateway.store(product),
            :ok <- notifier.notify_of_product_creation(product) do
-        :ok
+        %ProductCreated{}
       else
         {:error, :duplicate_product} -> %DuplicateProductError{}
         :error -> :error
