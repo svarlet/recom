@@ -81,7 +81,7 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
 
   describe "semantically invalid product" do
     test "it returns a validation error" do
-      stub(Shopkeeper.ProductValidatorStub, :validate, fn :__invalid_product__ -> :error end)
+      stub(Shopkeeper.ProductValidatorStub, :validate, fn :__invalid_product__ -> :invalid end)
 
       assert :validation_error ==
                Shopkeeper.CreateProduct.create(:__invalid_product__,

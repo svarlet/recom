@@ -24,7 +24,7 @@ defmodule Recom.Usecases.Shopkeeper do
       gateway = deps[:with_gateway]
       notifier = deps[:with_notifier]
 
-      if deps[:with_validator].validate(product) == :error do
+      if deps[:with_validator].validate(product) == :invalid do
         :validation_error
       else
         with {:ok, product} <- gateway.store(product),
