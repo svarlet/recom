@@ -24,6 +24,10 @@ defmodule Recom.Usecases.Shopkeeper do
       defstruct message: "The product was successfully created."
     end
 
+    defmodule GatewayError do
+      defstruct message: "The gateway failed to save the product."
+    end
+
     def create(product, deps) do
       gateway = deps[:with_gateway]
       notifier = deps[:with_notifier]
@@ -33,7 +37,7 @@ defmodule Recom.Usecases.Shopkeeper do
         %ProductCreated{}
       else
         {:error, :duplicate_product} -> %DuplicateProductError{}
-        :error -> :error
+        :error -> %GatewayError{}
       end
     end
   end

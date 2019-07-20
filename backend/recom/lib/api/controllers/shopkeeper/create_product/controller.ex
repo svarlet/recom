@@ -5,6 +5,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.Controller do
   alias Recom.Entities.Product
   alias Recom.Usecases.Shopkeeper.CreateProduct.DuplicateProductError
   alias Recom.Usecases.Shopkeeper.CreateProduct.ProductCreated
+  alias Recom.Usecases.Shopkeeper.CreateProduct.GatewayError
 
   def create_product(conn, with_scanner: scanner, with_usecase: usecase, with_presenter: presenter) do
     with %Product{} = product <- scanner.scan(conn.params),
@@ -25,10 +26,10 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.Controller do
         |> put_resp_header("content-type", "application/json")
         |> send_resp(422, presenter.present(error))
 
-      error when error in ~w{error}a ->
+      %GatewayError{} = error ->
         conn
         |> put_resp_header("content-type", "application/json")
-        |> send_resp(422, presenter.present(error))
+        |> send_resp(500, presenter.present(error))
     end
   end
 end

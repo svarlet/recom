@@ -7,6 +7,7 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
   alias Recom.Usecases.Shopkeeper
   alias Recom.Usecases.Shopkeeper.CreateProduct.DuplicateProductError
   alias Recom.Usecases.Shopkeeper.CreateProduct.ProductCreated
+  alias Recom.Usecases.Shopkeeper.CreateProduct.GatewayError
 
   setup :verify_on_exit!
 
@@ -65,7 +66,7 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
     test "it returns an error" do
       stub(Shopkeeper.ProductsGatewayDouble, :store, fn :__valid_product__ -> :error end)
 
-      assert :error ==
+      assert %GatewayError{message: "The gateway failed to save the product."} ==
                Shopkeeper.CreateProduct.create(:__valid_product__,
                  with_gateway: Shopkeeper.ProductsGatewayDouble,
                  with_notifier: nil
