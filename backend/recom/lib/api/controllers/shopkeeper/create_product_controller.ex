@@ -1,15 +1,3 @@
-defmodule Recom.Api.Shopkeeper.CreateProduct.PayloadScanner do
-  @callback scan(map()) :: ScanningError.t() | Product.t()
-
-  defmodule ScanningError do
-    defstruct [:message, :errors]
-  end
-end
-
-defmodule Recom.Api.Shopkeeper.CreateProductPresenter do
-  @callback present(ScanningError.t()) :: String.t()
-end
-
 defmodule Recom.Api.Shopkeeper.CreateProductController do
   import Plug.Conn, only: [send_resp: 3, put_resp_header: 3]
 
