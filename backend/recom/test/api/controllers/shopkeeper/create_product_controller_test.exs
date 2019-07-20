@@ -113,7 +113,7 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
 
       stub(CreateProductPayloadScanner.Stub, :scan, fn _ -> product end)
       stub(CreateProduct.Mock, :create, fn _product -> :duplicate_product end)
-      stub(CreateProductPresenter.Stub, :present, fn _ -> nil end)
+      stub(CreateProductPresenter.Stub, :present, fn _ -> "descriptive explanation" end)
 
       response =
         http_request(with_payload: payload)
@@ -128,6 +128,10 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
 
     test "it responds with a 422 status", context do
       assert context.response.status == 422
+    end
+
+    test "it explains the error in the body of the response", context do
+      assert context.response.resp_body == "descriptive explanation"
     end
   end
 
