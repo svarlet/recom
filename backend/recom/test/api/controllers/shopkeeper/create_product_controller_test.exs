@@ -26,17 +26,15 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
       stub(CreateProductPayloadScanner.Stub, :scan, fn _ -> %ScanningError{} end)
       stub(CreateProductPresenter.Stub, :present, fn _ -> "details about the scanning error" end)
 
-      invalid_payload = %{irrelevant_field: 0}
+      response =
+        http_request(with_payload: "invalid_payload")
+        |> CreateProductController.create_product(
+          with_scanner: CreateProductPayloadScanner.Stub,
+          with_usecase: nil,
+          with_presenter: CreateProductPresenter.Stub
+        )
 
-      %{
-        response:
-          http_request(with_payload: invalid_payload)
-          |> CreateProductController.create_product(
-            with_scanner: CreateProductPayloadScanner.Stub,
-            with_usecase: nil,
-            with_presenter: CreateProductPresenter.Stub
-          )
-      }
+      [response: response]
     end
 
     test "it sets the status to 422", context do
