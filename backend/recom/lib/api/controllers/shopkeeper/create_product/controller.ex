@@ -1,4 +1,4 @@
-defmodule Recom.Api.Shopkeeper.CreateProductController do
+defmodule Recom.Api.Shopkeeper.CreateProduct.Controller do
   import Plug.Conn, only: [send_resp: 3, put_resp_header: 3]
 
   alias Recom.Api.Shopkeeper.CreateProduct.PayloadScanner.ScanningError

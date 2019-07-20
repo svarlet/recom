@@ -1,4 +1,4 @@
-defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
+defmodule Recom.Api.Shopkeeper.CreateProduct.ControllerTest do
   use ExUnit.Case, async: true
   use Timex
 
@@ -8,7 +8,7 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
 
   setup :verify_on_exit!
 
-  alias Recom.Api.Shopkeeper.CreateProductController
+  alias Recom.Api.Shopkeeper.CreateProduct.Controller
   alias Recom.Api.Shopkeeper.CreateProduct.Presenter
   alias Recom.Api.Shopkeeper.CreateProduct.PayloadScanner
   alias Recom.Api.Shopkeeper.CreateProduct.PayloadScanner.ScanningError
@@ -32,7 +32,7 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
 
       response =
         http_request(with_payload: "invalid_payload")
-        |> CreateProductController.create_product(
+        |> Controller.create_product(
           with_scanner: PayloadScanner.Stub,
           with_usecase: nil,
           with_presenter: Presenter.Stub
@@ -82,7 +82,7 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
       [
         response:
           http_request(with_payload: payload)
-          |> CreateProductController.create_product(
+          |> Controller.create_product(
             with_scanner: PayloadScanner.Stub,
             with_usecase: CreateProduct.Double,
             with_presenter: Presenter.Stub
@@ -126,7 +126,7 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
 
       response =
         http_request(with_payload: payload)
-        |> CreateProductController.create_product(
+        |> Controller.create_product(
           with_scanner: PayloadScanner.Stub,
           with_usecase: CreateProduct.Double,
           with_presenter: Presenter.Stub
@@ -175,7 +175,7 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
 
       response =
         http_request(with_payload: payload)
-        |> CreateProductController.create_product(
+        |> Controller.create_product(
           with_scanner: PayloadScanner.Stub,
           with_usecase: CreateProduct.Double,
           with_presenter: Presenter.Stub
