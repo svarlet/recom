@@ -23,17 +23,16 @@ defmodule Recom.Usecases.Shopkeeper do
     def create(product, deps) do
       gateway = deps[:with_gateway]
       notifier = deps[:with_notifier]
+      validator = deps[:with_validator]
 
-      if deps[:with_validator].validate(product) == :invalid do
-        :validation_error
+      with :valid <- validator.validate(product),
+           {:ok, product} <- gateway.store(product),
+           :ok <- notifier.notify_of_product_creation(product) do
+        :ok
       else
-        with {:ok, product} <- gateway.store(product),
-             :ok <- notifier.notify_of_product_creation(product) do
-          :ok
-        else
-          {:error, :duplicate_product} -> :duplicate_product
-          :error -> :error
-        end
+        {:error, :duplicate_product} -> :duplicate_product
+        :invalid -> :validation_error
+        :error -> :error
       end
     end
   end
