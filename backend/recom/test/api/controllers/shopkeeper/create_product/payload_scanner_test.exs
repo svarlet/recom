@@ -1,9 +1,9 @@
-defmodule Recom.Api.Shopkeeper.ProductPayloadScannerTest do
+defmodule Recom.Api.Shopkeeper.CreateProduct.PayloadScannerTest do
   use ExUnit.Case, async: true
   use Timex
 
+  alias Recom.Api.Shopkeeper.CreateProduct.PayloadScanner
   alias Recom.Entities.Product
-  alias Recom.Api.Shopkeeper.ProductPayloadScanner
 
   @valid_payload %{
     "name" => "Orange juice 2L",
@@ -27,7 +27,7 @@ defmodule Recom.Api.Shopkeeper.ProductPayloadScannerTest do
         {:zero, field}, payload -> Map.put(payload, field, 0)
         _not_an_override_spec, _payload -> raise "unknown override instruction"
       end)
-      |> ProductPayloadScanner.scan()
+      |> PayloadScanner.scan()
 
     [result: result]
   end
@@ -114,12 +114,34 @@ defmodule Recom.Api.Shopkeeper.ProductPayloadScannerTest do
   # VALID CASES
   @tag overrides: [zero: "price"]
   test "price is zero", context do
-    assert {:ok, _} = context.result
+    assert {:ok, product} = context.result
+
+    assert Product.equals?(product, %Product{
+             name: "Orange juice 2L",
+             price: 0,
+             quantity: 1_000,
+             time_span:
+               Interval.new(
+                 from: ~U[2010-10-10 14:15:00.000000Z],
+                 until: ~U[2020-10-18 13:12:09.000000Z]
+               )
+           })
   end
 
   @tag overrides: [zero: "quantity"]
   test "quantity is zero", context do
-    assert {:ok, _} = context.result
+    assert {:ok, product} = context.result
+
+    assert Product.equals?(product, %Product{
+             name: "Orange juice 2L",
+             price: 100,
+             quantity: 0,
+             time_span:
+               Interval.new(
+                 from: ~U[2010-10-10 14:15:00.000000Z],
+                 until: ~U[2020-10-18 13:12:09.000000Z]
+               )
+           })
   end
 
   test "A valid payload is scanned into a Product entity", context do

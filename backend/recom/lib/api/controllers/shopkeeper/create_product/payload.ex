@@ -1,12 +1,8 @@
-defmodule Recom.Api.Shopkeeper.ProductPayloadScanner do
+defmodule Recom.Api.Shopkeeper.CreateProduct.Payload do
   use Ecto.Schema
   use Timex
 
   import Ecto.Changeset
-
-  alias Recom.Entities.Product
-
-  @behaviour Recom.Api.PayloadScannerPlug
 
   embedded_schema do
     field(:name, :string)
@@ -16,17 +12,7 @@ defmodule Recom.Api.Shopkeeper.ProductPayloadScanner do
     field(:end, :utc_datetime_usec)
   end
 
-  def scan(payload) do
-    changeset = changeset(%__MODULE__{}, payload)
-
-    if changeset.valid? do
-      {:ok, apply_changes(changeset) |> to_product()}
-    else
-      {:error, "This payload does not represent a valid product."}
-    end
-  end
-
-  defp changeset(schema, params) do
+  def changeset(schema, params) do
     schema
     |> cast(params, ~w{name price quantity from end}a)
     |> validate_required(~w{name price quantity from end}a)
@@ -35,7 +21,7 @@ defmodule Recom.Api.Shopkeeper.ProductPayloadScanner do
     |> validate_daterange()
   end
 
-  def validate_daterange(changeset) do
+  defp validate_daterange(changeset) do
     validate_change(changeset, :end, fn _, _ ->
       with {:ok, from} <- Map.fetch(changeset.changes, :from),
            {:ok, the_end} <- Map.fetch(changeset.changes, :end) do
@@ -50,14 +36,5 @@ defmodule Recom.Api.Shopkeeper.ProductPayloadScanner do
         :error -> [end: "or its counterpart is missing"]
       end
     end)
-  end
-
-  defp to_product(payload) do
-    %Product{
-      name: payload.name,
-      price: payload.price,
-      quantity: payload.quantity,
-      time_span: Interval.new(from: payload.from, until: payload.end)
-    }
   end
 end

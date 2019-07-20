@@ -15,7 +15,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ControllerTest do
   alias Recom.Usecases.Shopkeeper.CreateProduct
   alias Recom.Entities.Product
 
-  defmock(PayloadScanner.Stub, for: PayloadScanner)
+  defmock(PayloadScanner.Stub, for: PayloadScanner.Behaviour)
   defmock(Presenter.Stub, for: Presenter)
   defmock(CreateProduct.Double, for: CreateProduct.Behaviour)
 
