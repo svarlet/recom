@@ -133,6 +133,10 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
     test "it explains the error in the body of the response", context do
       assert context.response.resp_body == "descriptive explanation"
     end
+
+    test "it sets the content-type header of the response to application/json", context do
+      assert ["application/json"] = get_resp_header(context.response, "content-type")
+    end
   end
 
   describe "gateway error" do

@@ -31,6 +31,7 @@ defmodule Recom.Api.Shopkeeper.CreateProductController do
 
       :duplicate_product = error ->
         conn
+        |> put_resp_header("content-type", "application/json")
         |> send_resp(422, presenter.present(error))
     end
   end
