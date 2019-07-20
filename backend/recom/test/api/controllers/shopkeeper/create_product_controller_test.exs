@@ -21,6 +21,10 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
 
   defp http_request(with_payload: payload), do: conn(:post, "/create_product", payload)
 
+  defp assert_json_response(response) do
+    assert ["application/json"] == get_resp_header(response, "content-type")
+  end
+
   describe "invalid json payload" do
     setup do
       stub(CreateProductPayloadScanner.Stub, :scan, fn _ -> %ScanningError{} end)
@@ -42,8 +46,7 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
     end
 
     test "it sets the response content-type to application/json", context do
-      assert ["application/json"] ==
-               get_resp_header(context.response, "content-type")
+      assert_json_response(context.response)
     end
 
     test "it delegates the creation of the response body to the presenter", context do
@@ -133,7 +136,7 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
     end
 
     test "it sets the content-type header of the response to application/json", context do
-      assert ["application/json"] = get_resp_header(context.response, "content-type")
+      assert_json_response(context.response)
     end
   end
 
