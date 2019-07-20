@@ -24,7 +24,7 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
   describe "invalid json payload" do
     setup do
       stub(CreateProductPayloadScanner.Stub, :scan, fn _ -> %ScanningError{} end)
-      stub(CreateProductPresenter.Stub, :present, fn _ -> "the body" end)
+      stub(CreateProductPresenter.Stub, :present, fn _ -> "details about the scanning error" end)
 
       invalid_payload = %{irrelevant_field: 0}
 
@@ -49,7 +49,7 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
     end
 
     test "it delegates the creation of the response body to the presenter", context do
-      assert context.response.resp_body == "the body"
+      assert context.response.resp_body == "details about the scanning error"
     end
   end
 
