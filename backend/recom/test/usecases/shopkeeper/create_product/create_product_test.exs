@@ -10,17 +10,13 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
 
   defmock(Shopkeeper.ProductsGatewayDouble, for: Shopkeeper.ProductsGateway)
   defmock(Shopkeeper.NotifierDouble, for: Shopkeeper.Notifier)
-  defmock(Shopkeeper.ProductValidatorStub, for: Shopkeeper.ProductValidator)
 
   describe "original product" do
     setup do
-      stub(Shopkeeper.ProductValidatorStub, :validate, fn _ -> :valid end)
-
       %{
         deps: [
           with_gateway: Shopkeeper.ProductsGatewayDouble,
-          with_notifier: Shopkeeper.NotifierDouble,
-          with_validator: Shopkeeper.ProductValidatorStub
+          with_notifier: Shopkeeper.NotifierDouble
         ]
       }
     end
@@ -50,8 +46,6 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
 
   describe "duplicate product" do
     test "it returns an error" do
-      stub(Shopkeeper.ProductValidatorStub, :validate, fn _ -> :valid end)
-
       expect(Shopkeeper.ProductsGatewayDouble, :store, fn :__duplicate_product__ ->
         {:error, :duplicate_product}
       end)
@@ -59,34 +53,18 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
       assert :duplicate_product ==
                Shopkeeper.CreateProduct.create(:__duplicate_product__,
                  with_gateway: Shopkeeper.ProductsGatewayDouble,
-                 with_notifier: nil,
-                 with_validator: Shopkeeper.ProductValidatorStub
+                 with_notifier: nil
                )
     end
   end
 
   describe "handling of a gateway failure" do
     test "it returns an error" do
-      stub(Shopkeeper.ProductValidatorStub, :validate, fn _ -> :valid end)
       stub(Shopkeeper.ProductsGatewayDouble, :store, fn :__valid_product__ -> :error end)
 
       assert :error ==
                Shopkeeper.CreateProduct.create(:__valid_product__,
                  with_gateway: Shopkeeper.ProductsGatewayDouble,
-                 with_notifier: nil,
-                 with_validator: Shopkeeper.ProductValidatorStub
-               )
-    end
-  end
-
-  describe "semantically invalid product" do
-    test "it returns a validation error" do
-      stub(Shopkeeper.ProductValidatorStub, :validate, fn :__invalid_product__ -> :invalid end)
-
-      assert :validation_error ==
-               Shopkeeper.CreateProduct.create(:__invalid_product__,
-                 with_validator: Shopkeeper.ProductValidatorStub,
-                 with_gateway: nil,
                  with_notifier: nil
                )
     end

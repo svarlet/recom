@@ -18,7 +18,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.Controller do
         |> put_resp_header("content-type", "application/json")
         |> send_resp(422, body)
 
-      error when error in ~w{duplicate_product invalid}a ->
+      error when error in ~w{duplicate_product}a ->
         conn
         |> put_resp_header("content-type", "application/json")
         |> send_resp(422, presenter.present(error))
