@@ -11,6 +11,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.Controller_DuplicateProductTest do
   alias Recom.Api.Shopkeeper.CreateProduct.Controller
   alias Recom.Api.Shopkeeper.CreateProduct.Presenter
   alias Recom.Api.Shopkeeper.CreateProduct.PayloadScanner
+  alias Recom.Usecases.Shopkeeper.CreateProduct.DuplicateProductError
   alias Recom.Usecases.Shopkeeper.CreateProduct
   alias Recom.Entities.Product
 
@@ -37,7 +38,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.Controller_DuplicateProductTest do
     }
 
     stub(PayloadScanner.Stub, :scan, fn _ -> product end)
-    stub(CreateProduct.Double, :create, fn _product -> :duplicate_product end)
+    stub(CreateProduct.Double, :create, fn _product -> %DuplicateProductError{} end)
     stub(Presenter.Stub, :present, fn _ -> "descriptive explanation" end)
 
     response =

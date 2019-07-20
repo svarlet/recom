@@ -3,6 +3,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.Controller do
 
   alias Recom.Api.Shopkeeper.CreateProduct.PayloadScanner.ScanningError
   alias Recom.Entities.Product
+  alias Recom.Usecases.Shopkeeper.CreateProduct.DuplicateProductError
 
   def create_product(conn, with_scanner: scanner, with_usecase: usecase, with_presenter: presenter) do
     with %Product{} = product <- scanner.scan(conn.params),
@@ -18,7 +19,12 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.Controller do
         |> put_resp_header("content-type", "application/json")
         |> send_resp(422, body)
 
-      error when error in ~w{duplicate_product}a ->
+      %DuplicateProductError{} = error ->
+        conn
+        |> put_resp_header("content-type", "application/json")
+        |> send_resp(422, presenter.present(error))
+
+      error when error in ~w{error}a ->
         conn
         |> put_resp_header("content-type", "application/json")
         |> send_resp(422, presenter.present(error))
