@@ -17,7 +17,7 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
 
   defmock(CreateProductPayloadScanner.Stub, for: CreateProductPayloadScanner)
   defmock(CreateProductPresenter.Stub, for: CreateProductPresenter)
-  defmock(CreateProduct.Mock, for: CreateProduct.Behaviour)
+  defmock(CreateProduct.Double, for: CreateProduct.Behaviour)
 
   defp http_request(with_payload: payload), do: conn(:post, "/create_product", payload)
 
@@ -72,7 +72,7 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
       }
 
       stub(CreateProductPayloadScanner.Stub, :scan, fn _ -> product end)
-      expect(CreateProduct.Mock, :create, fn ^product -> :ok end)
+      expect(CreateProduct.Double, :create, fn ^product -> :ok end)
       stub(CreateProductPresenter.Stub, :present, fn _ -> "empty body" end)
 
       [
@@ -80,7 +80,7 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
           http_request(with_payload: payload)
           |> CreateProductController.create_product(
             with_scanner: CreateProductPayloadScanner.Stub,
-            with_usecase: CreateProduct.Mock,
+            with_usecase: CreateProduct.Double,
             with_presenter: CreateProductPresenter.Stub
           )
       ]
@@ -113,14 +113,14 @@ defmodule Recom.Api.Shopkeeper.CreateProductControllerTest do
       }
 
       stub(CreateProductPayloadScanner.Stub, :scan, fn _ -> product end)
-      stub(CreateProduct.Mock, :create, fn _product -> :duplicate_product end)
+      stub(CreateProduct.Double, :create, fn _product -> :duplicate_product end)
       stub(CreateProductPresenter.Stub, :present, fn _ -> "descriptive explanation" end)
 
       response =
         http_request(with_payload: payload)
         |> CreateProductController.create_product(
           with_scanner: CreateProductPayloadScanner.Stub,
-          with_usecase: CreateProduct.Mock,
+          with_usecase: CreateProduct.Double,
           with_presenter: CreateProductPresenter.Stub
         )
 
