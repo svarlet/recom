@@ -17,8 +17,8 @@ defmodule Recom.Usecases.Shopkeeper do
     end
 
     def create(product, deps) do
-      gateway = Keyword.fetch!(deps, :with_gateway)
-      notifier = Keyword.fetch!(deps, :with_notifier)
+      gateway = deps[:with_gateway]
+      notifier = deps[:with_notifier]
 
       with {:ok, product} <- gateway.store(product),
            :ok <- notifier.notify_of_product_creation(product) do
