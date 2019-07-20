@@ -10,6 +10,10 @@ defmodule Recom.Usecases.Shopkeeper do
     @callback notify_of_product_creation(Product.t()) :: :ok
   end
 
+  defmodule ProductValidator do
+    @callback validate(Product.t()) :: :error
+  end
+
   defmodule CreateProduct do
     defmodule Behaviour do
       @type result :: :ok | :duplicate_product | :error
@@ -20,12 +24,16 @@ defmodule Recom.Usecases.Shopkeeper do
       gateway = deps[:with_gateway]
       notifier = deps[:with_notifier]
 
-      with {:ok, product} <- gateway.store(product),
-           :ok <- notifier.notify_of_product_creation(product) do
-        :ok
+      if deps[:with_validator].validate(product) == :error do
+        :validation_error
       else
-        {:error, :duplicate_product} -> :duplicate_product
-        :error -> :error
+        with {:ok, product} <- gateway.store(product),
+             :ok <- notifier.notify_of_product_creation(product) do
+          :ok
+        else
+          {:error, :duplicate_product} -> :duplicate_product
+          :error -> :error
+        end
       end
     end
   end
