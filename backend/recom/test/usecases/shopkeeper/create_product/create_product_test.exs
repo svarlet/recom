@@ -14,7 +14,7 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
 
   describe "original product" do
     setup do
-      stub(Shopkeeper.ProductValidatorStub, :validate, fn _ -> :ok end)
+      stub(Shopkeeper.ProductValidatorStub, :validate, fn _ -> :valid end)
 
       %{
         deps: [
@@ -50,7 +50,7 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
 
   describe "duplicate product" do
     test "it returns an error" do
-      stub(Shopkeeper.ProductValidatorStub, :validate, fn _ -> :ok end)
+      stub(Shopkeeper.ProductValidatorStub, :validate, fn _ -> :valid end)
 
       expect(Shopkeeper.ProductsGatewayDouble, :store, fn :__duplicate_product__ ->
         {:error, :duplicate_product}
@@ -67,7 +67,7 @@ defmodule Recom.Usecases.Shopkeeper.CreateProductTest do
 
   describe "handling of a gateway failure" do
     test "it returns an error" do
-      stub(Shopkeeper.ProductValidatorStub, :validate, fn _ -> :ok end)
+      stub(Shopkeeper.ProductValidatorStub, :validate, fn _ -> :valid end)
       stub(Shopkeeper.ProductsGatewayDouble, :store, fn :__valid_product__ -> :error end)
 
       assert :error ==

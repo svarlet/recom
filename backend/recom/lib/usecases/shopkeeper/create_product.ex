@@ -11,12 +11,12 @@ defmodule Recom.Usecases.Shopkeeper do
   end
 
   defmodule ProductValidator do
-    @callback validate(Product.t()) :: :error
+    @callback validate(Product.t()) :: :valid | :invalid
   end
 
   defmodule CreateProduct do
     defmodule Behaviour do
-      @type result :: :ok | :duplicate_product | :error
+      @type result :: :ok | :duplicate_product | :error | :validation_error
       @callback create(Product.t()) :: result
     end
 
