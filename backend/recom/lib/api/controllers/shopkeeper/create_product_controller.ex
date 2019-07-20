@@ -28,6 +28,10 @@ defmodule Recom.Api.Shopkeeper.CreateProductController do
         conn
         |> put_resp_header("content-type", "application/json")
         |> send_resp(422, body)
+
+      :duplicate_product ->
+        conn
+        |> send_resp(422, "")
     end
   end
 end
