@@ -21,7 +21,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScanner do
 
   defp check_name(payload) do
     case payload do
-      %{"name" => name} = payload when is_binary(name) ->
+      %{"name" => name} when is_binary(name) ->
         payload
 
       %{"name" => _} ->
@@ -35,19 +35,20 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScanner do
     end
   end
 
-  defp check_price(%{"price" => price} = payload) when is_integer(price) do
-    payload
-  end
+  defp check_price(payload) do
+    case payload do
+      %{"price" => price} when is_integer(price) ->
+        payload
 
-  defp check_price(%{"price" => _}) do
-    %ScanningError{
-      message: "Invalid payload.",
-      reason: %{price: "Invalid type, expected an integer."}
-    }
-  end
+      %{"price" => _} ->
+        %ScanningError{
+          message: "Invalid payload.",
+          reason: %{price: "Invalid type, expected an integer."}
+        }
 
-  defp check_price(_) do
-    %ScanningError{message: "Invalid payload.", reason: %{price: "Missing."}}
+      _ ->
+        %ScanningError{message: "Invalid payload.", reason: %{price: "Missing."}}
+    end
   end
 
   defp to_product(payload) do
