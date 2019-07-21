@@ -4,7 +4,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScanner do
   alias Recom.Entities.Product
 
   defmodule ScanningError do
-    defexception message: nil, reason: %{name: "Invalid type, expected a string."}
+    defexception ~w{message reason}a
   end
 
   def scan(payload) do
@@ -42,7 +42,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScannerTest do
   alias Recom.Api.Shopkeeper.CreateProduct.ProductScanner.ScanningError
 
   test "payload is nil" do
-    assert %ScanningError{message: "Nil payload."} == ProductScanner.scan(nil)
+    assert %ScanningError{message: "Nil payload.", reason: nil} == ProductScanner.scan(nil)
   end
 
   test "payload with all fields of valid type" do
