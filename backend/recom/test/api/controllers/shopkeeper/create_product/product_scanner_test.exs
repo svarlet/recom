@@ -4,13 +4,13 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScanner do
   alias Recom.Entities.Product
 
   defmodule ScanningError do
-    defexception message: "Nil payload.", reason: %{name: "Invalid type, expected a string."}
+    defexception message: nil, reason: %{name: "Invalid type, expected a string."}
   end
 
   def scan(payload) do
     case payload do
       nil ->
-        %ScanningError{}
+        %ScanningError{message: "Nil payload."}
 
       %{"name" => name} when not is_binary(name) ->
         %ScanningError{
