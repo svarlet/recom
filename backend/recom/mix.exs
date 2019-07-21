@@ -37,7 +37,8 @@ defmodule Recom.MixProject do
       {:x509, "~> 0.6.0", only: [:dev, :test]},
       {:jason, "~> 1.1"},
       {:dialyxir, "~> 1.0.0-rc.6", only: [:dev], runtime: false},
-      {:httpoison, "~> 1.5", only: [:test]}
+      {:httpoison, "~> 1.5", only: [:test]},
+      {:exceptional, "~> 2.1"}
     ]
   end
 end
