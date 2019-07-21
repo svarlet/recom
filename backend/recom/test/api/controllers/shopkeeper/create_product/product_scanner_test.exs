@@ -45,6 +45,10 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScanner do
     }
   end
 
+  defp check_price(_) do
+    %ScanningError{message: "Invalid payload.", reason: %{price: "Missing."}}
+  end
+
   defp to_product(payload) do
     %Product{
       name: payload["name"],
@@ -118,6 +122,15 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScannerTest do
     assert %ScanningError{
              message: "Invalid payload.",
              reason: %{price: "Invalid type, expected an integer."}
+           } = ProductScanner.scan(payload)
+  end
+
+  test "price is missing" do
+    payload = Map.delete(@valid_payload, "price")
+
+    assert %ScanningError{
+             message: "Invalid payload.",
+             reason: %{price: "Missing."}
            } = ProductScanner.scan(payload)
   end
 end
