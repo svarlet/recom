@@ -55,41 +55,35 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScannerTest do
   alias Recom.Api.Shopkeeper.CreateProduct.ProductScanner
   alias Recom.Api.Shopkeeper.CreateProduct.ProductScanner.ScanningError
 
+  @valid_payload %{
+    "name" => "Orange Juice 2L",
+    "price" => 589,
+    "quantity" => 1_000,
+    "from" => "2019-01-01T14:00:00.000000Z",
+    "end" => "2019-01-09T14:00:00.000000Z"
+  }
+
+  @valid_product %Product{
+    name: "Orange Juice 2L",
+    price: 589,
+    quantity: 1_000,
+    time_span:
+      Interval.new(
+        from: ~U[2019-01-01 14:00:00.000000Z],
+        until: [days: 8]
+      )
+  }
+
   test "payload is nil" do
     assert %ScanningError{message: "Nil payload.", reason: nil} == ProductScanner.scan(nil)
   end
 
   test "payload with all fields of valid type" do
-    payload = %{
-      "name" => "Orange Juice 2L",
-      "price" => 589,
-      "quantity" => 1_000,
-      "from" => "2019-01-01T14:00:00.000000Z",
-      "end" => "2019-01-09T14:00:00.000000Z"
-    }
-
-    product = %Product{
-      name: "Orange Juice 2L",
-      price: 589,
-      quantity: 1_000,
-      time_span:
-        Interval.new(
-          from: ~U[2019-01-01 14:00:00.000000Z],
-          until: [days: 8]
-        )
-    }
-
-    assert Product.equals?(product, ProductScanner.scan(payload))
+    assert Product.equals?(@valid_product, ProductScanner.scan(@valid_payload))
   end
 
   test "name with an invalid type" do
-    payload = %{
-      "name" => 0,
-      "price" => 589,
-      "quantity" => 1_000,
-      "from" => "2019-01-01T14:00:00.000000Z",
-      "end" => "2019-01-09T14:00:00.000000Z"
-    }
+    payload = Map.put(@valid_payload, "name", 0)
 
     assert %ScanningError{
              message: "Invalid payload.",
@@ -98,12 +92,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScannerTest do
   end
 
   test "name is missing" do
-    payload = %{
-      "price" => 589,
-      "quantity" => 1_000,
-      "from" => "2019-01-01T14:00:00.000000Z",
-      "end" => "2019-01-09T14:00:00.000000Z"
-    }
+    payload = Map.delete(@valid_payload, "name")
 
     assert %ScanningError{
              message: "Invalid payload.",
