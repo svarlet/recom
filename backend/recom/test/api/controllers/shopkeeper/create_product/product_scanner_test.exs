@@ -15,6 +15,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScanner do
   def scan(payload) do
     payload
     |> check_name()
+    ~> check_price()
     ~> to_product()
   end
 
@@ -31,6 +32,17 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScanner do
 
   defp check_name(_) do
     %ScanningError{message: "Invalid payload.", reason: %{name: "Missing."}}
+  end
+
+  defp check_price(%{"price" => price} = payload) when is_integer(price) do
+    payload
+  end
+
+  defp check_price(%{"price" => _}) do
+    %ScanningError{
+      message: "Invalid payload.",
+      reason: %{price: "Invalid type, expected an integer."}
+    }
   end
 
   defp to_product(payload) do
@@ -97,6 +109,15 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScannerTest do
     assert %ScanningError{
              message: "Invalid payload.",
              reason: %{name: "Missing."}
+           } = ProductScanner.scan(payload)
+  end
+
+  test "price has an invalid type" do
+    payload = Map.put(@valid_payload, "price", "not an integer")
+
+    assert %ScanningError{
+             message: "Invalid payload.",
+             reason: %{price: "Invalid type, expected an integer."}
            } = ProductScanner.scan(payload)
   end
 end
