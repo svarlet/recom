@@ -91,8 +91,11 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ResponseBuilderTest do
       assert ["application/json"] == Plug.Conn.get_resp_header(context.response, "content-type")
     end
 
-    @tag :skip
-    test "it sets the response body with the error properties"
+    test "it sets the response body with the error properties", context do
+      assert Jason.decode!(context.response.resp_body, keys: :atoms) == %{
+               message: "boom"
+             }
+    end
   end
 
   describe "given a connection and a duplicate product error" do
