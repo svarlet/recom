@@ -11,6 +11,12 @@ defmodule Recom.Usecases.Shopkeeper.CreateProduct.ProductValidator do
       product.price < 0 ->
         %ValidationError{message: "Invalid product.", reason: %{price: "The price is negative."}}
 
+      product.quantity < 0 ->
+        %ValidationError{
+          message: "Invalid product.",
+          reason: %{quantity: "The quantity is negative."}
+        }
+
       true ->
         product
     end
@@ -67,8 +73,13 @@ defmodule Recom.Usecases.Shopkeeper.CreateProduct.ProductValidatorTest do
            } == context.result
   end
 
-  @tag :skip
-  test "quantity is negative"
+  @tag overrides: [negative: :quantity]
+  test "quantity is negative", context do
+    assert %ValidationError{
+             message: "Invalid product.",
+             reason: %{quantity: "The quantity is negative."}
+           } == context.result
+  end
 
   @tag :skip
   test "end precedes from"
