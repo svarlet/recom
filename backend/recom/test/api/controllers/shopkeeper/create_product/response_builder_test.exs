@@ -3,7 +3,9 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ResponseBuilder do
   import Plug.Conn
 
   def build(conn, _error) do
-    send_resp(conn, 422, "")
+    conn
+    |> put_resp_header("content-type", "application/json")
+    |> send_resp(422, "")
   end
 end
 
@@ -30,8 +32,13 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ResponseBuilderTest do
       assert response.status == 422
     end
 
-    @tag :skip
-    test "it sets the content-type header to application/json"
+    test "it sets the content-type header to application/json" do
+      irrelevant_payload = %{}
+      conn = Plug.Test.conn(:post, "/create_product", irrelevant_payload)
+      result = %ScanningError{message: "the message", reason: %{field: "invalid"}}
+      response = ResponseBuilder.build(conn, result)
+      assert ["application/json"] == Plug.Conn.get_resp_header(response, "content-type")
+    end
 
     @tag :skip
     test "it sets the response body with the error properties"
