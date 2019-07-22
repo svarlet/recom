@@ -91,8 +91,17 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScanner do
 
   defp check_end(payload) do
     case payload do
-      %{"end" => _} ->
-        payload
+      %{"end" => the_end} ->
+        case Timex.parse(the_end, "{ISO:Extended:Z}") do
+          {:ok, _} ->
+            payload
+
+          {:error, _} ->
+            %ScanningError{
+              message: "Invalid payload.",
+              reason: %{end: "Invalid type, expected a datetime."}
+            }
+        end
 
       _ ->
         %ScanningError{message: "Invalid payload.", reason: %{end: "Missing."}}
@@ -229,5 +238,13 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScannerTest do
   test "end is missing", context do
     assert %ScanningError{message: "Invalid payload.", reason: %{end: "Missing."}} ==
              context.result
+  end
+
+  @tag overrides: [not_a_datetime: "end"]
+  test "end is not a datetime", context do
+    assert %ScanningError{
+             message: "Invalid payload.",
+             reason: %{end: "Invalid type, expected a datetime."}
+           } == context.result
   end
 end
