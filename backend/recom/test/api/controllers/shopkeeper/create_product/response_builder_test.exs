@@ -15,6 +15,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ResponseBuilderTest do
   use ExUnit.Case, async: true
 
   alias Recom.Api.Shopkeeper.CreateProduct.ProductScanner.ScanningError
+  alias Recom.Usecases.Shopkeeper.CreateProduct.GatewayError
   alias Recom.Api.Shopkeeper.CreateProduct.ResponseBuilder
 
   describe "given a connection and a scanning error" do
@@ -62,8 +63,16 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ResponseBuilderTest do
   end
 
   describe "given a connection and a gateway error" do
-    @tag :skip
-    test "it sends the response"
+    setup do
+      irrelevant_payload = %{}
+      conn = Plug.Test.conn(:post, "/create_product", irrelevant_payload)
+      error = %GatewayError{message: "boom"}
+      [response: ResponseBuilder.build(conn, error)]
+    end
+
+    test "it sends the response", context do
+      assert context.response.state == :sent
+    end
 
     @tag :skip
     test "it sets the response status to 500"

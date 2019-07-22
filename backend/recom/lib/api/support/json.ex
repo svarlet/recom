@@ -29,3 +29,13 @@ defimpl Jason.Encoder, for: Recom.Api.Shopkeeper.CreateProduct.ProductScanner.Sc
     |> Jason.encode!()
   end
 end
+
+defimpl Jason.Encoder, for: Recom.Usecases.Shopkeeper.CreateProduct.GatewayError do
+  require Jason.Helpers
+
+  def encode(error, _) do
+    error
+    |> Jason.Helpers.json_map_take(~w{message}a)
+    |> Jason.encode!()
+  end
+end
