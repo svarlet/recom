@@ -8,18 +8,23 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScanner do
     defexception ~w{message reason}a
   end
 
-  def scan(payload) when not is_map(payload) do
-    %ScanningError{message: "Cannot scan this payload."}
-  end
-
   def scan(payload) do
     payload
-    |> check_name()
+    |> check_payload_type()
+    ~> check_name()
     ~> check_price()
     ~> check_quantity()
     ~> check_from()
     ~> check_end()
     ~> to_product()
+  end
+
+  defp check_payload_type(payload) do
+    if is_map(payload) do
+      payload
+    else
+      %ScanningError{message: "Cannot scan this payload."}
+    end
   end
 
   defp check_name(payload) do
