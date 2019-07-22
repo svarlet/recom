@@ -72,7 +72,16 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScanner do
   defp check_from(payload) do
     case payload do
       %{"from" => _from} ->
-        payload
+        case Timex.parse(payload["from"], "{ISO:Extended:Z}") do
+          {:ok, _} ->
+            payload
+
+          {:error, _} ->
+            %ScanningError{
+              message: "Invalid payload.",
+              reason: %{from: "Invalid type, expected a datetime."}
+            }
+        end
 
       _ ->
         %ScanningError{message: "Invalid payload.", reason: %{from: "Missing."}}
@@ -127,6 +136,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScannerTest do
           {:delete, field}, payload -> Map.delete(payload, field)
           {:zero, field}, payload -> Map.put(payload, field, 0)
           {:not_an_integer, field}, payload -> Map.put(payload, field, "not an integer")
+          {:not_a_datetime, field}, payload -> Map.put(payload, field, "not a datetime")
           _, _ -> raise "Unsupported override instruction."
         end)
       else
@@ -194,5 +204,13 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScannerTest do
   test "from is missing", context do
     assert %ScanningError{message: "Invalid payload.", reason: %{from: "Missing."}} ==
              context.result
+  end
+
+  @tag overrides: [not_a_datetime: "from"]
+  test "from is not a datetime", context do
+    assert %ScanningError{
+             message: "Invalid payload.",
+             reason: %{from: "Invalid type, expected a datetime."}
+           } == context.result
   end
 end
