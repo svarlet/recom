@@ -4,12 +4,12 @@ defmodule Recom.Usecases.Shopkeeper.CreateProduct.ProductValidator do
   end
 
   def validate(product) do
-    if String.trim(product.name) == "" do
-      %ValidationError{message: "Invalid product.", reason: %{name: "The value is blank."}}
-    else
-      if product.price < 0 do
+    cond do
+      String.trim(product.name) == "" ->
+        %ValidationError{message: "Invalid product.", reason: %{name: "The value is blank."}}
+
+      product.price < 0 ->
         %ValidationError{message: "Invalid product.", reason: %{price: "The price is negative."}}
-      end
     end
   end
 end
