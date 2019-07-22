@@ -75,42 +75,31 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScanner do
     end
   end
 
+  defp check(payload, field, checker, message) do
+    if Map.has_key?(payload, field) do
+      if checker.(payload[field]) do
+        payload
+      else
+        %ScanningError{message: "Invalid payload.", reason: %{String.to_atom(field) => message}}
+      end
+    else
+      %ScanningError{message: "Invalid payload.", reason: %{String.to_atom(field) => "Missing."}}
+    end
+  end
+
   defp check_from(payload) do
-    case payload do
-      %{"from" => from} ->
-        case Timex.parse(from, "{ISO:Extended:Z}") do
-          {:ok, _} ->
-            payload
+    check(payload, "from", &is_datetime?/1, "Invalid type, expected a datetime.")
+  end
 
-          {:error, _} ->
-            %ScanningError{
-              message: "Invalid payload.",
-              reason: %{from: "Invalid type, expected a datetime."}
-            }
-        end
-
-      _ ->
-        %ScanningError{message: "Invalid payload.", reason: %{from: "Missing."}}
+  defp is_datetime?(value) do
+    case Timex.parse(value, "{ISO:Extended:Z}") do
+      {:ok, _} -> true
+      {:error, _} -> false
     end
   end
 
   defp check_end(payload) do
-    case payload do
-      %{"end" => the_end} ->
-        case Timex.parse(the_end, "{ISO:Extended:Z}") do
-          {:ok, _} ->
-            payload
-
-          {:error, _} ->
-            %ScanningError{
-              message: "Invalid payload.",
-              reason: %{end: "Invalid type, expected a datetime."}
-            }
-        end
-
-      _ ->
-        %ScanningError{message: "Invalid payload.", reason: %{end: "Missing."}}
-    end
+    check(payload, "end", &is_datetime?/1, "Invalid type, expected a datetime.")
   end
 
   defp to_product(payload) do
