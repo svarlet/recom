@@ -6,6 +6,11 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ResponseBuilder do
   alias Recom.Usecases.Shopkeeper.CreateProduct.GatewayError
   alias Recom.Usecases.Shopkeeper.CreateProduct.DuplicateProductError
   alias Recom.Usecases.Shopkeeper.CreateProduct.ProductValidator.ValidationError
+  alias Recom.Entities.Product
+
+  def build(conn, %Product{}) do
+    send_resp(conn, 201, "")
+  end
 
   def build(conn, error) do
     status =
@@ -32,6 +37,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ResponseBuilderTest do
   alias Recom.Usecases.Shopkeeper.CreateProduct.DuplicateProductError
   alias Recom.Usecases.Shopkeeper.CreateProduct.ProductValidator.ValidationError
   alias Recom.Api.Shopkeeper.CreateProduct.ResponseBuilder
+  alias Recom.Entities.Product
 
   defp fake_request_to_create_a_product() do
     irrelevant_payload = %{}
@@ -149,13 +155,26 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ResponseBuilderTest do
   end
 
   describe "given a connection and a successfully saved product" do
-    @tag :skip
-    test "it sends the response"
+    setup do
+      conn = fake_request_to_create_a_product()
+      product = %Product{}
+      [response: ResponseBuilder.build(conn, product)]
+    end
 
-    @tag :skip
-    test "it sets the response status to 201"
+    test "it sends the response", context do
+      assert context.response.state == :sent
+    end
 
-    @tag :skip
-    test "it doesn't set the content-type of the response"
+    test "it sets the response status to 201", context do
+      assert context.response.status == 201
+    end
+
+    test "it doesn't set the content-type of the response", context do
+      assert [] == Plug.Conn.get_resp_header(context.response, "content-type")
+    end
+
+    test "it leaves the response body empty", context do
+      assert "" == context.response.resp_body
+    end
   end
 end
