@@ -92,6 +92,20 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScannerTest do
       )
   }
 
+  setup context do
+    payload =
+      if context[:overrides] do
+        Enum.reduce(context[:overrides], @valid_payload, fn
+          {:delete, field}, payload -> Map.delete(payload, field)
+          _, _ -> raise "Unsupported override instruction."
+        end)
+      else
+        @valid_payload
+      end
+
+    [result: ProductScanner.scan(payload)]
+  end
+
   test "payload is nil" do
     assert %ScanningError{message: "Nil payload.", reason: nil} == ProductScanner.scan(nil)
   end
@@ -125,20 +139,6 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScannerTest do
              message: "Invalid payload.",
              reason: %{price: "Invalid type, expected an integer."}
            } = ProductScanner.scan(payload)
-  end
-
-  setup context do
-    payload =
-      if context[:overrides] do
-        Enum.reduce(context[:overrides], @valid_payload, fn
-          {:delete, field}, payload -> Map.delete(payload, field)
-          _, _ -> raise "Unsupported override instruction."
-        end)
-      else
-        @valid_payload
-      end
-
-    [result: ProductScanner.scan(payload)]
   end
 
   @tag overrides: [delete: "price"]
