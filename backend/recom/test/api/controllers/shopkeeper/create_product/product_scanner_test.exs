@@ -97,6 +97,8 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScannerTest do
       if context[:overrides] do
         Enum.reduce(context[:overrides], @valid_payload, fn
           {:delete, field}, payload -> Map.delete(payload, field)
+          {:zero, field}, payload -> Map.put(payload, field, 0)
+          {:not_an_integer, field}, payload -> Map.put(payload, field, "not an integer")
           _, _ -> raise "Unsupported override instruction."
         end)
       else
@@ -114,31 +116,28 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScannerTest do
     assert Product.equals?(@valid_product, ProductScanner.scan(@valid_payload))
   end
 
-  test "name with an invalid type" do
-    payload = Map.put(@valid_payload, "name", 0)
-
+  @tag overrides: [zero: "name"]
+  test "name with an invalid type", context do
     assert %ScanningError{
              message: "Invalid payload.",
              reason: %{name: "Invalid type, expected a string."}
-           } = ProductScanner.scan(payload)
+           } = context.result
   end
 
-  test "name is missing" do
-    payload = Map.delete(@valid_payload, "name")
-
+  @tag overrides: [delete: "name"]
+  test "name is missing", context do
     assert %ScanningError{
              message: "Invalid payload.",
              reason: %{name: "Missing."}
-           } = ProductScanner.scan(payload)
+           } = context.result
   end
 
-  test "price has an invalid type" do
-    payload = Map.put(@valid_payload, "price", "not an integer")
-
+  @tag overrides: [not_an_integer: "price"]
+  test "price has an invalid type", context do
     assert %ScanningError{
              message: "Invalid payload.",
              reason: %{price: "Invalid type, expected an integer."}
-           } = ProductScanner.scan(payload)
+           } = context.result
   end
 
   @tag overrides: [delete: "price"]
