@@ -8,7 +8,7 @@ defmodule Recom.Storage.PurchasablesGateway.DbAdapter do
   alias Recom.Repo
   alias Recom.Storage
   alias Recom.Storage.PurchasablesGateway.DataMapper
-  alias Recom.Usecases.Shopkeeper.CreateProduct.GatewayError
+  alias Recom.Usecases.Shopkeeper.CreateProduct.{DuplicateProductError, GatewayError}
 
   @impl true
   def all(instant) do
@@ -38,7 +38,10 @@ defmodule Recom.Storage.PurchasablesGateway.DbAdapter do
       |> Repo.insert!()
       |> DataMapper.convert()
     rescue
-      _ ->
+      Ecto.ConstraintError ->
+        %DuplicateProductError{message: "This product already exists."}
+
+      _error ->
         %GatewayError{message: "An unexpected error happened while saving the product."}
     end
   end

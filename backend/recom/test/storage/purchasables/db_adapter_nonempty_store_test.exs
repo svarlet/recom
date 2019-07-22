@@ -5,6 +5,7 @@ defmodule Recom.Storage.DbAdapter_NonEmptyStoreTest do
   alias Recom.Storage
   alias Recom.Entities.Product
   alias Recom.Storage.PurchasablesGateway.DbAdapter
+  alias Recom.Usecases.Shopkeeper.CreateProduct.DuplicateProductError
 
   @a_valid_product Product.new(
                      name: "Apricots x6",
@@ -46,6 +47,11 @@ defmodule Recom.Storage.DbAdapter_NonEmptyStoreTest do
                saved_product.end,
                Timex.to_datetime(@a_valid_product.time_span.until, "Etc/UTC")
              ) == :eq
+    end
+
+    test "when the product is a duplicate, it returns an error" do
+      assert %DuplicateProductError{message: "This product already exists."} ==
+               DbAdapter.save_product(@another_valid_product)
     end
   end
 end
