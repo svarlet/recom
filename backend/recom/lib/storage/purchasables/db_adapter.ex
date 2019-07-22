@@ -24,7 +24,20 @@ defmodule Recom.Storage.PurchasablesGateway.DbAdapter do
     end
   end
 
-  def save_product(_product) do
-    %GatewayError{message: "An unexpected error happened while saving the product."}
+  def save_product(product) do
+    try do
+      record = %Storage.Product{
+        name: product.name,
+        price: product.price,
+        quantity: product.quantity,
+        start: Timex.to_datetime(product.time_span.from, "Etc/UTC"),
+        end: Timex.to_datetime(product.time_span.until, "Etc/UTC")
+      }
+
+      Repo.insert!(record)
+    rescue
+      _ ->
+        %GatewayError{message: "An unexpected error happened while saving the product."}
+    end
   end
 end
