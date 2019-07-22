@@ -44,19 +44,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScanner do
   end
 
   defp check_price(payload) do
-    case payload do
-      %{"price" => price} when is_integer(price) ->
-        payload
-
-      %{"price" => _} ->
-        %ScanningError{
-          message: "Invalid payload.",
-          reason: %{price: "Invalid type, expected an integer."}
-        }
-
-      _ ->
-        %ScanningError{message: "Invalid payload.", reason: %{price: "Missing."}}
-    end
+    check(payload, "price", &is_integer/1, "Invalid type, expected an integer.")
   end
 
   defp check_quantity(payload) do
