@@ -4,6 +4,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ResponseBuilder do
 
   alias Recom.Api.Shopkeeper.CreateProduct.ProductScanner.ScanningError
   alias Recom.Usecases.Shopkeeper.CreateProduct.GatewayError
+  alias Recom.Usecases.Shopkeeper.CreateProduct.DuplicateProductError
   alias Recom.Usecases.Shopkeeper.CreateProduct.ProductValidator.ValidationError
 
   def build(conn, error) do
@@ -11,6 +12,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ResponseBuilder do
       case error do
         %ScanningError{} -> 422
         %ValidationError{} -> 422
+        %DuplicateProductError{} -> 422
         %GatewayError{} -> 500
       end
 
@@ -27,6 +29,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ResponseBuilderTest do
 
   alias Recom.Api.Shopkeeper.CreateProduct.ProductScanner.ScanningError
   alias Recom.Usecases.Shopkeeper.CreateProduct.GatewayError
+  alias Recom.Usecases.Shopkeeper.CreateProduct.DuplicateProductError
   alias Recom.Usecases.Shopkeeper.CreateProduct.ProductValidator.ValidationError
   alias Recom.Api.Shopkeeper.CreateProduct.ResponseBuilder
 
@@ -120,17 +123,29 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ResponseBuilderTest do
   end
 
   describe "given a connection and a duplicate product error" do
-    @tag :skip
-    test "it sends the response"
+    setup do
+      conn = fake_request_to_create_a_product()
+      error = %DuplicateProductError{message: "have you forgotten already?"}
+      [response: ResponseBuilder.build(conn, error)]
+    end
 
-    @tag :skip
-    test "it sets the response status to 422"
+    test "it sends the response", context do
+      assert context.response.state == :sent
+    end
 
-    @tag :skip
-    test "it sets the content-type header to application/json"
+    test "it sets the response status to 422", context do
+      assert context.response.status == 422
+    end
 
-    @tag :skip
-    test "it sets the response body with the error properties"
+    test "it sets the content-type header to application/json", context do
+      assert ["application/json"] == Plug.Conn.get_resp_header(context.response, "content-type")
+    end
+
+    test "it sets the response body with the error properties", context do
+      assert Jason.decode!(context.response.resp_body, keys: :atoms) == %{
+               message: "have you forgotten already?"
+             }
+    end
   end
 
   describe "given a connection and a successfully saved product" do
