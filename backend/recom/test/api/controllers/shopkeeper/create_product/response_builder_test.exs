@@ -16,28 +16,23 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ResponseBuilderTest do
   alias Recom.Api.Shopkeeper.CreateProduct.ResponseBuilder
 
   describe "given a connection and a scanning error" do
-    test "it sends the response" do
+    setup do
       irrelevant_payload = %{}
       conn = Plug.Test.conn(:post, "/create_product", irrelevant_payload)
       result = %ScanningError{message: "the message", reason: %{field: "invalid"}}
-      response = ResponseBuilder.build(conn, result)
-      assert response.state == :sent
+      [response: ResponseBuilder.build(conn, result)]
     end
 
-    test "it sets the response status to 422" do
-      irrelevant_payload = %{}
-      conn = Plug.Test.conn(:post, "/create_product", irrelevant_payload)
-      result = %ScanningError{message: "the message", reason: %{field: "invalid"}}
-      response = ResponseBuilder.build(conn, result)
-      assert response.status == 422
+    test "it sends the response", context do
+      assert context.response.state == :sent
     end
 
-    test "it sets the content-type header to application/json" do
-      irrelevant_payload = %{}
-      conn = Plug.Test.conn(:post, "/create_product", irrelevant_payload)
-      result = %ScanningError{message: "the message", reason: %{field: "invalid"}}
-      response = ResponseBuilder.build(conn, result)
-      assert ["application/json"] == Plug.Conn.get_resp_header(response, "content-type")
+    test "it sets the response status to 422", context do
+      assert context.response.status == 422
+    end
+
+    test "it sets the content-type header to application/json", context do
+      assert ["application/json"] == Plug.Conn.get_resp_header(context.response, "content-type")
     end
 
     @tag :skip
