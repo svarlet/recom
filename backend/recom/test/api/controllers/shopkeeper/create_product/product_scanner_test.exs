@@ -62,6 +62,9 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScanner do
           message: "Invalid payload.",
           reason: %{quantity: "Invalid type, expected an integer."}
         }
+
+      _ ->
+        %ScanningError{message: "Invalid payload.", reason: %{quantity: "Missing."}}
     end
   end
 
@@ -168,5 +171,11 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScannerTest do
              message: "Invalid payload.",
              reason: %{quantity: "Invalid type, expected an integer."}
            } = context.result
+  end
+
+  @tag overrides: [delete: "quantity"]
+  test "quantity is missing", context do
+    assert %ScanningError{message: "Invalid payload.", reason: %{quantity: "Missing."}} ==
+             context.result
   end
 end
