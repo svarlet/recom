@@ -81,9 +81,6 @@ defmodule Recom.Usecases.Shopkeeper.CreateProduct.ProductValidatorTest do
            } == context.result
   end
 
-  @tag :skip
-  test "end precedes from"
-
   test "valid product", context do
     assert context.result == @a_valid_product
   end
