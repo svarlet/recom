@@ -2,12 +2,21 @@
 defmodule Recom.Api.Shopkeeper.CreateProduct.ResponseBuilder do
   import Plug.Conn
 
+  alias Recom.Api.Shopkeeper.CreateProduct.ProductScanner.ScanningError
+  alias Recom.Usecases.Shopkeeper.CreateProduct.GatewayError
+
   def build(conn, error) do
+    status =
+      case error do
+        %ScanningError{} -> 422
+        %GatewayError{} -> 500
+      end
+
     {:ok, body} = Jason.encode(error)
 
     conn
     |> put_resp_header("content-type", "application/json")
-    |> send_resp(422, body)
+    |> send_resp(status, body)
   end
 end
 
@@ -74,8 +83,9 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ResponseBuilderTest do
       assert context.response.state == :sent
     end
 
-    @tag :skip
-    test "it sets the response status to 500"
+    test "it sets the response status to 500", context do
+      assert context.response.status == 500
+    end
 
     @tag :skip
     test "it sets the content-type header to application/json"
