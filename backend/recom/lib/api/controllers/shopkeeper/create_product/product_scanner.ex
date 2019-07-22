@@ -60,19 +60,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScanner do
   end
 
   defp check_quantity(payload) do
-    case payload do
-      %{"quantity" => quantity} when is_integer(quantity) ->
-        payload
-
-      %{"quantity" => _} ->
-        %ScanningError{
-          message: "Invalid payload.",
-          reason: %{quantity: "Invalid type, expected an integer."}
-        }
-
-      _ ->
-        %ScanningError{message: "Invalid payload.", reason: %{quantity: "Missing."}}
-    end
+    check(payload, "quantity", &is_integer/1, "Invalid type, expected an integer.")
   end
 
   defp check(payload, field, checker, message) do
