@@ -1,4 +1,3 @@
-# REFACTOR rename to ConnectionReducer? (conn + event = new conn). That would certainly compose well with the input of the notifier too.
 defmodule Recom.Api.Shopkeeper.CreateProduct.ResponseBuilder do
   import Plug.Conn
 
