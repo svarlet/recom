@@ -16,6 +16,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScanner do
     payload
     |> check_name()
     ~> check_price()
+    ~> check_quantity()
     ~> to_product()
   end
 
@@ -48,6 +49,19 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScanner do
 
       _ ->
         %ScanningError{message: "Invalid payload.", reason: %{price: "Missing."}}
+    end
+  end
+
+  defp check_quantity(payload) do
+    case payload do
+      %{"quantity" => quantity} when is_integer(quantity) ->
+        payload
+
+      %{"quantity" => _} ->
+        %ScanningError{
+          message: "Invalid payload.",
+          reason: %{quantity: "Invalid type, expected an integer."}
+        }
     end
   end
 
@@ -145,6 +159,14 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScannerTest do
     assert %ScanningError{
              message: "Invalid payload.",
              reason: %{price: "Missing."}
+           } = context.result
+  end
+
+  @tag overrides: [not_an_integer: "quantity"]
+  test "quantity is not an integer", context do
+    assert %ScanningError{
+             message: "Invalid payload.",
+             reason: %{quantity: "Invalid type, expected an integer."}
            } = context.result
   end
 end
