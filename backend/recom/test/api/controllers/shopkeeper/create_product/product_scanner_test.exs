@@ -72,8 +72,8 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScanner do
 
   defp check_from(payload) do
     case payload do
-      %{"from" => _from} ->
-        case Timex.parse(payload["from"], "{ISO:Extended:Z}") do
+      %{"from" => from} ->
+        case Timex.parse(from, "{ISO:Extended:Z}") do
           {:ok, _} ->
             payload
 
