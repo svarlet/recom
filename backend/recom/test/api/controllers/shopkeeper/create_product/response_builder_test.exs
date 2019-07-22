@@ -27,10 +27,14 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ResponseBuilderTest do
   alias Recom.Usecases.Shopkeeper.CreateProduct.GatewayError
   alias Recom.Api.Shopkeeper.CreateProduct.ResponseBuilder
 
+  defp fake_request_to_create_a_product() do
+    irrelevant_payload = %{}
+    Plug.Test.conn(:post, "/create_product", irrelevant_payload)
+  end
+
   describe "given a connection and a scanning error" do
     setup do
-      irrelevant_payload = %{}
-      conn = Plug.Test.conn(:post, "/create_product", irrelevant_payload)
+      conn = fake_request_to_create_a_product()
       result = %ScanningError{message: "the message", reason: %{field: "invalid"}}
       [response: ResponseBuilder.build(conn, result)]
     end
@@ -73,8 +77,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ResponseBuilderTest do
 
   describe "given a connection and a gateway error" do
     setup do
-      irrelevant_payload = %{}
-      conn = Plug.Test.conn(:post, "/create_product", irrelevant_payload)
+      conn = fake_request_to_create_a_product()
       error = %GatewayError{message: "boom"}
       [response: ResponseBuilder.build(conn, error)]
     end
