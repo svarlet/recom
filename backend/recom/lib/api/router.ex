@@ -22,6 +22,8 @@ defmodule Recom.Api.Router do
 
   get("/purchasables", to: CompositionRoot.Shopper.ListPurchasablesController)
 
+  post("/create_product", to: CompositionRoot.Shopkeeper.CreateProductController)
+
   match _ do
     send_resp(conn, 404, "oops, not found")
   end
