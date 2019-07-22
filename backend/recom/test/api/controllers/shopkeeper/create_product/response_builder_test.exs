@@ -3,7 +3,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ResponseBuilder do
   import Plug.Conn
 
   def build(conn, _error) do
-    send_resp(conn, 200, "")
+    send_resp(conn, 422, "")
   end
 end
 
@@ -22,8 +22,13 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ResponseBuilderTest do
       assert response.state == :sent
     end
 
-    @tag :skip
-    test "it sets the response status to 422"
+    test "it sets the response status to 422" do
+      irrelevant_payload = %{}
+      conn = Plug.Test.conn(:post, "/create_product", irrelevant_payload)
+      result = %ScanningError{message: "the message", reason: %{field: "invalid"}}
+      response = ResponseBuilder.build(conn, result)
+      assert response.status == 422
+    end
 
     @tag :skip
     test "it sets the content-type header to application/json"
