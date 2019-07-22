@@ -11,7 +11,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScannerTest do
     "price" => 589,
     "quantity" => 1_000,
     "from" => "2019-01-01T14:00:00.000000Z",
-    "end" => "2019-01-09T14:00:00.000000Z"
+    "end" => "2019-01-08T14:00:00.000000Z"
   }
 
   @valid_product %Product{
@@ -21,7 +21,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScannerTest do
     time_span:
       Interval.new(
         from: ~U[2019-01-01 14:00:00.000000Z],
-        until: [days: 8]
+        until: [days: 7]
       )
   }
 

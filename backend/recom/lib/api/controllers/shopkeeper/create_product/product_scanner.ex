@@ -94,7 +94,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScanner do
         Interval.new(
           from: Timex.parse!(payload["from"], "{ISO:Extended:Z}"),
           # TODO Fix this, it shouldn't always be 8
-          until: [days: 8]
+          until: Timex.parse!(payload["end"], "{ISO:Extended:Z}")
         )
     }
   end
