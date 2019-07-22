@@ -1,33 +1,3 @@
-defmodule Recom.Api.Shopkeeper.CreateProduct.ResponseBuilder do
-  import Plug.Conn
-
-  alias Recom.Api.Shopkeeper.CreateProduct.ProductScanner.ScanningError
-  alias Recom.Usecases.Shopkeeper.CreateProduct.GatewayError
-  alias Recom.Usecases.Shopkeeper.CreateProduct.DuplicateProductError
-  alias Recom.Usecases.Shopkeeper.CreateProduct.ProductValidator.ValidationError
-  alias Recom.Entities.Product
-
-  def build(conn, %Product{}) do
-    send_resp(conn, 201, "")
-  end
-
-  def build(conn, error) do
-    status =
-      case error do
-        %ScanningError{} -> 422
-        %ValidationError{} -> 422
-        %DuplicateProductError{} -> 422
-        %GatewayError{} -> 500
-      end
-
-    {:ok, body} = Jason.encode(error)
-
-    conn
-    |> put_resp_header("content-type", "application/json")
-    |> send_resp(status, body)
-  end
-end
-
 defmodule Recom.Api.Shopkeeper.CreateProduct.ResponseBuilderTest do
   use ExUnit.Case, async: true
 
@@ -47,7 +17,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ResponseBuilderTest do
     setup do
       conn = fake_request_to_create_a_product()
       result = %ScanningError{message: "the message", reason: %{field: "invalid"}}
-      [response: ResponseBuilder.build(conn, result)]
+      [response: ResponseBuilder.build(result, conn)]
     end
 
     test "it sends the response", context do
@@ -76,7 +46,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ResponseBuilderTest do
     setup do
       conn = fake_request_to_create_a_product()
       error = %ValidationError{message: "semantic error", reason: %{field: "is bad"}}
-      [response: ResponseBuilder.build(conn, error)]
+      [response: ResponseBuilder.build(error, conn)]
     end
 
     test "it sends the response", context do
@@ -105,7 +75,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ResponseBuilderTest do
     setup do
       conn = fake_request_to_create_a_product()
       error = %GatewayError{message: "boom"}
-      [response: ResponseBuilder.build(conn, error)]
+      [response: ResponseBuilder.build(error, conn)]
     end
 
     test "it sends the response", context do
@@ -131,7 +101,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ResponseBuilderTest do
     setup do
       conn = fake_request_to_create_a_product()
       error = %DuplicateProductError{message: "have you forgotten already?"}
-      [response: ResponseBuilder.build(conn, error)]
+      [response: ResponseBuilder.build(error, conn)]
     end
 
     test "it sends the response", context do
@@ -157,7 +127,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ResponseBuilderTest do
     setup do
       conn = fake_request_to_create_a_product()
       product = %Product{}
-      [response: ResponseBuilder.build(conn, product)]
+      [response: ResponseBuilder.build(product, conn)]
     end
 
     test "it sends the response", context do
