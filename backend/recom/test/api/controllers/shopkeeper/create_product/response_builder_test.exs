@@ -1,4 +1,4 @@
-# REFACTOR rename to ConnectionReducer? (conn + event = new conn)
+# REFACTOR rename to ConnectionReducer? (conn + event = new conn). That would certainly compose well with the input of the notifier too.
 defmodule Recom.Api.Shopkeeper.CreateProduct.ResponseBuilder do
   import Plug.Conn
 
@@ -87,8 +87,9 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ResponseBuilderTest do
       assert context.response.status == 500
     end
 
-    @tag :skip
-    test "it sets the content-type header to application/json"
+    test "it sets the content-type header to application/json", context do
+      assert ["application/json"] == Plug.Conn.get_resp_header(context.response, "content-type")
+    end
 
     @tag :skip
     test "it sets the response body with the error properties"
@@ -114,5 +115,8 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ResponseBuilderTest do
 
     @tag :skip
     test "it sets the response status to 201"
+
+    @tag :skip
+    test "it doesn't set the content-type of the response"
   end
 end
