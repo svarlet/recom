@@ -8,6 +8,7 @@ defmodule Recom.Storage.PurchasablesGateway.DbAdapter do
   alias Recom.Repo
   alias Recom.Storage
   alias Recom.Storage.PurchasablesGateway.DataMapper
+  alias Recom.Usecases.Shopkeeper.CreateProduct.GatewayError
 
   @impl true
   def all(instant) do
@@ -21,5 +22,9 @@ defmodule Recom.Storage.PurchasablesGateway.DbAdapter do
     rescue
       _ -> :error
     end
+  end
+
+  def save_product(_product) do
+    %GatewayError{message: "An unexpected error happened while saving the product."}
   end
 end
