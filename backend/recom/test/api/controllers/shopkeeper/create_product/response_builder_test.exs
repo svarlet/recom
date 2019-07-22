@@ -2,10 +2,12 @@
 defmodule Recom.Api.Shopkeeper.CreateProduct.ResponseBuilder do
   import Plug.Conn
 
-  def build(conn, _error) do
+  def build(conn, error) do
+    {:ok, body} = Jason.encode(error)
+
     conn
     |> put_resp_header("content-type", "application/json")
-    |> send_resp(422, "")
+    |> send_resp(422, body)
   end
 end
 
@@ -35,8 +37,14 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ResponseBuilderTest do
       assert ["application/json"] == Plug.Conn.get_resp_header(context.response, "content-type")
     end
 
-    @tag :skip
-    test "it sets the response body with the error properties"
+    test "it sets the response body with the error properties", context do
+      assert Jason.decode!(context.response.resp_body, keys: :atoms) == %{
+               message: "the message",
+               reason: %{
+                 field: "invalid"
+               }
+             }
+    end
   end
 
   describe "given a connection and a validation errors" do
