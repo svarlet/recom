@@ -13,17 +13,17 @@ defmodule Recom.Storage.PurchasablesGateway.DbAdapter_EmptyStoreTest do
     end
   end
 
+  @a_valid_product Product.new(
+                     name: "Apricots x6",
+                     price: 599,
+                     quantity: 1_000,
+                     time_span:
+                       Interval.new(from: ~U[2010-07-14 08:00:00.000000Z], until: [days: 7])
+                   )
+
   describe "save_product/1" do
     test "saves the product when it's original" do
-      product =
-        Product.new(
-          name: "Apricots x6",
-          price: 599,
-          quantity: 1_000,
-          time_span: Interval.new(from: ~U[2010-07-14 08:00:00.000000Z], until: [days: 7])
-        )
-
-      DbAdapter.save_product(product)
+      DbAdapter.save_product(@a_valid_product)
 
       saved_product = Repo.one!(Storage.Product)
 
@@ -33,25 +33,17 @@ defmodule Recom.Storage.PurchasablesGateway.DbAdapter_EmptyStoreTest do
 
       assert DateTime.compare(
                saved_product.start,
-               Timex.to_datetime(product.time_span.from, "Etc/UTC")
+               Timex.to_datetime(@a_valid_product.time_span.from, "Etc/UTC")
              ) == :eq
 
       assert DateTime.compare(
                saved_product.end,
-               Timex.to_datetime(product.time_span.until, "Etc/UTC")
+               Timex.to_datetime(@a_valid_product.time_span.until, "Etc/UTC")
              ) == :eq
     end
 
     test "returns the saved product as an entity" do
-      product =
-        Product.new(
-          name: "Apricots x6",
-          price: 599,
-          quantity: 1_000,
-          time_span: Interval.new(from: ~U[2010-07-14 08:00:00.000000Z], until: [days: 7])
-        )
-
-      assert product == DbAdapter.save_product(product)
+      assert @a_valid_product == DbAdapter.save_product(@a_valid_product)
     end
   end
 end
