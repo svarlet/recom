@@ -16,6 +16,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScanner do
     ~> check_quantity()
     ~> check_from()
     ~> check_end()
+    ~> check_order_of_dates()
     ~> to_product()
   end
 
@@ -66,6 +67,24 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScanner do
     check(payload, "end", &is_datetime?/1, "Invalid type, expected a datetime.")
   end
 
+  defp check_order_of_dates(payload) do
+    from = parse_date(payload["from"])
+    the_end = parse_date(payload["end"])
+
+    if Timex.before?(from, the_end) do
+      payload
+    else
+      %ScanningError{
+        message: "Invalid payload.",
+        reason: %{end: "The end value should not precede the from value."}
+      }
+    end
+  end
+
+  defp parse_date(date) do
+    Timex.parse!(date, "{ISO:Extended:Z}")
+  end
+
   defp to_product(payload) do
     %Product{
       name: payload["name"],
@@ -74,6 +93,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScanner do
       time_span:
         Interval.new(
           from: Timex.parse!(payload["from"], "{ISO:Extended:Z}"),
+          # TODO Fix this, it shouldn't always be 8
           until: [days: 8]
         )
     }

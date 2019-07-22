@@ -33,6 +33,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScannerTest do
           {:zero, field}, payload -> Map.put(payload, field, 0)
           {:not_an_integer, field}, payload -> Map.put(payload, field, "not an integer")
           {:not_a_datetime, field}, payload -> Map.put(payload, field, "not a datetime")
+          :swap_dates, payload -> swap_dates(payload)
           _, _ -> raise "Unsupported override instruction."
         end)
       else
@@ -40,6 +41,15 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScannerTest do
       end
 
     [result: ProductScanner.scan(payload)]
+  end
+
+  defp swap_dates(payload) do
+    from = payload["from"]
+    the_end = payload["end"]
+
+    payload
+    |> Map.put("from", the_end)
+    |> Map.put("end", from)
   end
 
   test "payload is not a map" do
@@ -122,6 +132,14 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScannerTest do
     assert %ScanningError{
              message: "Invalid payload.",
              reason: %{end: "Invalid type, expected a datetime."}
+           } == context.result
+  end
+
+  @tag overrides: [:swap_dates]
+  test "end precedes from", context do
+    assert %ScanningError{
+             message: "Invalid payload.",
+             reason: %{end: "The end value should not precede the from value."}
            } == context.result
   end
 end
