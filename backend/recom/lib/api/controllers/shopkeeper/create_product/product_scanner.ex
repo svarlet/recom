@@ -28,19 +28,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScanner do
   end
 
   defp check_name(payload) do
-    case payload do
-      %{"name" => name} when is_binary(name) ->
-        payload
-
-      %{"name" => _} ->
-        %ScanningError{
-          message: "Invalid payload.",
-          reason: %{name: "Invalid type, expected a string."}
-        }
-
-      _ ->
-        %ScanningError{message: "Invalid payload.", reason: %{name: "Missing."}}
-    end
+    check(payload, "name", &is_binary/1, "Invalid type, expected a string.")
   end
 
   defp check_price(payload) do
