@@ -8,8 +8,8 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScanner do
     defexception ~w{message reason}a
   end
 
-  def scan(nil) do
-    %ScanningError{message: "Nil payload."}
+  def scan(payload) when not is_map(payload) do
+    %ScanningError{message: "Cannot scan this payload."}
   end
 
   def scan(payload) do
@@ -166,8 +166,9 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScannerTest do
     [result: ProductScanner.scan(payload)]
   end
 
-  test "payload is nil" do
-    assert %ScanningError{message: "Nil payload.", reason: nil} == ProductScanner.scan(nil)
+  test "payload is not a map" do
+    assert %ScanningError{message: "Cannot scan this payload.", reason: nil} ==
+             ProductScanner.scan(nil)
   end
 
   test "payload with all fields of valid type" do
