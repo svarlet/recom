@@ -4,7 +4,7 @@ defmodule Recom.Storage.PurchasablesGateway.DbAdapter_ErrorTest do
 
   alias Recom.Storage.PurchasablesGateway.DbAdapter
 
-  describe "all/2" do
+  describe "all/1" do
     test "when Ecto raises an error then it returns :error" do
       assert :error ==
                DbAdapter.all("NOT A DATETIME, THAT WILL RAISE")
