@@ -41,5 +41,17 @@ defmodule Recom.Storage.PurchasablesGateway.DbAdapter_EmptyStoreTest do
                Timex.to_datetime(product.time_span.until, "Etc/UTC")
              ) == :eq
     end
+
+    test "returns the saved product as an entity" do
+      product =
+        Product.new(
+          name: "Apricots x6",
+          price: 599,
+          quantity: 1_000,
+          time_span: Interval.new(from: ~U[2010-07-14 08:00:00.000000Z], until: [days: 7])
+        )
+
+      assert product == DbAdapter.save_product(product)
+    end
   end
 end

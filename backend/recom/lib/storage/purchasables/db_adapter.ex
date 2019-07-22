@@ -34,7 +34,9 @@ defmodule Recom.Storage.PurchasablesGateway.DbAdapter do
         end: Timex.to_datetime(product.time_span.until, "Etc/UTC")
       }
 
-      Repo.insert!(record)
+      record
+      |> Repo.insert!()
+      |> DataMapper.convert()
     rescue
       _ ->
         %GatewayError{message: "An unexpected error happened while saving the product."}
