@@ -6,6 +6,10 @@ defmodule Recom.Usecases.Shopkeeper.CreateProduct.ProductValidator do
   def validate(product) do
     if String.trim(product.name) == "" do
       %ValidationError{message: "Invalid product.", reason: %{name: "The value is blank."}}
+    else
+      if product.price < 0 do
+        %ValidationError{message: "Invalid product.", reason: %{price: "The price is negative."}}
+      end
     end
   end
 end
@@ -34,8 +38,23 @@ defmodule Recom.Usecases.Shopkeeper.CreateProduct.ProductValidatorTest do
              ProductValidator.validate(product)
   end
 
-  @tag :skip
-  test "price is negative"
+  test "price is negative" do
+    product = %Product{
+      name: "Oranges 2kg",
+      price: -1,
+      quantity: 1,
+      time_span:
+        Interval.new(
+          from: ~U[2018-10-15 14:00:00.000000Z],
+          until: [days: 1]
+        )
+    }
+
+    assert %ValidationError{
+             message: "Invalid product.",
+             reason: %{price: "The price is negative."}
+           } == ProductValidator.validate(product)
+  end
 
   @tag :skip
   test "quantity is negative"
