@@ -17,6 +17,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScanner do
     |> check_name()
     ~> check_price()
     ~> check_quantity()
+    ~> check_from()
     ~> to_product()
   end
 
@@ -65,6 +66,16 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScanner do
 
       _ ->
         %ScanningError{message: "Invalid payload.", reason: %{quantity: "Missing."}}
+    end
+  end
+
+  defp check_from(payload) do
+    case payload do
+      %{"from" => _from} ->
+        payload
+
+      _ ->
+        %ScanningError{message: "Invalid payload.", reason: %{from: "Missing."}}
     end
   end
 
@@ -176,6 +187,12 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScannerTest do
   @tag overrides: [delete: "quantity"]
   test "quantity is missing", context do
     assert %ScanningError{message: "Invalid payload.", reason: %{quantity: "Missing."}} ==
+             context.result
+  end
+
+  @tag overrides: [delete: "from"]
+  test "from is missing", context do
+    assert %ScanningError{message: "Invalid payload.", reason: %{from: "Missing."}} ==
              context.result
   end
 end
