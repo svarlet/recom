@@ -18,6 +18,7 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScanner do
     ~> check_price()
     ~> check_quantity()
     ~> check_from()
+    ~> check_end()
     ~> to_product()
   end
 
@@ -85,6 +86,16 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScanner do
 
       _ ->
         %ScanningError{message: "Invalid payload.", reason: %{from: "Missing."}}
+    end
+  end
+
+  defp check_end(payload) do
+    case payload do
+      %{"end" => _} ->
+        payload
+
+      _ ->
+        %ScanningError{message: "Invalid payload.", reason: %{end: "Missing."}}
     end
   end
 
@@ -212,5 +223,11 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScannerTest do
              message: "Invalid payload.",
              reason: %{from: "Invalid type, expected a datetime."}
            } == context.result
+  end
+
+  @tag overrides: [delete: "end"]
+  test "end is missing", context do
+    assert %ScanningError{message: "Invalid payload.", reason: %{end: "Missing."}} ==
+             context.result
   end
 end
