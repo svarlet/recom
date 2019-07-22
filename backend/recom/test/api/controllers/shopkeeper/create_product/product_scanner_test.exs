@@ -127,12 +127,25 @@ defmodule Recom.Api.Shopkeeper.CreateProduct.ProductScannerTest do
            } = ProductScanner.scan(payload)
   end
 
-  test "price is missing" do
-    payload = Map.delete(@valid_payload, "price")
+  setup context do
+    payload =
+      if context[:overrides] do
+        Enum.reduce(context[:overrides], @valid_payload, fn
+          {:delete, field}, payload -> Map.delete(payload, field)
+          _, _ -> raise "Unsupported override instruction."
+        end)
+      else
+        @valid_payload
+      end
 
+    [result: ProductScanner.scan(payload)]
+  end
+
+  @tag overrides: [delete: "price"]
+  test "price is missing", context do
     assert %ScanningError{
              message: "Invalid payload.",
              reason: %{price: "Missing."}
-           } = ProductScanner.scan(payload)
+           } = context.result
   end
 end
