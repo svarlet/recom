@@ -39,3 +39,14 @@ defimpl Jason.Encoder, for: Recom.Usecases.Shopkeeper.CreateProduct.GatewayError
     |> Jason.encode!()
   end
 end
+
+defimpl Jason.Encoder,
+  for: Recom.Usecases.Shopkeeper.CreateProduct.ProductValidator.ValidationError do
+  require Jason.Helpers
+
+  def encode(error, _) do
+    error
+    |> Jason.Helpers.json_map_take(~w{message reason}a)
+    |> Jason.encode!()
+  end
+end
